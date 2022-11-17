@@ -1,32 +1,47 @@
 import query_database as db
 
 """
-This module runs the IMPC specific validate a procedure
+This module runs the IMPC specific validation for mice and procedures
 based on a number of business rules.
 
-They throw an exception if the test fails.
-The caller should catch the exception and continue 
+Most return a tuple of pass/fail and a message 
+
+The caller should catch any exception and continue 
 processing.
 """
-g_CollectedBy = ""
-g_DateCollected = ""
+
+# Globals that are pulled out of the results and stored for later use in building the XML.
+g_CollectedBy = ""      #i.e. Experimenter ID
+g_DateCollected = ""    # date of test
+g_ReviewedBy = ""       # Reviewer - means the task has ben review
+g_ReviewedDate = ""     # We store the reviewed date and if the new one is newer we submit it. Else we ignore it.
 
 # Is the procedure completed or cancelled? i.e. not 'Active'
 def testTaskStatus(proc):
-    msg = ""
-    return True, msg
+    # Assume it is active
+    msg = "Task not set to Complete or Cancelled"
+    success = False
+    
+    if proc["taskStatus"] == 'Complete' or proc["taskStatus"] == 'Cancelled':
+        success = True
+        msg = ''
+        
+    return success, msg
 
+# Used to set the experimenter id
 def setCollectedBy(output):
     global g_CollectedBy  
     if output["collectedBy"] != None:
         g_CollectedBy = output["collectedBy"]
     return
 
+# Used to set the date of experiment
 def setDateCollected(output):
     global g_DateCollected
-    g_DateCollected = output["dateCollected"]
+    g_DateCollected = output["collectedDate"]
     return    
-    
+
+
 def getCollectedBy(output):
     global g_CollectedBy  
     return g_CollectedBy
@@ -34,21 +49,59 @@ def getCollectedBy(output):
 def getDateCollected(output):
     global g_DateCollected
     return g_DateCollected
-    
+
+# Not really used but for now needs to have some value.
+def setReviewedBy(proc):
+    global g_ReviewedBy
+    g_ReviewedBy = proc["reviewedBy"]
+
+def getReviewedBy():
+    global g_ReviewedBy
+    return g_ReviewedBy
+
+# Newer than the store date means it is a resubmission
+def setReviewedDate(proc):
+    global g_ReviewedDate
+    g_ReviewedDate = proc["dateReviewed"]
+
+def getReviewedDate():
+    global g_ReviewedDate
+    return g_ReviewedDate
+
 # Have we submitted this successfully before?
+# Look up the test in the database and compare reviewed dates
 def testPreviouslySubmitted(proc):
     msg = ""
     return True, msg
 
 # Is there a date of experiment?
 def testCollectedDate(output):
-    msg = ""
-    return True
+
+    if output["collectedDate"]  == None or len(output["collectedDate"]) == 0:
+        return False, "No collected date."
+    
+    setDateCollected(output)
+    return True, ""
 
 # Is there a date of experiment?
 def testCollectedBy(output):
-    msg = ""
-    return True
+    
+    if output["collectedBy"]  == None or len(output["collectedBy"]) == 0:
+        return False, "No 'collected by' value."
+    
+    setCollectedBy(output)
+    return True, ""
+
+# make sure this has been reviewed by someone
+def testReviewedBy(proc):
+    if proc["reviewedBy"] == None or len(proc["reviewedBy"]) == 0:
+        return False, "Review By is missing."
+    
+    # I need to set it as a global
+    setReviewedBy(proc)
+    setReviewedDate(proc)
+    
+    return True, ""
 
 # Are all inputs set? 
 def testInputs(proc):
@@ -57,11 +110,9 @@ def testInputs(proc):
     inputLs = proc["inputs"]
     if inputLs == None or len(inputLs) == 0:
         msg = "No inputs!"
-        print(msg)
         success = False
-        return success, msg
 
-    return (success, msg);
+    return success, msg
 
 
 # Are all outputs set? 
@@ -71,7 +122,6 @@ def testOutputs(proc):
     outputLs = proc["outputs"]
     if outputLs == None or len(outputLs) == 0:
         msg = "No outputs!"
-        print(msg)
         success = False
         return success, msg
     
@@ -81,14 +131,9 @@ def testOutputs(proc):
         if testCollectedDate(output) == True:
             setDateCollected(output)
         
-    return (success, msg);
+    return success, msg
 
-# Do we have an experimenter ID? 
-def testCollectedBy(outputs):
-    msg = ""
-    return True, msg
-
-# Is there a mouse?
+# Is there a mouse? It needs sex, generation and genotypes
 def testMouseInfo(animal):
     # Does it have a generation? Sex? Name?
     result = True
@@ -96,27 +141,44 @@ def testMouseInfo(animal):
     if animal == None:
         msg = "No mouse to test!"
         result = False
+    
+    animalInfo = animal["animal"]
         
-    if animal["animalName"] == None or len(animal["animalName"]) == 0:
-        msg = "No mouse name."
+    if animalInfo["animalName"] == None or len(animalInfo["animalName"]) == 0:
+        msg += " No mouse name."
         result = False
-         
-    if animal["generation"] == None or len(animal["generation"]) == 0:
-        msg = "No mouse generation."
+
+    if animalInfo["generation"] == None or len(animalInfo["generation"]) == 0:
+        msg = " No mouse generation."
         result = False         
         
-    if animal["sex"] == None or len(animal["sex"]) == 0:
-        msg = "No mouse sex."
+    if animalInfo["sex"] == None or len(animalInfo["sex"]) == 0:
+        msg = " No mouse sex."
         result = False
-        
+    
+    assayName = ''
+    zygosity = ''
+    genotypeInfo = animal["genotypes"]
+    genotypeResult, genotypeMsg, assayName, zygosity = testGenotypeInfo(genotypeInfo)
+    if genotypeResult == False:
+        result = False
+        msg += " " + genotypeMsg
+    
+    lineInfo = animal["line"]
+    lineResult, lineMsg = testLineInfo(lineInfo)
+    if lineResult == False:
+        result = False
+        msg += " " + lineMsg
+    
     return result, msg
 
-# Is there a genotype?
+# Is there a genotype? Not in the taskInstance information 
 def testGenotypeInfo(genotypes):
+    
     msg = "No KOMP assay name"
     success = False
     zygosity = "none"
-    assayName = ""
+    assayName = "none"
     
     for genotype in genotypes:
         # Exclude assays we don't care about. 
@@ -133,34 +195,27 @@ def testLineInfo(line):
     msg = ""
     success = True
     
+    legalLineStatus = [ 'KOMP Active', 'KOMP Complete', 'Embryo Lethal Complete', 'Embryo Lethal Active' ]
+    
     if line["stock"] == None or len(line["stock"]) == 0:
         msg = 'StockNumber is not set for ' + line["name"] + ';'
         success = False
-    
-    if line["lineStatus"] != None and "KOMP" not in line["lineStatus"]:
-        msg = msg + line["name"] + ' status is not KOMP Active or KOMP Complete ' + ';'
-        success = False   
-         
-    if line["lineStatus"] == None:
-        msg = msg + line["name"] + ' status is not KOMP Active or KOMP Complete ' + ';'
-        success = False    
+
+# BUG - Our code is not returning lineStatus    
+#    if not line["lineStatus"] in legalLineStatus:
+#        msg = msg + str(line["name"]) + ' status is not in supported list of ' + str(legalLineStatus) + ';'
+#        success = False   
         
     if line["references"] == None or len(line["references"]) == 0:
-        msg = msg + 'The References field is not set. It should containg teh MGI reference for KOMP lines.' + ';'
+        msg = msg + 'The References field is not set. It should containg the MGI reference for KOMP lines.' + ';'
         success = False    
-    
-    if line["references"] == None or len(line["references"]) == 0:
-        msg = msg + 'The References field is not set. It should contain the MGI reference for KOMP lines.' + ';'
-        success = False
+
           
     return success, msg
 
 # Assumes all parameters are valid dictionaries with the keys required or None type 
 def createLogEntry(animalInfo, procedureInfo, lineInfo, genotypeInfo, issueStr):
-    print('///////////')
-    print(procedureInfo)
-    print('////////////')
-    
+
     msgDict = {"AnimalName":"", "TaskName":"", "TaskInstanceKey":0, "ImpcCode": "", "StockNumber":"", "DateDue":"", "Issue":"" }
     db.init()
     
@@ -194,54 +249,68 @@ def createLogEntry(animalInfo, procedureInfo, lineInfo, genotypeInfo, issueStr):
 
 # A speciemen looks like { "animal": <dictionary>, "line": <dictionary>, "litter": <dictionary>, "genotypes": <list of dictionaries> }
 def validateAnimal(specimen):
-    # procedureInfo = { "taskInstanceKey": "N/A", "impcCode": "N/A", "dateDue": "N/A"}
-    success = True
+    successMouse = True
+    successStockNumber = True
+    # For writing to the database
     msgDict = {"AnimalName":"", "TaskName":"", "TaskInstanceKey":0, "ImpcCode": "", "StockNumber":"", "DateDue":"", "Issue":"" }
     msg = ""
     
-    success, msg = testMouseInfo(specimen["animal"])
+    successMouse, msg = testMouseInfo(specimen)
    
-    if success == False:
+    if successMouse == False:
         createLogEntry(specimen["animal"], None, specimen["line"], specimen["genotypes"], msg)
-    
-    success, msg = testLineInfo(specimen["line"])
-    if success == False:
-        createLogEntry(specimen["animal"], None, specimen["line"], specimen["genotypes"], msg)
-   
-    success, msg, assayName, genotype = testGenotypeInfo(specimen["genotypes"]) # return the active genotype
-    
-    if success == False:
-        createLogEntry(specimen["animal"], None, specimen["line"], assayName + ' ' + genotype, msg)   
-           
-    return success
+
+    return (successMouse and successStockNumber)
 
 def validateProcedure(proc):
     
     specimenLs = proc["animal"]
-    specimen = specimenLs[0]
+    specimen = specimenLs[0]  # TODO - Handle multiple mice?
     lineInfo = { "stock" : specimen["stock"] }
     taskLs = proc["taskInstance"] 
-    task = taskLs[0] 
+    if len(taskLs) == 0:
+        return "No task returned by query", False
+    
+    task = taskLs[0] # TODO - Handle multiple procedures?
     
     msg = ""
     
-    print("PROCEDURE:")
-    print(proc)
-    print("")
-    print("TASK:")
-    print(task)
-    print("")
-    print("SPECIMEN:")
-    print(specimen)
-    print("")
-    print("Line Info:")
-    print(lineInfo)
+    overallMsg = ""
+    overallSuccess = True
+    
+#    We don't need to do validateAnimal(). Each animal is evaluated separately    
+#    success, msg = validateAnimal(specimen)
+#    overallSuccess = overallSuccess and success
+#    if len(msg) > 0:
+#        overallMsg = overallMsg + "; " + msg
     
     success, msg = testOutputs(task)
-    print('Msg= ' + msg)
-    print('Success= ' + str(success))
+    overallSuccess = overallSuccess and success
+    if len(msg) > 0:
+        overallMsg = overallMsg + "; " + msg
+        
+    success, msg = testReviewedBy(task)
+    overallSuccess = overallSuccess and success
+    if len(msg) > 0:
+        overallMsg = overallMsg + "; " + msg
+        
+    success, msg = testPreviouslySubmitted(task)
+    overallSuccess = overallSuccess and success
+    if len(msg) > 0:
+        overallMsg = overallMsg + "; " + msg
     
-    if success == False:
-        createLogEntry(specimen, task, lineInfo, None, msg)
-    success = True
-    return success
+    success, msg = testTaskStatus(task)
+    overallSuccess = overallSuccess and success
+    if len(msg) > 0:
+        overallMsg = overallMsg + "; " + msg
+    
+    print('Msg= ' + overallMsg)
+    print('Success= ' + str(overallSuccess))
+    
+    #success, msg = testInputs(task) # Embryo lethal tasks were erronoeusly created with no inputs
+    
+    if overallSuccess == False:
+        createLogEntry(specimen, task, lineInfo, None, overallMsg)
+        task["taskStatus"]  = 'Failed QC'  # Local to this app
+        
+    return overallSuccess

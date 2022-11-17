@@ -77,13 +77,22 @@ def databaseSelectImpcData(threeLetterCode, isMetatdata, usingInputs):
     
     return lsOfTuples
 
-# Given a 3 letter procedure code, get the metadata definitions
-def getImpcCodes(procedureCode, usingInputs, metadataOnly):
+def recordSubmissionAttempt(fileName, animal, procedure, impcCode, reviewDate):  
     
-    impcCodeLs = []
-    
-    
-    return impcCodeLs
+    animalName = animal["animalName"]
+    procedureName = procedure["workflowTaskName"]
+    """ Given  dictionary pull out the elements and insert it into the database """
+    insertStmt = "INSERT INTO komp.submittedProcedures (AnimalName, ExperimentName, ImpcCode, XmlFilename, DateReviewed) VALUES ( '{0}','{1}','{2}','{3}','{4}')".\
+        format(animalName, procedureName, impcCode, fileName, reviewDate)
+
+    try:    
+        print(insertStmt)
+        g_MysqlCursor.execute(insertStmt)
+        g_mysqldb.commit()
+       
+    except Exception as e:
+        print('INSERT FAILED FOR: ' + insertStmt)        
+    return
 
 def setupDatabaseConnection():
     
@@ -120,18 +129,5 @@ def close():
 
 if __name__ == '__main__':
     init()
-    # IMPC 3 letter code, isMetadata, lookAtInputsOnly
-    dccTuples = databaseSelectImpcData('ABR',True, True)
-    print(dccTuples)
-    impcCodeStr = 'IMPC_ABR_037_001'
-    result = next((i for i, v in enumerate(dccTuples) if v[0] == impcCodeStr), None)
-    print(result)
-    myTuple = dccTuples[result]
-    print(myTuple)
-    print(myTuple[0])
-    print(myTuple[1])
-    print(myTuple[2])
-    #s = databaseSelectProcedureCode('Heart Weight')
-    #print(s)
-    #print(s[0])
+    recordSubmissionAttempt('blah.xml', 'lefty', 'Body Weight - LEFTY - 001', 'IMPC_BWT_001', '2020-10-01')
     close()

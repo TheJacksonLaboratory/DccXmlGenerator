@@ -812,6 +812,179 @@ call komp.updateDccParam(	342	,	'IMPC_GPL_014_001'	); -- 	E9.5 Placenta Morpholo
 call komp.updateDccParam(	343	,	'IMPC_GPL_016_001'	); -- 	E9.5 Placenta Morphology	Time of dark cycle end
 call komp.updateDccParam(	344	,	'IMPC_GPL_015_001'	); -- 	E9.5 Placenta Morphology	Time of dark cycle start
 call komp.updateDccParam(	345	,	'IMPC_GPL_013_001'	); -- 	E9.5 Placenta Morphology	Time of Dissection
+
+call komp.updateDccParam(	358	,	'IMPC_FER_017_001'		);
+call komp.updateDccParam(	359	,	'IMPC_FER_018_001'		);
+call komp.updateDccParam(	360	,	'IMPC_FER_020_001'		);
+call komp.updateDccParam(	361	,	'IMPC_FER_021_001'		);
+call komp.updateDccParam(	362	,	'IMPC_FER_023_001'		);
+call komp.updateDccParam(	363	,	'IMPC_FER_015_001'		);
+call komp.updateDccParam(	364	,	'IMPC_FER_014_001'		);
+call komp.updateDccParam(	365	,	'IMPC_FER_022_001'		);
+call komp.updateDccParam(	366	,	'IMPC_FER_016_001'		);
+call komp.updateDccParam(	367	,	'IMPC_VIA_026_001'		);
+call komp.updateDccParam(	368	,	'IMPC_VIA_027_001'		);
+call komp.updateDccParam(	369	,	'IMPC_VIA_030_001'		);
+call komp.updateDccParam(	370	,	'IMPC_VIA_034_001'		);
+call komp.updateDccParam(	371	,	'IMPC_VIA_035_001'		);
+call komp.updateDccParam(	372	,	'IMPC_VIA_036_001'		);
+call komp.updateDccParam(	373	,	'IMPC_EVL_004_001'		);
+call komp.updateDccParam(	374	,	'IMPC_EVL_022_001'		);
+call komp.updateDccParam(	375	,	'IMPC_EVL_023_001'		);
+call komp.updateDccParam(	376	,	'IMPC_EVM_020_001'		);
+call komp.updateDccParam(	377	,	'IMPC_EVM_021_001'		);
+call komp.updateDccParam(	378	,	'IMPC_EVM_022_001'		);
+call komp.updateDccParam(	379	,	'IMPC_EVO_021_001'		);
+call komp.updateDccParam(	380	,	'IMPC_EVO_022_001'		);
+call komp.updateDccParam(	381	,	'IMPC_EVO_023_001'		);
+call komp.updateDccParam(	382	,	'IMPC_EVP_020_001'		);
+call komp.updateDccParam(	383	,	'IMPC_EVP_021_001'		);
+call komp.updateDccParam(	384	,	'IMPC_EVP_022_001'		);
+call komp.updateDccParam(	659	,	'IMPC_FER_001_001'		);
+call komp.updateDccParam(	660	,	'IMPC_FER_002_001'		);
+call komp.updateDccParam(	661	,	'IMPC_FER_003_001'		);
+call komp.updateDccParam(	662	,	'IMPC_FER_004_001'		);
+call komp.updateDccParam(	663	,	'IMPC_FER_005_001'		);
+call komp.updateDccParam(	664	,	'IMPC_FER_006_001'		);
+call komp.updateDccParam(	665	,	'IMPC_FER_007_001'		);
+call komp.updateDccParam(	666	,	'IMPC_FER_008_001'		);
+call komp.updateDccParam(	667	,	'IMPC_FER_009_001'		);
+call komp.updateDccParam(	668	,	'IMPC_FER_010_001'		);
+call komp.updateDccParam(	669	,	'IMPC_FER_011_001'		);
+call komp.updateDccParam(	670	,	'IMPC_FER_012_001'		);
+call komp.updateDccParam(	671	,	'IMPC_FER_013_001'		);
+call komp.updateDccParam(	672	,	'IMPC_FER_019_001'		);
+call komp.updateDccParam(	673	,	'IMPC_VIA_037_001'		);
+call komp.updateDccParam(	674	,	'IMPC_VIA_038_001'		);
+call komp.updateDccParam(	675	,	'IMPC_VIA_039_001'		);
+call komp.updateDccParam(	676	,	'IMPC_VIA_040_001'		);
+call komp.updateDccParam(	677	,	'IMPC_VIA_041_001'		);
+call komp.updateDccParam(	678	,	'IMPC_VIA_042_001'		);
+call komp.updateDccParam(	679	,	'IMPC_VIA_043_001'		);
+call komp.updateDccParam(	680	,	'IMPC_VIA_044_001'		);
+call komp.updateDccParam(	682	,	'IMPC_VIA_045_001'		);
+call komp.updateDccParam(	683	,	'IMPC_VIA_046_001'		);
+call komp.updateDccParam(	684	,	'IMPC_VIA_047_001'		);
+call komp.updateDccParam(	685	,	'IMPC_VIA_048_001'		);
+call komp.updateDccParam(	686	,	'IMPC_VIA_049_001'		);
+call komp.updateDccParam(	687	,	'IMPC_VIA_050_001'		);
+call komp.updateDccParam(	688	,	'IMPC_VIA_051_001'		);
+call komp.updateDccParam(	689	,	'IMPC_VIA_052_001'		);
+call komp.updateDccParam(	690	,	'IMPC_VIA_053_001'		);
+call komp.updateDccParam(	691	,	'IMPC_VIA_054_001'		);
+call komp.updateDccParam(	692	,	'IMPC_VIA_055_001'		);
+call komp.updateDccParam(	693	,	'IMPC_VIA_056_001'		);
+call komp.updateDccParam(	694	,	'IMPC_VIA_057_001'		);
+call komp.updateDccParam(	695	,	'IMPC_VIA_058_001'		);
+call komp.updateDccParam(	696	,	'IMPC_VIA_059_001'		);
+call komp.updateDccParam(	697	,	'IMPC_VIA_060_001'		);
+call komp.updateDccParam(	698	,	'IMPC_VIA_061_001'		);
+call komp.updateDccParam(	699	,	'IMPC_VIA_062_001'		);
+call komp.updateDccParam(	700	,	'IMPC_VIA_063_001'		);
+call komp.updateDccParam(	701	,	'IMPC_VIA_064_001'		);
+call komp.updateDccParam(	702	,	'IMPC_VIA_065_001'		);
+call komp.updateDccParam(	703	,	'IMPC_VIA_066_001'		);
+call komp.updateDccParam(	704	,	'IMPC_VIA_067_001'		);
+call komp.updateDccParam(	705	,	'IMPC_EVL_001_001'		);
+call komp.updateDccParam(	706	,	'IMPC_EVL_002_001'		);
+call komp.updateDccParam(	707	,	'IMPC_EVL_005_001'		);
+call komp.updateDccParam(	708	,	'IMPC_EVL_007_001'		);
+call komp.updateDccParam(	709	,	'IMPC_EVL_008_001'		);
+call komp.updateDccParam(	710	,	'IMPC_EVL_009_001'		);
+call komp.updateDccParam(	711	,	'IMPC_EVL_010_001'		);
+call komp.updateDccParam(	712	,	'IMPC_EVL_011_001'		);
+call komp.updateDccParam(	713	,	'IMPC_EVL_012_001'		);
+call komp.updateDccParam(	714	,	'IMPC_EVL_013_001'		);
+call komp.updateDccParam(	715	,	'IMPC_EVL_014_001'		);
+call komp.updateDccParam(	716	,	'IMPC_EVL_015_001'		);
+call komp.updateDccParam(	717	,	'IMPC_EVL_016_001'		);
+call komp.updateDccParam(	718	,	'IMPC_EVL_017_001'		);
+call komp.updateDccParam(	719	,	'IMPC_EVL_018_001'		);
+call komp.updateDccParam(	720	,	'IMPC_EVL_019_001'		);
+call komp.updateDccParam(	721	,	'IMPC_EVL_020_001'		);
+call komp.updateDccParam(	722	,	'IMPC_EVL_003_001'		);
+call komp.updateDccParam(	723	,	'IMPC_EVL_006_001'		);
+call komp.updateDccParam(	724	,	'IMPC_EVL_021_001'		);
+call komp.updateDccParam(	725	,	'IMPC_EVM_001_001'		);
+call komp.updateDccParam(	726	,	'IMPC_EVM_023_001'		);
+call komp.updateDccParam(	727	,	'IMPC_EVM_002_001'		);
+call komp.updateDccParam(	728	,	'IMPC_EVM_004_001'		);
+call komp.updateDccParam(	729	,	'IMPC_EVM_005_001'		);
+call komp.updateDccParam(	730	,	'IMPC_EVM_006_001'		);
+call komp.updateDccParam(	731	,	'IMPC_EVM_007_001'		);
+call komp.updateDccParam(	732	,	'IMPC_EVM_008_001'		);
+call komp.updateDccParam(	733	,	'IMPC_EVM_009_001'		);
+call komp.updateDccParam(	734	,	'IMPC_EVM_010_001'		);
+call komp.updateDccParam(	735	,	'IMPC_EVM_011_001'		);
+call komp.updateDccParam(	736	,	'IMPC_EVM_012_001'		);
+call komp.updateDccParam(	737	,	'IMPC_EVM_013_001'		);
+call komp.updateDccParam(	738	,	'IMPC_EVM_014_001'		);
+call komp.updateDccParam(	739	,	'IMPC_EVM_015_001'		);
+call komp.updateDccParam(	740	,	'IMPC_EVM_017_001'		);
+call komp.updateDccParam(	741	,	'IMPC_EVM_018_001'		);
+call komp.updateDccParam(	742	,	'IMPC_EVM_016_001'		);
+call komp.updateDccParam(	743	,	'IMPC_EVM_003_001'		);
+call komp.updateDccParam(	744	,	'IMPC_EVM_019_001'		);
+call komp.updateDccParam(	745	,	'IMPC_EVO_001_001'		);
+call komp.updateDccParam(	746	,	'IMPC_EVO_004_001'		);
+call komp.updateDccParam(	747	,	'IMPC_EVO_002_001'		);
+call komp.updateDccParam(	748	,	'IMPC_EVO_005_001'		);
+call komp.updateDccParam(	749	,	'IMPC_EVO_006_001'		);
+call komp.updateDccParam(	750	,	'IMPC_EVO_007_001'		);
+call komp.updateDccParam(	751	,	'IMPC_EVO_008_001'		);
+call komp.updateDccParam(	752	,	'IMPC_EVO_009_001'		);
+call komp.updateDccParam(	753	,	'IMPC_EVO_010_001'		);
+call komp.updateDccParam(	754	,	'IMPC_EVO_011_001'		);
+call komp.updateDccParam(	755	,	'IMPC_EVO_012_001'		);
+call komp.updateDccParam(	756	,	'IMPC_EVO_013_001'		);
+call komp.updateDccParam(	757	,	'IMPC_EVO_014_001'		);
+call komp.updateDccParam(	758	,	'IMPC_EVO_015_001'		);
+call komp.updateDccParam(	759	,	'IMPC_EVO_016_001'		);
+call komp.updateDccParam(	760	,	'IMPC_EVO_019_001'		);
+call komp.updateDccParam(	761	,	'IMPC_EVO_020_001'		);
+call komp.updateDccParam(	762	,	'IMPC_EVO_018_001'		);
+call komp.updateDccParam(	763	,	'IMPC_EVO_003_001'		);
+call komp.updateDccParam(	764	,	'IMPC_EVO_017_001'		);
+call komp.updateDccParam(	765	,	'IMPC_EVP_001_001'		);
+call komp.updateDccParam(	766	,	'IMPC_EVP_004_001'		);
+call komp.updateDccParam(	767	,	'IMPC_EVP_002_001'		);
+call komp.updateDccParam(	768	,	'IMPC_EVP_023_001'		);
+call komp.updateDccParam(	769	,	'IMPC_EVP_005_001'		);
+call komp.updateDccParam(	770	,	'IMPC_EVP_006_001'		);
+call komp.updateDccParam(	771	,	'IMPC_EVP_007_001'		);
+call komp.updateDccParam(	772	,	'IMPC_EVP_008_001'		);
+call komp.updateDccParam(	773	,	'IMPC_EVP_009_001'		);
+call komp.updateDccParam(	774	,	'IMPC_EVP_010_001'		);
+call komp.updateDccParam(	775	,	'IMPC_EVP_011_001'		);
+call komp.updateDccParam(	776	,	'IMPC_EVP_012_001'		);
+call komp.updateDccParam(	777	,	'IMPC_EVP_013_001'		);
+call komp.updateDccParam(	778	,	'IMPC_EVP_014_001'		);
+call komp.updateDccParam(	779	,	'IMPC_EVP_015_001'		);
+call komp.updateDccParam(	780	,	'IMPC_EVP_018_001'		);
+call komp.updateDccParam(	781	,	'IMPC_EVP_019_001'		);
+call komp.updateDccParam(	782	,	'IMPC_EVP_017_001'		);
+call komp.updateDccParam(	783	,	'IMPC_EVP_003_001'		);
+call komp.updateDccParam(	784	,	'IMPC_EVP_016_001'		);
+
+
+call komp.updateDccParam(346,'IMPC_EMA_002_001'); -- Experimenter ID
+call komp.updateDccParam(347,'IMPC_EMA_003_001'); -- Equipment ID
+call komp.updateDccParam(348,'IMPC_EMA_004_001'); -- Equipment Manufacturer
+call komp.updateDccParam(349,'IMPC_EMA_005_001'); -- Equipment Model
+call komp.updateDccParam(350,'IMPC_EMA_006_001'); -- Equipment Version
+call komp.updateDccParam(351,'IMPC_EMA_007_001'); -- Image Pixel Size
+call komp.updateDccParam(352,'IMPC_EMA_008_001'); -- E18.5 MicroCT Preparation Protocol
+call komp.updateDccParam(353,'IMPC_EMA_013_001'); -- Source Voltage
+call komp.updateDccParam(354,'IMPC_EMA_014_001'); -- Source Current
+call komp.updateDccParam(355,'IMPC_EMA_015_001'); -- Object to Source
+call komp.updateDccParam(356,'IMPC_EMA_016_001'); -- Camera to Source
+call komp.updateDccParam(357,'IMPC_EMA_013_001'); -- Date equipment last calibrated
+call komp.updateDccParam(655,'IMPC_EMA_010_001'); -- Date of Sacrifice
+call komp.updateDccParam(656,'IMPC_EMA_011_001'); -- Date Preparation Finished
+call komp.updateDccParam(657,'IMPC_EMA_012_001'); -- Date of Scan
+call komp.updateDccParam(658,'IMPC_EMA_001_001'); -- Image link
+
+
 UPDATE komp.dccparameterdetails SET ModifiedBy='michaelm', DateModified=NOW(), IsInput=1 WHERE _DccType_key=7;
 UPDATE komp.dccparameterdetails SET ModifiedBy='michaelm', DateModified=NOW(), IsInput=0 WHERE _DccType_key<>7;
 
@@ -879,7 +1052,8 @@ CREATE TABLE `komp`.`submittedProcedures` (
   `ExperimentName`  varchar(64) DEFAULT NULL,
   `TaskName`  varchar(64) DEFAULT NULL,
   `ImpcCode` varchar(32) DEFAULT NULL,
-  `DateSubmitted` datetime,
+  `DateSubmitted` datetime DEFAULT NOW(),
+  `DateReviewed` datetime,
   `XmlFilename` varchar(128),
   `Confirmed` smallint DEFAULT 0,
   `CreatedBy` varchar(128) NOT NULL DEFAULT 'dba',
@@ -898,7 +1072,7 @@ CREATE TABLE `komp`.`dccQualityIssues` (
   `TaskInstanceKey`  int(11) DEFAULT 0,
   `ImpcCode` varchar(32) DEFAULT NULL,
   `StockNumber` varchar(16) DEFAULT NULL,
-  `DateDue` datetime,
+  `DateDue` VARCHAR(64),
   `Issue` TEXT,
   `CreatedBy` varchar(128) NOT NULL DEFAULT 'dba',
   `DateCreated` datetime NOT NULL DEFAULT NOW(),

@@ -259,6 +259,27 @@ def getTaskInfoFromFilter(taskInfoFiler):
        
     return taskInfoLs
 
+def getAnimalInfoFromFilter(animalInfoFilter):
+    animalInfoLs = []
+    call_header = {'Authorization' : 'Bearer ' + token()}
+    try:
+        wgResponse = requests.post(endpoint()+'/animalInfo', data=json.dumps(animalInfoFilter), headers=call_header, timeout=60)
+        animalInfoLs = wgResponse.json()
+    except requests.exceptions.Timeout as e: 
+        #print(e.message())
+        raise 
+    except requests.exceptions.InvalidHeader as e:  
+        #print(e.message())
+        raise 
+    except requests.exceptions.InvalidURL as e:  
+        #print(e.message())
+        raise 
+    except requests.exceptions.RequestException as e:  # All others
+        #print(e.message())
+        raise  
+       
+    return animalInfoLs
+
 def getMinMaxFromOutput(key):
     min = None
     max = None
