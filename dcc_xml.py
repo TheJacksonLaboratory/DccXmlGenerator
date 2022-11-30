@@ -111,24 +111,33 @@ def createMetadata(procedureNode,impcCode, strVal):
 #    <value incrementValue="1" URI="ftp://images/image1.jpg" fileType="img/jpg">
 #    <value incrementValue="1" URI="ftp://images/image1.jpg" fileType="img/jpg">
 #</seriesMediaParameter>
+# Must be included just before the metadata!!!
 def createSeriesMediaParameter(procedureNode,impcCode, strVal,statusCode):
     
+    # She has bad data for her images. Need to fix that first 
+    return procedureNode
+  
     if len(strVal) == 0:
           return procedureNode
         
     imageLs = strVal.split()
     
+    # Temporary kluge - she is putting "no" as the value of images when not present
+    if len(imageLs) > 0 and imageLs[0] == "no":
+          return procedureNode
+        
     paramNode = ET.SubElement(procedureNode, 'seriesMediaParameter', { 'parameterID': '{code}'.format(code=impcCode)})
     
     incrementValue = 1
     for image in imageLs:
       valueNode = ET.SubElement(paramNode, 'value')
-      valueNode.text = "incrementValue=" + str(incrementValue) + " URI=" + getFtpServer() + impcCode + "/" + image # Don't need the file type
+      valueNode.text = "incrementValue=" + "\"" + str(incrementValue) + "\"" + " URI=\"" + getFtpServer() + impcCode + "/" + image + "\"" # Don't need the file type
       incrementValue += 1
     
     if len(statusCode) > 0:
         statusNode = ET.SubElement(paramNode,'statusCode')
         statusNode.text = statusCode
+        
     return procedureNode # procedureNode
   
 # TODO
@@ -169,9 +178,12 @@ def embryoKluge(taskName, parentNode):
     # If this is an embryo gross morphology or placenta task
     # we may have to create the metadata because there were many tasks
     # created before the inputs were created.
-    
+  
+  expName = v.getCollectedBy()
+  expId = db.databaseGetExperimenterIdCode(expName)
+  
   if taskName ==  "E9.5 Embryo Gross Morphology":
-    createMetadata(parentNode,"IMPC_GEL_045_001", "5")
+    createMetadata(parentNode,"IMPC_GEL_045_001", expId)
     createMetadata(parentNode,"IMPC_GEL_046_001", "0")
     createMetadata(parentNode,"IMPC_GEL_047_001", "Leica")
     createMetadata(parentNode,"IMPC_GEL_048_001", "MC170HD")
@@ -181,7 +193,7 @@ def embryoKluge(taskName, parentNode):
     createMetadata(parentNode,"IMPC_GEL_052_001", "19:00")
     createMetadata(parentNode,"IMPC_GEL_053_001", "07:00")
   elif taskName == "E9.5 Placenta Morphology":
-    createMetadata(parentNode,"IMPC_GPL_008_001", "5")
+    createMetadata(parentNode,"IMPC_GPL_008_001", expId)
     createMetadata(parentNode,"IMPC_GPL_009_001", "0")
     createMetadata(parentNode,"IMPC_GPL_010_001", "Leica")
     createMetadata(parentNode,"IMPC_GPL_011_001", "MC170HD")
@@ -191,7 +203,7 @@ def embryoKluge(taskName, parentNode):
     createMetadata(parentNode,"IMPC_GPL_015_001", "19:00")
     createMetadata(parentNode,"IMPC_GPL_016_001", "07:00")
   elif taskName == "E12.5 Embryo Gross Morphology":
-    createMetadata(parentNode,"IMPC_GEM_050_001", "5")
+    createMetadata(parentNode,"IMPC_GEM_050_001", expId)
     createMetadata(parentNode,"IMPC_GEM_051_001", "0")
     createMetadata(parentNode,"IMPC_GEM_052_001", "Leica")
     createMetadata(parentNode,"IMPC_GEM_053_001", "MC170HD")
@@ -201,7 +213,7 @@ def embryoKluge(taskName, parentNode):
     createMetadata(parentNode,"IMPC_GEM_057_001", "19:00")
     createMetadata(parentNode,"IMPC_GEM_058_001", "07:00")
   elif taskName == "E12.5 Placenta Morphology":
-    createMetadata(parentNode,"IMPC_GPM_008_001", "5")
+    createMetadata(parentNode,"IMPC_GPM_008_001", expId)
     createMetadata(parentNode,"IMPC_GPM_009_001", "0")
     createMetadata(parentNode,"IMPC_GPM_010_001", "Leica")
     createMetadata(parentNode,"IMPC_GPM_011_001", "MC170HD")
@@ -211,7 +223,7 @@ def embryoKluge(taskName, parentNode):
     createMetadata(parentNode,"IMPC_GPM_015_001", "19:00")
     createMetadata(parentNode,"IMPC_GPM_016_001", "07:00")
   elif taskName == "E15.5 Embryo Gross Morphology":
-    createMetadata(parentNode,"IMPC_GEO_051_001", "5")
+    createMetadata(parentNode,"IMPC_GEO_051_001", expId)
     createMetadata(parentNode,"IMPC_GEO_052_001", "0")
     createMetadata(parentNode,"IMPC_GEO_053_001", "Leica")
     createMetadata(parentNode,"IMPC_GEO_054_001", "MC170HD")
@@ -221,7 +233,7 @@ def embryoKluge(taskName, parentNode):
     createMetadata(parentNode,"IMPC_GEO_058_001", "19:00")
     createMetadata(parentNode,"IMPC_GEO_059_001", "07:00")
   elif taskName == "E15.5 Placenta Morphology":
-    createMetadata(parentNode,"IMPC_GPO_008_001", "5")
+    createMetadata(parentNode,"IMPC_GPO_008_001", expId)
     createMetadata(parentNode,"IMPC_GPO_009_001", "0")
     createMetadata(parentNode,"IMPC_GPO_010_001", "Leica")
     createMetadata(parentNode,"IMPC_GPO_011_001", "MC170HD")
@@ -231,7 +243,7 @@ def embryoKluge(taskName, parentNode):
     createMetadata(parentNode,"IMPC_GPO_015_001", "19:00")
     createMetadata(parentNode,"IMPC_GPO_016_001", "07:00")
   elif taskName == "E18.5 Embryo Gross Morphology":
-    createMetadata(parentNode,"IMPC_GEP_065_001", "5")
+    createMetadata(parentNode,"IMPC_GEP_065_001", expId)
     createMetadata(parentNode,"IMPC_GEP_066_001", "0")
     createMetadata(parentNode,"IMPC_GEP_067_001", "Leica")
     createMetadata(parentNode,"IMPC_GEP_068_001", "MC170HD")
@@ -241,7 +253,7 @@ def embryoKluge(taskName, parentNode):
     createMetadata(parentNode,"IMPC_GEP_072_001", "19:00")
     createMetadata(parentNode,"IMPC_GEP_073_001", "07:00")
   elif taskName == "E18.5 Placenta Morphology":
-    createMetadata(parentNode,"IMPC_GPP_008_001", "5")
+    createMetadata(parentNode,"IMPC_GPP_008_001", expId)
     createMetadata(parentNode,"IMPC_GPP_009_001", "0")
     createMetadata(parentNode,"IMPC_GPP_010_001", "Leica")
     createMetadata(parentNode,"IMPC_GPP_011_001", "MC170HD")
@@ -257,16 +269,16 @@ def embryoKluge(taskName, parentNode):
   # End of metadata kluge
 
 # Create experiment XMLs
-def generateExperimentXML(resultsPackage, centerNode):
+def generateExperimentXML(taskInfoLs, centerNode):
     # Given a dictionary parse out the animal info and the procedure info
     # It looks like "taskInfo" [ { "animal" [] , "taskInstance" : [] }, { "animal" [] , "taskInstance" : [] }, ...]
     # If an animal has multiple procedures the animal will only appear once.
     # Get the list of mouse info. For KOMP it should always be 1 element
     
-    taskInfoLs = resultsPackage["taskInfo"]
+    #taskInfoLs = resultsPackage["taskInfo"]
     if taskInfoLs == None:
           return
-        
+    
     # Else we have some data
     db.init() # Create database connection for IMPC codes
     
@@ -285,8 +297,8 @@ def generateExperimentXML(resultsPackage, centerNode):
             procedureNode = createProcedure(experimentNode,db.databaseSelectProcedureCode(proc['workflowTaskName']))
             
             # Now create the metadata from the inputs and outputs
-            procedureNode = buildMetadata(procedureNode,proc)
             procedureNode = buildParameters(procedureNode,proc)
+            procedureNode = buildMetadata(procedureNode,proc)
     
     db.close()
     return # used to return root
@@ -316,8 +328,12 @@ def buildMetadata(procedureNode,proc):
                   
             if not impcCode == None:
               # Get the IMPC code from metadataDefLs and the value from input
-              inputVal = input['inputValue']
-              procedureNode = createMetadata(procedureNode, impcCode, inputVal)
+              if input['inputValue'] is not None:
+                inputVal = input['inputValue'].strip()
+                if len(inputVal) > 0:  # only if there is a value there.
+                  if db.isExperimenterID(impcCode) == True:
+                    inputVal = db.databaseGetExperimenterIdCode(inputVal)
+                  procedureNode = createMetadata(procedureNode, impcCode, inputVal)
       
       # Go through the outputs and if there is a climb_key match add the value
       outputLs = proc['outputs']
@@ -329,9 +345,11 @@ def buildMetadata(procedureNode,proc):
                    impcCode = v[0]
                     
             if not impcCode == None:
-              # Get the IMPC code from metadataDefLs and the value from input
-              outputVal = output['outputValue']
-              procedureNode = createMetadata(procedureNode, impcCode, outputVal)
+              if output['outputValue'] is not None:
+                # Get the IMPC code from metadataDefLs and the value from input
+                outputVal = output['outputValue'].strip()
+                if len(outputVal) > 0: # only if there is a value there.
+                  procedureNode = createMetadata(procedureNode, impcCode, outputVal)
               
       return procedureNode
     
@@ -345,34 +363,37 @@ def buildParameters(procedureNode,proc):
       # Go through the inputs an if there is a climb_key match add the value
       outputLs = proc['outputs']
       for output in outputLs:
-            outputKey = output['outputKey']
-            impcCode = None
-            dccType = None
-            for i, v in enumerate(parameterDefLs):
-              if v[1] == outputKey:
-                   impcCode = v[0]
-                   dccType = v[2]
-                   break;
-                    
-            #print(impcCode)
-            if not impcCode == None:
-              # Get the IMPC code from metadataDefLs and the value from input
-              outputVal = output['outputValue']
+        outputKey = output['outputKey']
+        impcCode = None
+        dccType = None
+        for i, v in enumerate(parameterDefLs):
+          if v[1] == outputKey:
+                impcCode = v[0]
+                dccType = v[2]
+                break
+                
+        if not impcCode == None and output['outputValue'] is not None:
+          # Get the IMPC code from metadataDefLs and the value from input
+          outputVal = output['outputValue']
+          
+          if outputVal is None:
+                continue
               
-              if dccType == 1:
-                    procedureNode = createSimpleParameter(procedureNode, impcCode, outputVal,"")
-              elif dccType == 2: #  Ontology TBD
-                    procedureNode = createSimpleParameter(procedureNode, impcCode, outputVal,"")
-              elif dccType == 3: # Media - ABR (014) and ERG (047)
-                    procedureNode = createSimpleParameter(procedureNode, impcCode, outputVal,"")
-              elif dccType == 4: # Series TBD
-                    procedureNode = createSeriesParameter(procedureNode, impcCode, outputVal,"")
-              elif dccType == 5: # SeriesMedia  TBD
-                    procedureNode = createSeriesMediaParameter(procedureNode, impcCode, outputVal,"")
-              elif dccType == 6: # MediaSample - unsupported
-                    print("MediaSample for an output type? Output key:" + str(outputKey))
-              else:
-                    print("Metadata for an output? Output key:" + str(outputKey))
+          if len(outputVal.strip()) > 0:
+            if dccType == 1:
+                procedureNode = createSimpleParameter(procedureNode, impcCode, outputVal,"")
+            elif dccType == 2: #  Ontology TBD
+                procedureNode = createSimpleParameter(procedureNode, impcCode, outputVal,"")
+            elif dccType == 3: # Media - ABR (014) and ERG (047)
+                procedureNode = createSimpleParameter(procedureNode, impcCode, outputVal,"")
+            elif dccType == 4: # Series TBD
+                procedureNode = createSeriesParameter(procedureNode, impcCode, outputVal,"")
+            elif dccType == 5: # SeriesMedia  TBD
+                procedureNode = createSeriesMediaParameter(procedureNode, impcCode, outputVal,"")
+            elif dccType == 6: # MediaSample - unsupported
+                print("MediaSample for an output type? Output key:" + str(outputKey))
+            else:
+                print("Metadata for an output? Output key:" + str(outputKey))
                     
               
       return procedureNode
@@ -550,15 +571,22 @@ if __name__ == '__main__':
     
     expFileName = getNextExperimentFilename(dataDir)
     results = c.getTaskInfoFromFilter(climbFilter)
+    
+    db.init()
+    
     taskLs = results["taskInfo"]   # TODO Cycle through
     for task in taskLs:
-      success = v.validateProcedure(task)  # Sets the task status to 'Failed QC' if it fails.
-      if success == True:
-        generateExperimentXML(results, centerNode)
-        db.init()
-        db.recordSubmissionAttempt(expFileName.split('\\')[-1],task["animal"][0], task["taskInstance"][0], 
+      success, message = v.validateProcedure(task)  # Sets the task status to 'Failed QC' if it fails.
+      if success == False:
+          print("Rejected task: " + message)
+      else:
+          if len(task["animal"]) > 0 and len(task["taskInstance"]) > 0:
+            db.recordSubmissionAttempt(expFileName.split('\\')[-1],task["animal"][0], task["taskInstance"][0], 
                                        getProcedureImpcCode(), v.getReviewedDate())
-        db.close()
+            
+    generateExperimentXML(taskLs, centerNode)
+    
+    db.close()
            
     tree = ET.ElementTree(indent(root))
     tree.write(expFileName, xml_declaration=True, encoding='utf-8')

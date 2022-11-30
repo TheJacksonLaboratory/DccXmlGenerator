@@ -993,7 +993,7 @@ UPDATE komp.dccparameterdetails SET ModifiedBy='michaelm', DateModified=NOW(), I
 DROP TABLE IF EXISTS `komp`.`experimenterId` ;
 CREATE TABLE `komp`.`experimenterId` (
   `_experimenterId_key` int(11) NOT NULL,
-  `FirstNme` varchar(128) NOT NULL,
+  `FirstName` varchar(128) NOT NULL,
   `LastName` varchar(128) NOT NULL,
   `IsActive` smallint(6) NOT NULL DEFAULT '1',
   `CreatedBy` varchar(128) NOT NULL DEFAULT 'dba',
@@ -1042,6 +1042,8 @@ INSERT INTO komp.experimenterId  (FirstNme, LastName,_experimenterId_key) VALUES
 ('Charlize', 'Castro', 708),
 ('Jeff', 'Duryea', 709),
 ('Yaned', 'Gaitan', 710),
+('Coleen', '', 12),
+('Kristy', '', 210),
 ('Steve', 'Murray', 720);
 
 

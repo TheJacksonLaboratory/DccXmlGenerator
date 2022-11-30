@@ -30,7 +30,7 @@ def getToken(username, password):
         response = requests.get('http://climb-admin.azurewebsites.net/api/token',auth=(username,password), timeout=15)
         myContent = response.json()
         token = myContent['access_token']
-        print(token)
+        #print(token)
         return token
     except requests.exceptions.Timeout as e: 
         #print(e.message())
@@ -239,9 +239,6 @@ def getTaskInfoFromFilter(taskInfoFiler):
     taskInfoLs = []
     call_header = {'Authorization' : 'Bearer ' + token()}
     try:
-        print(endpoint() +'/taskAnimalInfo')
-        print(json.dumps(taskInfoFiler))
-        print(call_header)
         wgResponse = requests.post(endpoint()+'/taskAnimalInfo', data=json.dumps(taskInfoFiler), headers=call_header, timeout=60)
         taskInfoLs = wgResponse.json()
     except requests.exceptions.Timeout as e: 
@@ -263,7 +260,7 @@ def getAnimalInfoFromFilter(animalInfoFilter):
     animalInfoLs = []
     call_header = {'Authorization' : 'Bearer ' + token()}
     try:
-        wgResponse = requests.post(endpoint()+'/animalInfo', data=json.dumps(animalInfoFilter), headers=call_header, timeout=60)
+        wgResponse = requests.post(endpoint()+'/animalInfo', data=json.dumps(animalInfoFilter), headers=call_header, timeout=300)
         animalInfoLs = wgResponse.json()
     except requests.exceptions.Timeout as e: 
         #print(e.message())

@@ -18,14 +18,43 @@ def getDbPassword():
 def getDbSchema():
     return 'komp'
 
+def isExperimenterID(impcCode):
+    return impcCode in ["IMPC_GEL_045_001","IMPC_GPL_008_001", 
+                    "IMPC_GEM_050_001","IMPC_GPM_008_001", 
+                    "IMPC_GPO_009_001", "IMPC_GEO_051_001", 
+                    "IMPC_GEP_065_001", "IMPC_GPP_008_001"]
 
+
+def databaseGetExperimenterIdCode(expName):
+    
+    tupleName = tuple(map(str,expName.split(' ')))
+    
+    queryStatement = ""
+    if len(tupleName) > 1:
+        queryStatement = "SELECT _experimenterId_key FROM komp.experimenterid WHERE FirstName = '{0}' AND LastName = '{1}'" \
+                            .format(tupleName[0], tupleName[1])
+    else:
+        queryStatement = "SELECT _experimenterId_key FROM komp.experimenterid WHERE FirstName = '{0}' AND LastName = '{1}'" \
+                            .format(tupleName[0], '')
+                           
+    expId = ""
+    try:
+        g_MysqlCursor.execute(queryStatement)
+        
+        for _experimenterId_key in g_MysqlCursor:
+            expId=_experimenterId_key[0]
+            
+    except Exception as e:
+        print('SELECT FAILED FOR: ' + queryStatement)
+    
+    return str(expId)
+    
 def databaseInsertQualityErrorMessage(msg):
     """ Given  dictionary pull out the elements and insert it into the database """
     insertStmt = "INSERT INTO komp.dccQualityIssues (AnimalName, Taskname, TaskInstanceKey, ImpcCode, StockNumber, DateDue, Issue) VALUES ( '{0}','{1}',{2},'{3}','{4}','{5}','{6}')".\
         format(msg['AnimalName'], msg['TaskName'], int(msg['TaskInstanceKey']), msg['ImpcCode'], msg['StockNumber'], msg['DateDue'], msg['Issue'])
 
     try:    
-        print(insertStmt)
         g_MysqlCursor.execute(insertStmt)
         g_mysqldb.commit()
         
@@ -34,7 +63,7 @@ def databaseInsertQualityErrorMessage(msg):
 
 def databaseSelectProcedureCode(procName):
     sqlStatement = 'SELECT ImpcCode FROM komp.taskimpccodes WHERE TaskName = \'{0}\''.format(procName)
-    print(sqlStatement)
+    #print(sqlStatement)
      
     threeLetterCode = ''
     try:
@@ -56,13 +85,13 @@ def databaseSelectImpcData(threeLetterCode, isMetatdata, usingInputs):
         whereStr = ' _DccType_key = 7 '
     
     if usingInputs == True:
-        whereStr = whereStr + ' AND IsInput = 1'    
+        whereStr = whereStr + ' AND IsInput = 1 ORDER BY _DccType_key'    
     else:
-        whereStr = whereStr + ' AND IsInput = 0' 
+        whereStr = whereStr + ' AND IsInput = 0 ORDER BY _DccType_key' 
          
     selectStmt = 'SELECT ImpcCode, _ClimbType_key, _DccType_key FROM komp.dccparameterdetails WHERE _ClimbType_key IS NOT NULL AND ImpcCode LIKE \'%{0}%\' AND '.format(threeLetterCode) + whereStr
 
-    print(selectStmt)
+    #print(selectStmt)
     
     lsOfTuples = []
     try:
@@ -77,6 +106,21 @@ def databaseSelectImpcData(threeLetterCode, isMetatdata, usingInputs):
     
     return lsOfTuples
 
+def getLastReviewedDate(animal,procedure):
+    
+    lastReviewDate = ""
+    selectStmt = "SELECT MAX(DateReviewed) FROM komp.submittedProcedures WHERE AnimalName = '{0}' AND ExperimentName = '{1}'".format(animal,procedure)
+    
+    try:
+        g_MysqlCursor.execute(selectStmt)
+        
+        for DateReviewed in g_MysqlCursor:
+            lastReviewDate = DateReviewed[0]
+    except Exception as e:
+        print('SELECT FAILED FOR: ' + selectStmt)
+    
+    return lastReviewDate
+
 def recordSubmissionAttempt(fileName, animal, procedure, impcCode, reviewDate):  
     
     animalName = animal["animalName"]
@@ -86,7 +130,7 @@ def recordSubmissionAttempt(fileName, animal, procedure, impcCode, reviewDate):
         format(animalName, procedureName, impcCode, fileName, reviewDate)
 
     try:    
-        print(insertStmt)
+        #print(insertStmt)
         g_MysqlCursor.execute(insertStmt)
         g_mysqldb.commit()
        
@@ -129,5 +173,7 @@ def close():
 
 if __name__ == '__main__':
     init()
-    recordSubmissionAttempt('blah.xml', 'lefty', 'Body Weight - LEFTY - 001', 'IMPC_BWT_001', '2020-10-01')
+    #id = databaseGetExperimenterIdCode("Kristina Palmer")
+    print(getLastReviewedDate('A-3965','E9.5 Embryo Gross Morphology'))
+    #print(id)
     close()

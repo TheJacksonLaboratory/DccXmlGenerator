@@ -1,4 +1,5 @@
 import query_database as db
+from datetime import datetime
 
 """
 This module runs the IMPC specific validation for mice and procedures
@@ -83,7 +84,7 @@ def testCollectedDate(output):
     setDateCollected(output)
     return True, ""
 
-# Is there a date of experiment?
+# Is there a collectedBy value, i.e. experimneterID?
 def testCollectedBy(output):
     
     if output["collectedBy"]  == None or len(output["collectedBy"]) == 0:
@@ -274,9 +275,10 @@ def validateProcedure(proc):
     task = taskLs[0] # TODO - Handle multiple procedures?
     
     msg = ""
-    
     overallMsg = ""
     overallSuccess = True
+    
+    # Check to see if this procedure has been submitted previously
     
 #    We don't need to do validateAnimal(). Each animal is evaluated separately    
 #    success, msg = validateAnimal(specimen)
@@ -309,8 +311,15 @@ def validateProcedure(proc):
     
     #success, msg = testInputs(task) # Embryo lethal tasks were erronoeusly created with no inputs
     
+    lastReviewedDate = db.getLastReviewedDate(specimen["animalName"],task["workflowTaskName"])
+    reviewedDateStr = getReviewedDate()
+    currentReviewedDate = datetime.strptime(reviewedDateStr, "%Y-%m-%d")
+    
+    if lastReviewedDate >= currentReviewedDate:  # Is the SME resubmitting this procedure?
+        task["taskStatus"]  = 'Already submitted'  # else remove the Complete or Cancelled status to avoid unnecessary resubmission
+        
     if overallSuccess == False:
         createLogEntry(specimen, task, lineInfo, None, overallMsg)
         task["taskStatus"]  = 'Failed QC'  # Local to this app
-        
-    return overallSuccess
+    
+    return overallSuccess, overallMsg
