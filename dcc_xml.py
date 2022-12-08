@@ -150,27 +150,26 @@ def createStatusCode(procedureNode, statusCode):
     return procedureNode
   
 def createSpecimenRecord(specimenRecord,specimenSetNode,statusCode):
-      
-  paramNode = ET.SubElement(specimenSetNode, 'mouse', {
-                            'DOB': '{dob}'.format(dob=specimenRecord["dob"]),
-                            'colonyID': '{colonyID}'.format(colonyID=specimenRecord["colonyId"]),
-                            'isBaseline': '{isBaseline}'.format(isBaseline=str(specimenRecord["isBaseline"]).lower()),
-                            'strainID': '{strainID}'.format(strainID=specimenRecord["strainID"]),
-                            'specimenID': '{specimenID}'.format(specimenID=specimenRecord["specimenID"]),
-                            'gender': '{gender}'.format(gender=specimenRecord["gender"].lower()),
-                            'zygosity': '{zygosity}'.format(zygosity=specimenRecord["zygosity"]),
-                            'litterId': '{litterId}'.format(litterId=specimenRecord["litterId"]),
-                            'pipeline': '{pipeline}'.format(pipeline=specimenRecord["pipeline"]),
-                            'productionCentre': '{productionCentre}'.format(productionCentre=specimenRecord["productionCenter"]),
-                            'phenotypingCentre': '{phenotypingCentre}'.format(phenotypingCentre=specimenRecord["phenotypingCenter"]),
-                            'project': '{project}'.format(project=specimenRecord["project"]) })
   
-  if len(statusCode) > 0:
-    statusNode = ET.SubElement(paramNode,'statusCode')
-    statusNode.text = statusCode
+  if v.validateMouseFields(specimenRecord) == True:
+    paramNode = ET.SubElement(specimenSetNode, 'mouse', {
+                              'DOB': '{dob}'.format(dob=specimenRecord["dob"]),
+                              'colonyID': '{colonyID}'.format(colonyID=specimenRecord["colonyId"]),
+                              'isBaseline': '{isBaseline}'.format(isBaseline=str(specimenRecord["isBaseline"]).lower()),
+                              'strainID': '{strainID}'.format(strainID=specimenRecord["strainID"]),
+                              'specimenID': '{specimenID}'.format(specimenID=specimenRecord["specimenID"]),
+                              'gender': '{gender}'.format(gender=specimenRecord["gender"].lower()),
+                              'zygosity': '{zygosity}'.format(zygosity=specimenRecord["zygosity"]),
+                              'litterId': '{litterId}'.format(litterId=specimenRecord["litterId"]),
+                              'pipeline': '{pipeline}'.format(pipeline=specimenRecord["pipeline"]),
+                              'productionCentre': '{productionCentre}'.format(productionCentre=specimenRecord["productionCenter"]),
+                              'phenotypingCentre': '{phenotypingCentre}'.format(phenotypingCentre=specimenRecord["phenotypingCenter"]),
+                              'project': '{project}'.format(project=specimenRecord["project"]) })
+    if len(statusCode) > 0:
+      statusNode = ET.SubElement(paramNode,'statusCode')
+      statusNode.text = statusCode
     
   return specimenSetNode
-    
 
 # KLUGE KLUGE KLUGE KLUGE KLUGE KLUGE because these tests were created with no inputs. Yuck
 # Hopefully this will be temporary
@@ -583,7 +582,7 @@ if __name__ == '__main__':
           if len(task["animal"]) > 0 and len(task["taskInstance"]) > 0:
             db.recordSubmissionAttempt(expFileName.split('\\')[-1],task["animal"][0], task["taskInstance"][0], 
                                        getProcedureImpcCode(), v.getReviewedDate())
-            
+    
     generateExperimentXML(taskLs, centerNode)
     
     db.close()

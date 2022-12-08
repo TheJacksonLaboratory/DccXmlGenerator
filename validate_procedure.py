@@ -43,11 +43,11 @@ def setDateCollected(output):
     return    
 
 
-def getCollectedBy(output):
+def getCollectedBy():
     global g_CollectedBy  
     return g_CollectedBy
 
-def getDateCollected(output):
+def getDateCollected():
     global g_DateCollected
     return g_DateCollected
 
@@ -133,7 +133,47 @@ def testOutputs(proc):
             setDateCollected(output)
         
     return success, msg
-
+    
+def validateMouseFields(specimenRecord):
+      msg = ""
+      msgDict = { "AnimalName":"", "TaskName":"", "TaskInstanceKey":0, "ImpcCode":"", "StockNumber":"", "DateDue":"", "Issue":"" }
+      
+      # Make sure all the mandatory fields are present
+      if checkForValue(specimenRecord["colonyId"]) == False:
+            msg = " Colony ID missing" + str(specimenRecord)
+      if checkForValue(specimenRecord["strainID"]) == False:
+            msg = msg + " strain ID missing" + str(specimenRecord)
+      if checkForValue(specimenRecord["specimenID"]) == False:
+            msg = " specimen ID missing" + str(specimenRecord)
+      if checkForValue(specimenRecord["gender"]) == False:
+            msg = msg +  " gender missing" + str(specimenRecord)
+      if checkForValue(specimenRecord["zygosity"]) == False:
+            msg = msg +  " zygosity missing" + str(specimenRecord)
+      if checkForValue(specimenRecord["pipeline"]) == False:
+            msg = msg +  " pipeline ID missing" + str(specimenRecord)
+      if checkForValue(specimenRecord["productionCenter"]) == False:
+            msg = msg +  " production center ID missing" + str(specimenRecord)
+      if checkForValue(specimenRecord["phenotypingCenter"]) == False:
+            msg = msg +  " phenotyping ID missing" + str(specimenRecord)
+      if checkForValue(specimenRecord["project"]) == False:
+            msg = msg +  " project ID missing" + str(specimenRecord)
+      
+      if len(msg) == 0:
+        return True
+      else:
+        msgDict["AnimalName"] = specimenRecord["specimenID"]
+        msgDict["StockNumber"] = specimenRecord["strainID"]
+        msgDict["Issue"] = msg
+        db.databaseInsertQualityErrorMessage(msgDict)
+        return False
+   
+    
+def checkForValue(valuestr):
+      if valuestr is not None and len(valuestr) > 0:
+            return True
+      else:
+            return False
+          
 # Is there a mouse? It needs sex, generation and genotypes
 def testMouseInfo(animal):
     # Does it have a generation? Sex? Name?
@@ -270,7 +310,7 @@ def validateProcedure(proc):
     lineInfo = { "stock" : specimen["stock"] }
     taskLs = proc["taskInstance"] 
     if len(taskLs) == 0:
-        return "No task returned by query", False
+        return False,"No task returned by query" 
     
     task = taskLs[0] # TODO - Handle multiple procedures?
     
@@ -306,17 +346,15 @@ def validateProcedure(proc):
     if len(msg) > 0:
         overallMsg = overallMsg + "; " + msg
     
-    print('Msg= ' + overallMsg)
-    print('Success= ' + str(overallSuccess))
-    
     #success, msg = testInputs(task) # Embryo lethal tasks were erronoeusly created with no inputs
     
     lastReviewedDate = db.getLastReviewedDate(specimen["animalName"],task["workflowTaskName"])
     reviewedDateStr = getReviewedDate()
     currentReviewedDate = datetime.strptime(reviewedDateStr, "%Y-%m-%d")
     
-    if lastReviewedDate >= currentReviewedDate:  # Is the SME resubmitting this procedure?
-        task["taskStatus"]  = 'Already submitted'  # else remove the Complete or Cancelled status to avoid unnecessary resubmission
+    if lastReviewedDate is not None and currentReviewedDate is not None:
+        if lastReviewedDate >= currentReviewedDate:  # Is the SME resubmitting this procedure?
+            task["taskStatus"]  = 'Already submitted'  # else remove the Complete or Cancelled status to avoid unnecessary resubmission
         
     if overallSuccess == False:
         createLogEntry(specimen, task, lineInfo, None, overallMsg)

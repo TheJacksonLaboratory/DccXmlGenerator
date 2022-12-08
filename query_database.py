@@ -7,7 +7,7 @@ g_mysqldb = None
 g_MysqlCursor=None
 
 def getDbServer():
-    return 'rslims-dev.jax.org'
+    return 'rslims.jax.org'
 
 def getDbUsername():
     return 'dba'
@@ -52,7 +52,7 @@ def databaseGetExperimenterIdCode(expName):
 def databaseInsertQualityErrorMessage(msg):
     """ Given  dictionary pull out the elements and insert it into the database """
     insertStmt = "INSERT INTO komp.dccQualityIssues (AnimalName, Taskname, TaskInstanceKey, ImpcCode, StockNumber, DateDue, Issue) VALUES ( '{0}','{1}',{2},'{3}','{4}','{5}','{6}')".\
-        format(msg['AnimalName'], msg['TaskName'], int(msg['TaskInstanceKey']), msg['ImpcCode'], msg['StockNumber'], msg['DateDue'], msg['Issue'])
+        format(msg['AnimalName'], msg['TaskName'], int(msg['TaskInstanceKey']), msg['ImpcCode'], msg['StockNumber'], msg['DateDue'], msg['Issue'].replace("'", "\""))
 
     try:    
         g_MysqlCursor.execute(insertStmt)

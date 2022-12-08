@@ -1,5 +1,3 @@
-USE `komp`;
-DROP procedure IF EXISTS `updateDccParam`;
 
 USE `komp`;
 DROP procedure IF EXISTS `komp`.`updateDccParam`;
@@ -1000,10 +998,9 @@ CREATE TABLE `komp`.`experimenterId` (
   `DateCreated` datetime NOT NULL DEFAULT NOW(),
   `ModifiedBy` varchar(128) NOT NULL DEFAULT 'dba',
   `DateModified` datetime NOT NULL DEFAULT NOW(),
-  `Version` int(11) NOT NULL DEFAULT '1',
-  PRIMARY KEY (`_experimenterId_key`)
+  `Version` int(11) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-INSERT INTO komp.experimenterId  (FirstNme, LastName,_experimenterId_key) VALUES 
+INSERT INTO komp.experimenterId  (FirstName, LastName,_experimenterId_key) VALUES 
 ('Abigail', 'Miller', 1),
 ('Janet', 'Bakeman', 2),
 ('Mike', 'McFarland', 7),
@@ -1086,6 +1083,7 @@ CREATE TABLE `komp`.`dccQualityIssues` (
 
 -- KOMP CLEANUP
 truncate komp.active_experiments;
+truncate komp.axstrainstatus;
 truncate komp.`alz-specimen`;
 truncate komp.bwtisuessuperset;
 truncate komp.completed_lines_counts;
@@ -1115,7 +1113,7 @@ truncate komp.dccqcreport;
 truncate komp.dccupdates;
 truncate komp.ebiimages;
 truncate komp.experimenterinputs;
-truncate komp.experimentsonspecimens;
+-- truncate komp.experimentsonspecimens;
 truncate komp.failed;
 truncate komp.failed_experiments;
 truncate komp.fecal_dif_pens;
