@@ -220,14 +220,14 @@ def testGenotypeInfo(genotypes):
     success = False
     zygosity = "none"
     assayName = "none"
-    
     for genotype in genotypes:
-        # Exclude assays we don't care about. 
-        if "Generic" not in genotype["assay"] and "Sex Determination Assay" not in genotype["assay"]:
-            zygosity = genotype["genotype"]
-            assayName = genotype["assay"]
-            success = True
-            msg = ""
+        if not genotype["assay"] == None:
+            # Exclude assays we don't care about. 
+            if "Generic" not in genotype["assay"] and "Sex Determination Assay" not in genotype["assay"]:
+                zygosity = genotype["genotype"]
+                assayName = genotype["assay"]
+                success = True
+                msg = ""
     
     return success, msg, assayName, zygosity
 
