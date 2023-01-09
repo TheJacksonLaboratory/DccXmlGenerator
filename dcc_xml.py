@@ -536,60 +536,61 @@ dataDir = "C:\\Users\\michaelm\\Source\\Workspaes\\Teams\\Lab Informatics\\JAXLI
 resultsStr = ""
 
 if __name__ == '__main__':
-    
     ### Get task info based on the given filter
     # Get filter from file - temporary
-    f = open("C:\\TEMP\\filter.json")  # TODO - Does the filter come in on the command line?
-    climbFilter = json.loads(f.read())
+    with open("C:\\TEMP\\filters.json") as f:
+      filterLines = f.read().splitlines()
     
-    # Get the IMPC files
-   
-    # Start the new specimen XML file
-    root = createSpecimenRoot()
-    centerNode = createSpecimenCentre(root)
-    
-    # Get the animals and validate
-    results = c.getAnimalInfoFromFilter(climbFilter)
-    animalLs = results["animalInfo"]
-    for animal in animalLs:
-      isValid = v.validateAnimal(animal)
-      if isValid == False:
-            animalLs.remove(animal)
+    for climbFilter in filterLines:
+      # Start the new specimen XML file
+      root = createSpecimenRoot()
+      centerNode = createSpecimenCentre(root)
+      
+      # Get the animals and validate
+      results = c.getAnimalInfoFromFilter(json.loads(climbFilter))
+      # TODO Check for None or no animalInfo
+      animalLs = results["animalInfo"]
+      for animal in animalLs:
+        isValid = v.validateAnimal(animal)
+        if isValid == False:
+              animalLs.remove(animal)
+            
+      # Generate the specimen portion of the XML  
+      generateSpecimenXML(results, centerNode)
+      tree = ET.ElementTree(indent(root))
+      specimenFileName = getNextSpecimenFilename(dataDir)
+      tree.write(specimenFileName, xml_declaration=True, encoding='utf-8')
+      
+      
+      
+      # Start the new XML file
+      root = createProcedureRoot()
+      centerNode = createCentre(root)
+      
+      expFileName = getNextExperimentFilename(dataDir)
+      results = c.getTaskInfoFromFilter(json.loads(climbFilter))
+      
+      db.init()
+      
+      print(results)
+      
+      taskLs = results["taskInfo"]   # TODO Cycle through
+      for task in taskLs:
+        success, message = v.validateProcedure(task)  # Sets the task status to 'Failed QC' if it fails.
+        if success == False:
+            print("Rejected task: " + message)
+        else:
+            if len(task["animal"]) > 0 and len(task["taskInstance"]) > 0:
+              db.recordSubmissionAttempt(expFileName.split('\\')[-1],task["animal"][0], task["taskInstance"][0], 
+                                        getProcedureImpcCode(), v.getReviewedDate())
+      
+      generateExperimentXML(taskLs, centerNode)
+      
+      db.close()
+            
+      tree = ET.ElementTree(indent(root))
+      tree.write(expFileName, xml_declaration=True, encoding='utf-8')
           
-    # Generate the specimen portion of the XML  
-    generateSpecimenXML(results, centerNode)
-    tree = ET.ElementTree(indent(root))
-    specimenFileName = getNextSpecimenFilename(dataDir)
-    tree.write(specimenFileName, xml_declaration=True, encoding='utf-8')
-    
-    
-    
-    # Start the new XML file
-    root = createProcedureRoot()
-    centerNode = createCentre(root)
-    
-    expFileName = getNextExperimentFilename(dataDir)
-    results = c.getTaskInfoFromFilter(climbFilter)
-    
-    db.init()
-    
-    taskLs = results["taskInfo"]   # TODO Cycle through
-    for task in taskLs:
-      success, message = v.validateProcedure(task)  # Sets the task status to 'Failed QC' if it fails.
-      if success == False:
-          print("Rejected task: " + message)
-      else:
-          if len(task["animal"]) > 0 and len(task["taskInstance"]) > 0:
-            db.recordSubmissionAttempt(expFileName.split('\\')[-1],task["animal"][0], task["taskInstance"][0], 
-                                       getProcedureImpcCode(), v.getReviewedDate())
-    
-    generateExperimentXML(taskLs, centerNode)
-    
-    db.close()
-           
-    tree = ET.ElementTree(indent(root))
-    tree.write(expFileName, xml_declaration=True, encoding='utf-8')
-        
     
   
     print("SUCCESS")
