@@ -5,7 +5,7 @@ from logging import NullHandler
 import requests
 import sys
 import json
-import datetime
+from datetime import datetime
 import logging
 import csv
 
@@ -239,6 +239,7 @@ def getTaskInfoFromFilter(taskInfoFiler):
     taskInfoLs = []
     call_header = {'Authorization' : 'Bearer ' + token()}
     try:
+        print(">"+json.dumps(taskInfoFiler)+"<")
         wgResponse = requests.post(endpoint()+'/taskAnimalInfo', data=json.dumps(taskInfoFiler), headers=call_header, timeout=60)
         taskInfoLs = wgResponse.json()
     except requests.exceptions.Timeout as e: 
@@ -261,7 +262,13 @@ def getAnimalInfoFromFilter(animalInfoFilter):
     call_header = {'Authorization' : 'Bearer ' + token()}
     try:
         wgResponse = requests.post(endpoint()+'/animalInfo', data=json.dumps(animalInfoFilter), headers=call_header, timeout=300)
-        animalInfoLs = wgResponse.json()
+        
+        if wgResponse.status_code == 500: # Server error
+            print(wgResponse.content)
+        elif wgResponse.status_code == 422:
+            print(wgResponse.content)
+        elif wgResponse.status_code == 200:
+            animalInfoLs = wgResponse.json()
     except requests.exceptions.Timeout as e: 
         #print(e.message())
         raise 
@@ -282,7 +289,366 @@ def getMinMaxFromOutput(key):
     max = None
     
     return min, max
+
+######## SOME USEFUL, SPECIAL CLIMB METHODS
+
+""" Return a dictionary with a root of taskInfo
+
+	"taskInfo": [
+		{
+			"animal": [
+				{
+					"animalId": 37072,
+					"materialKey": 38604,
+					"animalName": "A-3955",
+					"sex": "Female",
+					"generation": "E9.5",
+					"status": "Alive",
+					"line": "C57BL/6NJ-Fbrs<em1(IMPC)J>/Mmjax",
+					"use": "Study Cohort",
+					"stock": "036867",
+					"dateBorn": "2022-09-09T04:00:00"
+				}
+			],
+			"taskInstance": [
+				{
+					"taskInstanceKey": 8289,
+					"workflowTaskName": "E9.5 Placenta Morphology",
+					"taskAlias": "E9.5 Placenta Morphology",
+					"taskStatus": "Complete",
+					"assignedTo": "",
+					"dateDue": "",
+					"completedBy": "Kristy",
+					"dateComplete": "2022-09-09",
+					"reviewedBy": "Kristy",
+					"dateReviewed": "2022-11-11",
+					"modifiedBy": "kjp",
+					"dateModified": "2022-11-11T14:39:11.263",
+					"inputs": [
+						{
+							"taskInputKey": 4837,
+							"inputKey": 336,
+							"inputName": "Date equipment last calibrated",
+							"inputValue": "",
+							"modifiedBy": "KJP",
+							"dateModified": "2022-09-09T17:57:53.303"
+						},
+						{
+							"taskInputKey": 4848,
+							"inputKey": 337,
+							"inputName": "Equipment ID",
+							"inputValue": "0",
+							"modifiedBy": "KJP",
+							"dateModified": "2022-09-09T17:57:53.303"
+						},
+						{
+							"taskInputKey": 4859,
+							"inputKey": 338,
+							"inputName": "Equipment Manufacturer",
+							"inputValue": "Leica",
+							"modifiedBy": "KJP",
+							"dateModified": "2022-09-09T17:57:53.303"
+						},
+						{
+							"taskInputKey": 4870,
+							"inputKey": 339,
+							"inputName": "Equipment Model",
+							"inputValue": "MC170HD",
+							"modifiedBy": "KJP",
+							"dateModified": "2022-09-09T17:57:53.303"
+						},
+						{
+							"taskInputKey": 4881,
+							"inputKey": 340,
+							"inputName": "Experimenter ID",
+							"inputValue": "Kristina Palmer",
+							"modifiedBy": "KJP",
+							"dateModified": "2022-09-09T17:57:53.303"
+						},
+						{
+							"taskInputKey": 4892,
+							"inputKey": 341,
+							"inputName": "Fixative",
+							"inputValue": "4% PFA",
+							"modifiedBy": "KJP",
+							"dateModified": "2022-09-09T17:57:53.303"
+						},
+						{
+							"taskInputKey": 4903,
+							"inputKey": 342,
+							"inputName": "Somite Stage",
+							"inputValue": "48",
+							"modifiedBy": "KJP",
+							"dateModified": "2022-09-09T17:57:53.303"
+						},
+						{
+							"taskInputKey": 4914,
+							"inputKey": 343,
+							"inputName": "Time of dark cycle end",
+							"inputValue": "07:00",
+							"modifiedBy": "KJP",
+							"dateModified": "2022-09-09T17:57:53.303"
+						},
+						{
+							"taskInputKey": 4925,
+							"inputKey": 344,
+							"inputName": "Time of dark cycle start",
+							"inputValue": "19:00",
+							"modifiedBy": "KJP",
+							"dateModified": "2022-09-09T17:57:53.303"
+						},
+						{
+							"taskInputKey": 4936,
+							"inputKey": 345,
+							"inputName": "Time of Dissection",
+							"inputValue": "12:00",
+							"modifiedBy": "KJP",
+							"dateModified": "2022-09-09T17:57:53.303"
+						}
+					],
+					"outputs": [
+						{
+							"taskOutputKey": 103669,
+							"outputKey": 41,
+							"outputName": "Placenta size",
+							"outputValue": "unobservable",
+							"collectedBy": "Kristy",
+							"collectedDate": "2022-09-09",
+							"taskAlias": "E9.5 Placenta Morphology",
+							"workflowTaskName": "E9.5 Placenta Morphology",
+							"modifiedBy": "kjp",
+							"dateModified": "2022-11-11T14:39:06.68"
+						},
+						{
+							"taskOutputKey": 103670,
+							"outputKey": 42,
+							"outputName": "Placenta vasculature",
+							"outputValue": "unobservable",
+							"collectedBy": "Kristy",
+							"collectedDate": "2022-09-09",
+							"taskAlias": "E9.5 Placenta Morphology",
+							"workflowTaskName": "E9.5 Placenta Morphology",
+							"modifiedBy": "kjp",
+							"dateModified": "2022-11-11T14:39:06.68"
+						},
+						{
+							"taskOutputKey": 103671,
+							"outputKey": 43,
+							"outputName": "Placental development",
+							"outputValue": "unobservable",
+							"collectedBy": "Kristy",
+							"collectedDate": "2022-09-09",
+							"taskAlias": "E9.5 Placenta Morphology",
+							"workflowTaskName": "E9.5 Placenta Morphology",
+							"modifiedBy": "kjp",
+							"dateModified": "2022-11-11T14:39:06.68"
+						},
+						{
+							"taskOutputKey": 103672,
+							"outputKey": 44,
+							"outputName": "Placenta morphology",
+							"outputValue": "unobservable",
+							"collectedBy": "Kristy",
+							"collectedDate": "2022-09-09",
+							"taskAlias": "E9.5 Placenta Morphology",
+							"workflowTaskName": "E9.5 Placenta Morphology",
+							"modifiedBy": "kjp",
+							"dateModified": "2022-11-11T14:39:06.68"
+						},
+						{
+							"taskOutputKey": 103673,
+							"outputKey": 45,
+							"outputName": "Umbilical cord moprhology",
+							"outputValue": "unobservable",
+							"collectedBy": "Kristy",
+							"collectedDate": "2022-09-09",
+							"taskAlias": "E9.5 Placenta Morphology",
+							"workflowTaskName": "E9.5 Placenta Morphology",
+							"modifiedBy": "kjp",
+							"dateModified": "2022-11-11T14:39:06.68"
+						},
+						{
+							"taskOutputKey": 103674,
+							"outputKey": 46,
+							"outputName": "Images",
+							"outputValue": "no",
+							"collectedBy": "Kristy",
+							"collectedDate": "2022-09-09",
+							"taskAlias": "E9.5 Placenta Morphology",
+							"workflowTaskName": "E9.5 Placenta Morphology",
+							"modifiedBy": "kjp",
+							"dateModified": "2022-09-09T18:01:42.19"
+						},
+						{
+							"taskOutputKey": 103675,
+							"outputKey": 196,
+							"outputName": "Comment on images",
+							"outputValue": "",
+							"collectedBy": "Kristy",
+							"collectedDate": "2022-09-09",
+							"taskAlias": "E9.5 Placenta Morphology",
+							"workflowTaskName": "E9.5 Placenta Morphology",
+							"modifiedBy": "kjp",
+							"dateModified": "2022-09-09T18:01:18.323"
+						}
+					]
+				}
+			]
+		}
+	]
+}
+
+"""
+def getProceduresGivenFilter(taskNameFilter):
+    # Return a list of dictionaries where each dictionary is a procedure
+    # This will also work when there are no animals associated with the task.
+    if taskNameFilter is None or taskNameFilter["taskInstance"] is None:
+        return []
     
+    workFlowTaskName =  taskNameFilter["taskInstance"]["workflowTaskName"]
+    if workFlowTaskName is None:
+        return []
+    
+    # OK. Let's extract the filters
+    startDate = None;
+    if 'completedStartDate' in  taskNameFilter["taskInstance"].keys():
+        startDateFilter =  taskNameFilter["taskInstance"]["completedStartDate"]
+        
+    endDate = None;
+    if 'completedStartDate' in  taskNameFilter["taskInstance"].keys():
+        endDateFilter = taskNameFilter["taskInstance"]["completedEndDate"]
+    
+    workFlowTaskStatusFilter = ""
+    if 'workflowTaskStatus' in  taskNameFilter["taskInstance"].keys():
+        workFlowTaskStatusFilter = taskNameFilter["taskInstance"]["workflowTaskStatus"]
+    
+    reviewedOnlyFilter = taskNameFilter["taskInstance"]["isReviewed"] == True
+    
+    # end of filters (we can expand as needed)
+    
+    taskInfoLs = [] # Response from CLIMB
+    taskInfoReturnLs = [] # What we return
+    taskInfoReturnDict = { "taskInfo":[] } # What we return
+    
+    call_header = {'Authorization' : 'Bearer ' + token()}
+    try:
+        # Start calls to CLIMB -- first are tasks
+        endpointUrl = endpoint() +'/taskinstances?WorkflowTaskName=' + escapeHtmlCharacter(workFlowTaskName) + '&PageNumber=0&PageSize=2000'
+        wgResponse = requests.get(endpointUrl, headers=call_header, timeout=60)
+        taskInfoLs = wgResponse.json()
+        taskInfoLs = taskInfoLs["data"]["items"]
+        print(taskNameFilter)
+        print("Before: " + str(len(taskInfoLs)))
+        
+        # Big loop: Remove tasks that fail the filter
+        for taskinstance in reversed(taskInfoLs):
+            # Are we filtering by status?
+            if len(workFlowTaskStatusFilter) > 0 and taskinstance["taskStatus"] != workFlowTaskStatusFilter:
+                taskInfoLs.remove(taskinstance)
+                continue
+            
+            # Are we filtering by date complete?
+            if startDateFilter != None:
+                if taskinstance["dateComplete"] == '':
+                    taskInfoLs.remove(taskinstance)
+                    continue
+                elif startDateFilter > taskinstance["dateComplete"]:
+                    taskInfoLs.remove(taskinstance)
+                    continue
+                    
+            if endDateFilter != None:
+                if taskinstance["dateComplete"] == '':
+                    taskInfoLs.remove(taskinstance)
+                    continue
+                elif endDateFilter < taskinstance["dateComplete"]:
+                    taskInfoLs.remove(taskinstance)
+                    continue
+            
+            # Are we filtering by reviewed only?
+            isReviewed = (taskinstance["reviewedBy"] != None) and (taskinstance["reviewedBy"] != '') # some value for reviewedBy
+            if isReviewed == False and reviewedOnlyFilter == True:
+                    taskInfoLs.remove(taskinstance)
+                    continue
+        # End of loop
+        
+        print("After: " + str(len(taskInfoLs)))
+        for taskinstance in taskInfoLs:
+        # Get the inputs
+            endpointUrl = endpoint() +'/taskinstances/taskInputs?TaskInstanceKey=' + str(taskinstance["taskInstanceKey"]) + '&PageNumber=0&PageSize=200'
+            wgResponse = requests.get(endpointUrl, headers=call_header, timeout=60)
+            inputLs = wgResponse.json()
+            inputsOnly = inputLs["data"]["items"]
+            # TBD - clean up input objects
+            inputsOnly = cleanupInputs(inputsOnly)
+            taskinstance["inputs"] = inputsOnly
+            
+        # Get the outputs
+            endpointUrl = endpoint() +'/taskinstances/taskOutputs?TaskInstanceKey=' + str(taskinstance["taskInstanceKey"]) + '&PageNumber=0&PageSize=200'
+            wgResponse = requests.get(endpointUrl, headers=call_header, timeout=60)
+            outputLs = wgResponse.json()
+            outputsOnly = outputLs["data"]["items"]
+            # clean up output objects
+            outputsOnly = cleanupOutputs(outputsOnly)
+            taskinstance["outputs"] = outputsOnly
+            
+            taskInfoReturnLs.append(taskinstance)
+            #print(taskinstance)
+            #print(taskInfoReturnLs)
+            
+        taskInfoReturnDict["taskInfo"].append(taskinstance)
+        f = open('out.txt','w')
+        print(taskInfoReturnDict,file=f)
+        f.close()
+        
+            
+    except requests.exceptions.Timeout as e: 
+        #print(e.message())
+        raise 
+    except requests.exceptions.InvalidHeader as e:  
+        #print(e.message())
+        raise 
+    except requests.exceptions.InvalidURL as e:  
+        #print(e.message())
+        raise 
+    except requests.exceptions.RequestException as e:  # All others
+        #print(e.message())
+        raise  
+    return taskInfoLs
+
+def cleanupInputs(inputsLs):
+    for inputObj in inputsLs:
+        del inputObj["taskInstanceKey"]
+        del inputObj["materialKeys"]
+        del inputObj["createdBy"]
+        del inputObj["dateCreated"]
+        del inputObj["workGroupKey"]
+        del inputObj["validatedInputValue"]
+    return inputsLs
+
+def cleanupOutputs(outputLs):
+    for outputObj in outputLs:
+        del outputObj["taskOutputSetKey"]
+        del outputObj["taskInstanceKey"]
+        del outputObj["taskAlias"]
+        del outputObj["workflowTaskKey"]
+        del outputObj["workflowTaskName"]
+        del outputObj["materialKeys"]
+        del outputObj["createdBy"]
+        del outputObj["dateCreated"]
+    return outputLs
+
+
+def getProceduresAndDataGivenName(procName):
+    # Return a list of dictionaries where dictionary is a procedure with inputs and putputs
+    return []
+
+def getAnimalsGivenProcedureName(proName):
+    # Return a list of dictionaries where each element is an animals with strain and genotype info
+    return []
+ 
+    
+######## END OF USEFUL, SPECIAL CLIMB METHODS
+
 #### CSV CSV #########################################
 def createInputCsvFileHeader():
     header = ['TaskName', 'InputName', 'InputKey' ]
@@ -340,9 +706,12 @@ def createUserCsv(userDictLs):
 #######################################################
 
 if __name__ == '__main__':
-    setMyToken(getTokenEx('mike', '1banana1'))
     setWorkgroup('KOMP-JAX Lab')
     setMyToken(getTokenEx('mike', '1banana1'))
+    getProceduresGivenFilter(json.loads('{ "taskInstance": { "workflowTaskName": "E18.5 Embryo Gross Morphology", "workflowTaskStatus":"Complete", "completedStartDate": "2021-01-03 19:11:50","completedEndDate": "2024-01-03 19:11:50","isReviewed": true}, "animal": { "animalName":"A-5", "generation":"E18.5"}, "lines": [] }'))
+    #setMyToken(getTokenEx('mike', '1banana1'))
+    #setWorkgroup('KOMP-JAX Lab')
+    #setMyToken(getTokenEx('mike', '1banana1'))
     #userDictLs = getClimbUsers()
     #print(json.dumps(userDictLs, indent=4, sort_keys=True))
     #createUserCsv(userDictLs)
