@@ -333,78 +333,7 @@ def getMinMaxFromOutput(key):
 							"modifiedBy": "KJP",
 							"dateModified": "2022-09-09T17:57:53.303"
 						},
-						{
-							"taskInputKey": 4848,
-							"inputKey": 337,
-							"inputName": "Equipment ID",
-							"inputValue": "0",
-							"modifiedBy": "KJP",
-							"dateModified": "2022-09-09T17:57:53.303"
-						},
-						{
-							"taskInputKey": 4859,
-							"inputKey": 338,
-							"inputName": "Equipment Manufacturer",
-							"inputValue": "Leica",
-							"modifiedBy": "KJP",
-							"dateModified": "2022-09-09T17:57:53.303"
-						},
-						{
-							"taskInputKey": 4870,
-							"inputKey": 339,
-							"inputName": "Equipment Model",
-							"inputValue": "MC170HD",
-							"modifiedBy": "KJP",
-							"dateModified": "2022-09-09T17:57:53.303"
-						},
-						{
-							"taskInputKey": 4881,
-							"inputKey": 340,
-							"inputName": "Experimenter ID",
-							"inputValue": "Kristina Palmer",
-							"modifiedBy": "KJP",
-							"dateModified": "2022-09-09T17:57:53.303"
-						},
-						{
-							"taskInputKey": 4892,
-							"inputKey": 341,
-							"inputName": "Fixative",
-							"inputValue": "4% PFA",
-							"modifiedBy": "KJP",
-							"dateModified": "2022-09-09T17:57:53.303"
-						},
-						{
-							"taskInputKey": 4903,
-							"inputKey": 342,
-							"inputName": "Somite Stage",
-							"inputValue": "48",
-							"modifiedBy": "KJP",
-							"dateModified": "2022-09-09T17:57:53.303"
-						},
-						{
-							"taskInputKey": 4914,
-							"inputKey": 343,
-							"inputName": "Time of dark cycle end",
-							"inputValue": "07:00",
-							"modifiedBy": "KJP",
-							"dateModified": "2022-09-09T17:57:53.303"
-						},
-						{
-							"taskInputKey": 4925,
-							"inputKey": 344,
-							"inputName": "Time of dark cycle start",
-							"inputValue": "19:00",
-							"modifiedBy": "KJP",
-							"dateModified": "2022-09-09T17:57:53.303"
-						},
-						{
-							"taskInputKey": 4936,
-							"inputKey": 345,
-							"inputName": "Time of Dissection",
-							"inputValue": "12:00",
-							"modifiedBy": "KJP",
-							"dateModified": "2022-09-09T17:57:53.303"
-						}
+      ...
 					],
 					"outputs": [
 						{
@@ -419,78 +348,7 @@ def getMinMaxFromOutput(key):
 							"modifiedBy": "kjp",
 							"dateModified": "2022-11-11T14:39:06.68"
 						},
-						{
-							"taskOutputKey": 103670,
-							"outputKey": 42,
-							"outputName": "Placenta vasculature",
-							"outputValue": "unobservable",
-							"collectedBy": "Kristy",
-							"collectedDate": "2022-09-09",
-							"taskAlias": "E9.5 Placenta Morphology",
-							"workflowTaskName": "E9.5 Placenta Morphology",
-							"modifiedBy": "kjp",
-							"dateModified": "2022-11-11T14:39:06.68"
-						},
-						{
-							"taskOutputKey": 103671,
-							"outputKey": 43,
-							"outputName": "Placental development",
-							"outputValue": "unobservable",
-							"collectedBy": "Kristy",
-							"collectedDate": "2022-09-09",
-							"taskAlias": "E9.5 Placenta Morphology",
-							"workflowTaskName": "E9.5 Placenta Morphology",
-							"modifiedBy": "kjp",
-							"dateModified": "2022-11-11T14:39:06.68"
-						},
-						{
-							"taskOutputKey": 103672,
-							"outputKey": 44,
-							"outputName": "Placenta morphology",
-							"outputValue": "unobservable",
-							"collectedBy": "Kristy",
-							"collectedDate": "2022-09-09",
-							"taskAlias": "E9.5 Placenta Morphology",
-							"workflowTaskName": "E9.5 Placenta Morphology",
-							"modifiedBy": "kjp",
-							"dateModified": "2022-11-11T14:39:06.68"
-						},
-						{
-							"taskOutputKey": 103673,
-							"outputKey": 45,
-							"outputName": "Umbilical cord moprhology",
-							"outputValue": "unobservable",
-							"collectedBy": "Kristy",
-							"collectedDate": "2022-09-09",
-							"taskAlias": "E9.5 Placenta Morphology",
-							"workflowTaskName": "E9.5 Placenta Morphology",
-							"modifiedBy": "kjp",
-							"dateModified": "2022-11-11T14:39:06.68"
-						},
-						{
-							"taskOutputKey": 103674,
-							"outputKey": 46,
-							"outputName": "Images",
-							"outputValue": "no",
-							"collectedBy": "Kristy",
-							"collectedDate": "2022-09-09",
-							"taskAlias": "E9.5 Placenta Morphology",
-							"workflowTaskName": "E9.5 Placenta Morphology",
-							"modifiedBy": "kjp",
-							"dateModified": "2022-09-09T18:01:42.19"
-						},
-						{
-							"taskOutputKey": 103675,
-							"outputKey": 196,
-							"outputName": "Comment on images",
-							"outputValue": "",
-							"collectedBy": "Kristy",
-							"collectedDate": "2022-09-09",
-							"taskAlias": "E9.5 Placenta Morphology",
-							"workflowTaskName": "E9.5 Placenta Morphology",
-							"modifiedBy": "kjp",
-							"dateModified": "2022-09-09T18:01:18.323"
-						}
+      ...
 					]
 				}
 			]

@@ -1,0 +1,137 @@
+{
+	"taskInfo": [
+		{
+			"animal": [
+				{
+					"animalId": 37072,
+					"animalName": "A-3955",
+					"sex": "Female",
+					"generation": "E9.5",
+					"status": "Alive",
+					"line": "C57BL/6NJ-Fbrs<em1(IMPC)J>/Mmjax",
+					"use": "Study Cohort",
+					"stock": "036867",
+					"dateBorn": "2022-09-09T04:00:00"
+				}
+			],
+			"taskInstance": [
+				{
+					"taskInstanceKey": 8289,
+					"workflowTaskName": "E9.5 Placenta Morphology",
+					"taskStatus": "Complete",
+					"completedBy": "Kristy",
+					"dateComplete": "2022-09-09",
+					"reviewedBy": "Kristy",
+					"dateReviewed": "2022-11-11"
+					"inputs": [
+						{
+							"inputKey": 336,
+							"inputName": "Date equipment last calibrated",
+							"inputValue": ""
+						},
+						{
+							"inputKey": 337,
+							"inputName": "Equipment ID",
+							"inputValue": "0"
+						},
+						{
+							"inputKey": 338,
+							"inputName": "Equipment Manufacturer",
+							"inputValue": "Leica"
+						},
+						{
+							"inputKey": 339,
+							"inputName": "Equipment Model",
+							"inputValue": "MC170HD"
+						},
+						{
+							"inputKey": 340,
+							"inputName": "Experimenter ID",
+							"inputValue": "Kristina Palmer"
+						},
+						{
+							"inputKey": 341,
+							"inputName": "Fixative",
+							"inputValue": "4% PFA"
+						},
+						{
+							"inputKey": 342,
+							"inputName": "Somite Stage",
+							"inputValue": "48"
+						},
+						{
+							"inputKey": 343,
+							"inputName": "Time of dark cycle end",
+							"inputValue": "07:00"
+						},
+						{
+							"inputKey": 344,
+							"inputName": "Time of dark cycle start",
+							"inputValue": "19:00"
+						},
+						{
+							"inputKey": 345,
+							"inputName": "Time of Dissection",
+							"inputValue": "12:00"
+						}
+					],
+					"outputs": [
+						{
+							"outputKey": 41,
+							"outputName": "Placenta size",
+							"outputValue": "unobservable",
+							"collectedBy": "Kristy",
+							"collectedDate": "2022-09-09"
+						},
+						{
+							"outputKey": 42,
+							"outputName": "Placenta vasculature",
+							"outputValue": "unobservable",
+							"collectedBy": "Kristy",
+							"collectedDate": "2022-09-09"
+						},
+						{
+							"outputKey": 43,
+							"outputName": "Placental development",
+							"outputValue": "unobservable",
+							"collectedBy": "Kristy",
+							"collectedDate": "2022-09-09"
+						},
+						{
+							"outputKey": 44,
+							"outputName": "Placenta morphology",
+							"outputValue": "unobservable",
+							"collectedBy": "Kristy",
+							"collectedDate": "2022-09-09"
+						},
+						{
+							"outputKey": 45,
+							"outputName": "Umbilical cord moprhology",
+							"outputValue": "unobservable",
+							"collectedBy": "Kristy",
+							"collectedDate": "2022-09-09",
+							"taskAlias": "E9.5 Placenta Morphology",
+							"workflowTaskName": "E9.5 Placenta Morphology",
+							"modifiedBy": "kjp",
+							"dateModified": "2022-11-11T14:39:06.68"
+						},
+						{
+							"outputKey": 46,
+							"outputName": "Images",
+							"outputValue": "no",
+							"collectedBy": "Kristy",
+							"collectedDate": "2022-09-09"
+						},
+						{
+							"outputKey": 196,
+							"outputName": "Comment on images",
+							"outputValue": "",
+							"collectedBy": "Kristy",
+							"collectedDate": "2022-09-09"
+						}
+					]
+				}
+			]
+		}
+	]
+}

@@ -115,7 +115,7 @@ def createMetadata(procedureNode,impcCode, strVal):
 def createSeriesMediaParameter(procedureNode,impcCode, strVal,statusCode):
     
     # She has bad data for her images. Need to fix that first 
-    return procedureNode
+    #return procedureNode
   
     if len(strVal) == 0:
           return procedureNode
@@ -123,7 +123,7 @@ def createSeriesMediaParameter(procedureNode,impcCode, strVal,statusCode):
     imageLs = strVal.split()
     
     # Temporary kluge - she is putting "no" as the value of images when not present
-    if len(imageLs) > 0 and imageLs[0] == "no":
+    if len(imageLs) > 0 and (imageLs[0] == "no" or imageLs[0] == "yes"):
           return procedureNode
         
     paramNode = ET.SubElement(procedureNode, 'seriesMediaParameter', { 'parameterID': '{code}'.format(code=impcCode)})
@@ -276,20 +276,22 @@ def generateExperimentXML(taskInfoLs, centerNode):
     
     #taskInfoLs = resultsPackage["taskInfo"]
     if taskInfoLs == None:
-          return
+          return 0
     
     # Else we have some data
     db.init() # Create database connection for IMPC codes
     
+    numberOfProcs = 0
     for exps in taskInfoLs:
         mouseInfoLs = exps["animal"]   # 
         for mouseInfo in mouseInfoLs:
           procLs = exps["taskInstance"]
           for proc in procLs:
-            if proc["taskStatus"]  == "Failed QC":
-                  continue # We failed it.
+            if proc["taskStatus"]  == "Failed QC" or proc["taskStatus"]  == "Already submitted":
+                  continue # We failed it or we've already submitted it.
             
             # for each procedure in the list build up the XML
+            numberOfProcs += 1
             # # root node
             experimentNode = createExperiment(centerNode,(proc['workflowTaskName'] + ' - ' +  mouseInfo['animalName'] + ' - ' + str(proc["taskInstanceKey"])), proc['dateComplete']) # TODO Add in task key
             experimentNode = createSpecimen(experimentNode,mouseInfo['animalName'])
@@ -300,7 +302,7 @@ def generateExperimentXML(taskInfoLs, centerNode):
             procedureNode = buildMetadata(procedureNode,proc)
     
     db.close()
-    return # used to return root
+    return numberOfProcs
 
 def buildMetadata(procedureNode,proc):
       
@@ -477,7 +479,7 @@ def getNextSpecimenFilename(dataDir):
       if max < int(cntr):
         max = int(cntr)
             
-    newFileName = 'J.' + datetime.today().strftime('%Y-%m-%d') + '.{counterVal}.specimen.impc.xml'.format(counterVal=str(max+1))
+    newFileName = 'J.' + datetime.today().strftime('%Y-%m-%d') + '.{counterVal}.specimen.impc.xml'.format(counterVal='{:02d}'.format(max+1))
       
     return dataDir + newFileName;
     
@@ -538,7 +540,7 @@ resultsStr = ""
 if __name__ == '__main__':
     ### Get task info based on the given filter
     # Get filter from file - temporary
-    with open("C:\\TEMP\\filters.json") as f:
+    with open("filters.json") as f:
       filterLines = f.read().splitlines()
     
     for climbFilter in filterLines:
@@ -584,12 +586,12 @@ if __name__ == '__main__':
               db.recordSubmissionAttempt(expFileName.split('\\')[-1],task["animal"][0], task["taskInstance"][0], 
                                         getProcedureImpcCode(), v.getReviewedDate())
       
-      generateExperimentXML(taskLs, centerNode)
+      numberOfProcs = generateExperimentXML(taskLs, centerNode)
       
       db.close()
-            
-      tree = ET.ElementTree(indent(root))
-      tree.write(expFileName, xml_declaration=True, encoding='utf-8')
+      if(numberOfProcs > 0):      
+        tree = ET.ElementTree(indent(root))
+        tree.write(expFileName, xml_declaration=True, encoding='utf-8')
           
     
   

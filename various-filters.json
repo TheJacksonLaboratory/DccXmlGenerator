@@ -1,0 +1,28 @@
+{ "taskInstance": { "workflowTaskName": "E12.5 Embryo Gross Morphology", "isReviewed": true }, "animal": { "animalName": "D66418-01"}, "lines": [] }
+{ "taskInstance": { "workflowTaskName": "E9.5 Embryo Gross Morphology", "isReviewed": true }, "animal": { "animalName": "A-39"}, "lines": [] }
+Yes { "taskInstance": { "workflowTaskName": "E9.5 Embryo Gross Morphology", "isReviewed": true}, "animal": { "generation":"E9.5"}, "lines": [] }
+Yes { "taskInstance": { "workflowTaskName": "E9.5 Embryo Gross Morphology", "isReviewed": true}, "animal": { "animalName":"A-4", "generation":"E9.5"}, "lines": [] }
+
+No { "taskInstance": { "workflowTaskName": "E9.5 Embryo Gross Morphology", "isReviewed": true, "completedStartDate":"2022-11-15", "completedEndDate":"2022-11-21" }, "animal": { "generation":"E9.5"}, "lines": [] }
+
+No {"taskInstance": {"workflowTaskName": "E9.5 Embryo Gross Morphology"},"animal": {}, "lines": [{"lineName": "C57BL/6NJ-Atp6v0b<em1(IMPC)J>/Mmjax"}]}
+
+Works:                 {"taskInstance": {"workflowTaskName": "E9.5 Embryo Gross Morphology"},"animal": {"animalName": "A-1495"}, "lines": [{"lineName": "C57BL/6NJ-Atp6v0b<em1(IMPC)J>/Mmjax"}]}
+Does not work:         {"taskInstance": {"workflowTaskName": "E9.5 Embryo Gross Morphology"}, "lines": [{"lineName": "C57BL/6NJ-Atp6v0b<em1(IMPC)J>/Mmjax"}]}
+
+
+{
+  "taskInstance": {
+    "materialKey": 0,
+    "taskInstanceKey": 0,
+    "workflowTaskKey": 0,
+    "workflowTaskName": "string",
+    "workflowTaskStatus": "string",
+    "completedStartDate": "2022-11-22T20:36:45.659Z",   doesn't work
+    "completedEndDate": "2022-11-22T20:36:45.659Z", doesn't work Internal Server error
+    "dueStartDate": "2022-11-22T20:36:45.659Z",
+    "dueEndDate": "2022-11-22T20:36:45.659Z",
+    "isReviewed": true
+	      success, message = v.validateProcedure(task)  # Sets the task status to 'Failed QC' if it fails.
+
+{ "taskInstance": { "workflowTaskName": "E9.5 Embryo Gross Morphology", "isReviewed": true}, "animal": { "animalName":"A-3", "generation":"E9.5"}, "lines" : [ {"lineName":"C57BL/6NJ-Gid8<em1(IMPC)J>/Mmjax", "stock":"035294", "lineKey":176} ]}

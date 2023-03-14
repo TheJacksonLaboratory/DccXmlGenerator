@@ -1,5 +1,4 @@
 #
-
 import mysql.connector
 from mysql.connector import errorcode
 
@@ -22,7 +21,8 @@ def isExperimenterID(impcCode):
     return impcCode in ["IMPC_GEL_045_001","IMPC_GPL_008_001", 
                     "IMPC_GEM_050_001","IMPC_GPM_008_001", 
                     "IMPC_GPO_009_001", "IMPC_GEO_051_001", 
-                    "IMPC_GEP_065_001", "IMPC_GPP_008_001"]
+                    "IMPC_GEP_065_001", "IMPC_GPP_008_001",
+                    "IMPC_EMA_002_001", "IMPC_EMO_002_001"]
 
 
 def databaseGetExperimenterIdCode(expName):
