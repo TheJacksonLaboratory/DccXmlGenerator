@@ -368,11 +368,11 @@ def getProceduresGivenFilter(taskNameFilter):
         return []
     
     # OK. Let's extract the filters
-    startDate = None;
+    startDateFilter = None;
     if 'completedStartDate' in  taskNameFilter["taskInstance"].keys():
         startDateFilter =  taskNameFilter["taskInstance"]["completedStartDate"]
         
-    endDate = None;
+    endDateFilter = None;
     if 'completedStartDate' in  taskNameFilter["taskInstance"].keys():
         endDateFilter = taskNameFilter["taskInstance"]["completedEndDate"]
     
@@ -385,8 +385,8 @@ def getProceduresGivenFilter(taskNameFilter):
     # end of filters (we can expand as needed)
     
     taskInfoLs = [] # Response from CLIMB
-    taskInfoReturnLs = [] # What we return
-    taskInfoReturnDict = { "taskInfo":[] } # What we return
+    taskInfoReturnLs = { "taskInstance" : [] }  # What we build up
+    taskInfoReturnDictLs = { "taskInfo":[] } # What we return - a list of dictionaries
     
     call_header = {'Authorization' : 'Bearer ' + token()}
     try:
@@ -395,8 +395,6 @@ def getProceduresGivenFilter(taskNameFilter):
         wgResponse = requests.get(endpointUrl, headers=call_header, timeout=60)
         taskInfoLs = wgResponse.json()
         taskInfoLs = taskInfoLs["data"]["items"]
-        print(taskNameFilter)
-        print("Before: " + str(len(taskInfoLs)))
         
         # Big loop: Remove tasks that fail the filter
         for taskinstance in reversed(taskInfoLs):
@@ -429,14 +427,13 @@ def getProceduresGivenFilter(taskNameFilter):
                     continue
         # End of loop
         
-        print("After: " + str(len(taskInfoLs)))
         for taskinstance in taskInfoLs:
         # Get the inputs
             endpointUrl = endpoint() +'/taskinstances/taskInputs?TaskInstanceKey=' + str(taskinstance["taskInstanceKey"]) + '&PageNumber=0&PageSize=200'
             wgResponse = requests.get(endpointUrl, headers=call_header, timeout=60)
             inputLs = wgResponse.json()
             inputsOnly = inputLs["data"]["items"]
-            # TBD - clean up input objects
+            # clean up unwanted input objects
             inputsOnly = cleanupInputs(inputsOnly)
             taskinstance["inputs"] = inputsOnly
             
@@ -445,18 +442,18 @@ def getProceduresGivenFilter(taskNameFilter):
             wgResponse = requests.get(endpointUrl, headers=call_header, timeout=60)
             outputLs = wgResponse.json()
             outputsOnly = outputLs["data"]["items"]
-            # clean up output objects
+            # clean up unwanted output objects
             outputsOnly = cleanupOutputs(outputsOnly)
             taskinstance["outputs"] = outputsOnly
             
-            taskInfoReturnLs.append(taskinstance)
-            #print(taskinstance)
-            #print(taskInfoReturnLs)
-            
-        taskInfoReturnDict["taskInfo"].append(taskinstance)
-        f = open('out.txt','w')
-        print(taskInfoReturnDict,file=f)
-        f.close()
+            taskInfoReturnLs["taskInstance"].append(taskinstance)
+        
+        taskInfoReturnDictLs["taskInfo"].append(taskInfoReturnLs) 
+        # A list containing one element that is a dict that is a llst of taskInstances
+        
+        #f = open('out.txt','w')
+        #print(taskInfoReturnDictLs,file=f)
+        #f.close()
         
             
     except requests.exceptions.Timeout as e: 
@@ -471,7 +468,8 @@ def getProceduresGivenFilter(taskNameFilter):
     except requests.exceptions.RequestException as e:  # All others
         #print(e.message())
         raise  
-    return taskInfoLs
+    
+    return taskInfoReturnDictLs
 
 def cleanupInputs(inputsLs):
     for inputObj in inputsLs:
@@ -566,13 +564,5 @@ def createUserCsv(userDictLs):
 if __name__ == '__main__':
     setWorkgroup('KOMP-JAX Lab')
     setMyToken(getTokenEx('mike', '1banana1'))
-    getProceduresGivenFilter(json.loads('{ "taskInstance": { "workflowTaskName": "E18.5 Embryo Gross Morphology", "workflowTaskStatus":"Complete", "completedStartDate": "2021-01-03 19:11:50","completedEndDate": "2024-01-03 19:11:50","isReviewed": true}, "animal": { "animalName":"A-5", "generation":"E18.5"}, "lines": [] }'))
-    #setMyToken(getTokenEx('mike', '1banana1'))
-    #setWorkgroup('KOMP-JAX Lab')
-    #setMyToken(getTokenEx('mike', '1banana1'))
-    #userDictLs = getClimbUsers()
-    #print(json.dumps(userDictLs, indent=4, sort_keys=True))
-    #createUserCsv(userDictLs)
-    
-    
+    getProceduresGivenFilter(json.loads('{ "taskInstance": { "workflowTaskName": "Viability Primary Screen v2", "workflowTaskStatus":"Complete", "isReviewed": true}, "animal": "", "lines": [] }'))
     print("SUCCESS")

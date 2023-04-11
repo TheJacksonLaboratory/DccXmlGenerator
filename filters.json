@@ -1,1 +1,1 @@
-{ "taskInstance": { "workflowTaskName": "E18.5 MicroCT", "isReviewed": true}, "animal": { "animalName":"A-121", "generation":"E18.5"}, "lines": [] }
+{ "taskInstance": { "workflowTaskName": "Viability Primary Screen v2", "workflowTaskStatus":"Complete", "isReviewed": true}, "animal": "", "lines": [] }

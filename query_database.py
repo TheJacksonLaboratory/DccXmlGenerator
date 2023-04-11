@@ -63,7 +63,6 @@ def databaseInsertQualityErrorMessage(msg):
 
 def databaseSelectProcedureCode(procName):
     sqlStatement = 'SELECT ImpcCode FROM komp.taskimpccodes WHERE TaskName = \'{0}\''.format(procName)
-    #print(sqlStatement)
      
     threeLetterCode = ''
     try:
@@ -91,8 +90,6 @@ def databaseSelectImpcData(threeLetterCode, isMetatdata, usingInputs):
          
     selectStmt = 'SELECT ImpcCode, _ClimbType_key, _DccType_key FROM komp.dccparameterdetails WHERE _ClimbType_key IS NOT NULL AND ImpcCode LIKE \'%{0}%\' AND '.format(threeLetterCode) + whereStr
 
-    #print(selectStmt)
-    
     lsOfTuples = []
     try:
         g_MysqlCursor.execute(selectStmt)
@@ -106,9 +103,10 @@ def databaseSelectImpcData(threeLetterCode, isMetatdata, usingInputs):
     
     return lsOfTuples
 
+
 def getLastReviewedDate(animal,procedure):
     
-    lastReviewDate = ""
+    lastReviewDate = None
     selectStmt = "SELECT MAX(DateReviewed) FROM komp.submittedProcedures WHERE AnimalName = '{0}' AND ExperimentName = '{1}'".format(animal,procedure)
     
     try:
@@ -121,13 +119,29 @@ def getLastReviewedDate(animal,procedure):
     
     return lastReviewDate
 
-def recordSubmissionAttempt(fileName, animal, procedure, impcCode, reviewDate):  
+def getLastReviewedDate(taskInstanceKey):
     
-    animalName = animal["animalName"]
+    lastReviewDate = None
+    selectStmt = "SELECT MAX(DateReviewed) FROM komp.submittedProcedures WHERE TaskInstanceId = '{0}'".format(taskInstanceKey)
+    
+    try:
+        g_MysqlCursor.execute(selectStmt)
+        
+        for DateReviewed in g_MysqlCursor:
+            lastReviewDate = DateReviewed[0]
+    except Exception as e:
+        print('SELECT FAILED FOR: ' + selectStmt)
+    
+    return lastReviewDate
+
+def recordSubmissionAttempt(fileName, animalName, procedure, impcCode, reviewDate):  
+    
     procedureName = procedure["workflowTaskName"]
+    taskInstanceId = int(procedure["taskInstanceKey"])
+    
     """ Given  dictionary pull out the elements and insert it into the database """
-    insertStmt = "INSERT INTO komp.submittedProcedures (AnimalName, ExperimentName, ImpcCode, XmlFilename, DateReviewed) VALUES ( '{0}','{1}','{2}','{3}','{4}')".\
-        format(animalName, procedureName, impcCode, fileName, reviewDate)
+    insertStmt = "INSERT INTO komp.submittedProcedures (AnimalName, ExperimentName, ImpcCode, XmlFilename, DateReviewed, TaskInstanceId) VALUES ( '{0}','{1}','{2}','{3}','{4}',{5})".\
+        format(animalName, procedureName, impcCode, fileName, reviewDate, taskInstanceId)
 
     try:    
         #print(insertStmt)
@@ -174,6 +188,6 @@ def close():
 if __name__ == '__main__':
     init()
     #id = databaseGetExperimenterIdCode("Kristina Palmer")
-    print(getLastReviewedDate('A-3965','E9.5 Embryo Gross Morphology'))
+    #print(getLastReviewedDate(0))
     #print(id)
     close()

@@ -39,8 +39,10 @@ import xml.etree.ElementTree as ET
 import Climb as c
 import validate_procedure as v
 
-g_ImpcCode = ""
+g_ImpcCode = ''
+g_ColonyId =''
 
+# Globals
 def setProcedureImpcCode(code):
   global g_ImpcCode
   g_ImpcCode=code
@@ -49,8 +51,28 @@ def getProcedureImpcCode():
   global g_ImpcCode
   return g_ImpcCode
 
+def getColonyId():
+  global g_ColonyId
+  return g_ColonyId
+
+def setColonyId(colonyId):
+  global g_ColonyId
+  g_ColonyId = colonyId
+
+# By convention if a task with no mice needs to record the line
+#   then she stores it in an output named "JR". But she only stores the five digit code
+def findColonyId(proc):
+      outputLs = proc['outputs']
+      for output in outputLs:
+        if output["outputName"] == 'JR':           
+          setColonyId(output["outputName"] + output["outputValue"])
+
+# TODO - get from YAML file            
+def getDatadir():
+      return "C:\\Users\\michaelm\\Source\\Workspaes\\Teams\\Lab Informatics\\JAXLIMS\\Main\\DccReporter\\data\\"
+
 def getFtpServer():
-      return 'ftp://bhjlk01.jax.org/'
+      return 'sftp://bhjlk02lp.jax.org/'
     
 # XML XML XML
 def createProcedureRoot():
@@ -71,20 +93,25 @@ def createSpecimenCentre(root):
 
 def createCentreSpecimenSet(root):
     centerNode = ET.SubElement(root, 'centreSpecimenSet', {'centreID':'J', 'pipeline':'JAX_001', 'project':'JAX'})
-    return  centerNode # center node
+    return  centerNode
 
 def createExperiment(centerNode, expName, expDate):
-      
+    # Generate the bones of the experiment node. No procedure or specimen info yet  
     experimentDictKeys = [ "experimentID", "dateOfExperiment" ]
     experimentDict = dict.fromkeys(experimentDictKeys)
     experimentDict["experimentID"] = expName
     experimentDict["dateOfExperiment"] = expDate
     experimentNode = ET.SubElement(centerNode, 'experiment', experimentDict)
-    return experimentNode # experimentNode
+    return experimentNode
 		
 def createSpecimen(experimentNode,animalName):
     specimenNode = ET.SubElement(experimentNode, 'specimenID')
     specimenNode.text = animalName
+    return experimentNode # experimentNode
+		
+def createColonyId(experimentNode,colonyId):
+    specimenNode = ET.SubElement(experimentNode, 'colonyId')
+    specimenNode.text = colonyId
     return experimentNode # experimentNode
 
 def createProcedure(experimentNode, procId):
@@ -99,39 +126,38 @@ def createSimpleParameter(procedureNode,impcCode, strVal,statusCode):
         statusNode = ET.SubElement(paramNode,'statusCode')
         statusNode.text = statusCode
         
-    return procedureNode # procedureNode
+    return procedureNode
 
 def createMetadata(procedureNode,impcCode, strVal):
     paramNode = ET.SubElement(procedureNode, 'procedureMetadata', { 'parameterID': '{code}'.format(code=impcCode)})
     valueNode = ET.SubElement(paramNode, 'value')
     valueNode.text = strVal
-    return procedureNode # procedureNode
+    return procedureNode
 
 # <seriesMediaParameter parameterID="IMPC_XRY_048_001">
 #    <value incrementValue="1" URI="ftp://images/image1.jpg" fileType="img/jpg">
 #    <value incrementValue="1" URI="ftp://images/image1.jpg" fileType="img/jpg">
 #</seriesMediaParameter>
 # Must be included just before the metadata!!!
-def createSeriesMediaParameter(procedureNode,impcCode, strVal,statusCode):
-    
-    # She has bad data for her images. Need to fix that first 
-    #return procedureNode
-  
+def createSeriesMediaParameter(procedureNode,impcCode, strVal,statusCode, directoryName):
+      
     if len(strVal) == 0:
-          return procedureNode
+          return procedureNode # bail
         
     imageLs = strVal.split()
     
     # Temporary kluge - she is putting "no" as the value of images when not present
     if len(imageLs) > 0 and (imageLs[0] == "no" or imageLs[0] == "yes"):
-          return procedureNode
+          return procedureNode # bail
         
     paramNode = ET.SubElement(procedureNode, 'seriesMediaParameter', { 'parameterID': '{code}'.format(code=impcCode)})
     
-    incrementValue = 1
+    incrementValue = 1  # We only support startig from 1 for now. May need to get smarter.
+                        # The values are stored in KOMP.DccParameterDetails.
     for image in imageLs:
-      valueNode = ET.SubElement(paramNode, 'value')
-      valueNode.text = "incrementValue=" + "\"" + str(incrementValue) + "\"" + " URI=\"" + getFtpServer() + impcCode + "/" + image + "\"" # Don't need the file type
+      filenameSplit = image.split('\\')
+      filenameOnly = filenameSplit[len(filenameSplit)-1]
+      valueNode = ET.SubElement(paramNode, 'value', {'incrementValue': str(incrementValue), 'URI': getFtpServer() + directoryName + "/" + filenameOnly})
       incrementValue += 1
     
     if len(statusCode) > 0:
@@ -140,9 +166,29 @@ def createSeriesMediaParameter(procedureNode,impcCode, strVal,statusCode):
         
     return procedureNode # procedureNode
   
-# TODO
-def createSeriesParameter(procedureNode,impcCode, strVal,statusCode):
-    return procedureNode
+# e.g. for Primary Viability
+"""
+  <seriesParameter parameterID="IMPC_VIA_037_001">
+                    <value incrementValue="litterID1">RIKEN-Rln1-AB5_01</value>
+                    <value incrementValue="litterID2">RIKEN-Rln1-AB5_01</value>
+                    <value incrementValue="litterID3">RIKEN-Rln1-AB5_03</value>
+                </seriesParameter>
+"""
+def createSeriesParameter(procedureNode,impcCode, strVal,statusCode):    
+    if len(strVal) == 0:
+          return procedureNode # bail
+  
+    paramNode = ET.SubElement(procedureNode, 'seriesParameter', { 'parameterID': '{code}'.format(code=impcCode)})
+    
+    incrementValue = 'litterID1'   # TODO - make smarter 
+    valueNode = ET.SubElement(paramNode, 'value', {'incrementValue': incrementValue})
+    valueNode.text = strVal
+    
+    if len(statusCode) > 0:
+        statusNode = ET.SubElement(paramNode,'statusCode')
+        statusNode.text = statusCode
+        
+    return procedureNode # procedureNode
 
 def createStatusCode(procedureNode, statusCode):
     statusNode = ET.SubElement(procedureNode, 'statusCode')
@@ -151,8 +197,26 @@ def createStatusCode(procedureNode, statusCode):
   
 def createSpecimenRecord(specimenRecord,specimenSetNode,statusCode):
   
+  # fairly weak check but it is true
+  isEmbryo = specimenRecord["generation"][0] == 'E'
+  
   if v.validateMouseFields(specimenRecord) == True:
-    paramNode = ET.SubElement(specimenSetNode, 'mouse', {
+    if isEmbryo == True:
+        paramNode = ET.SubElement(specimenSetNode, 'embryo', {
+                              'stage': '{stage}'.format(stage=specimenRecord["generation"][1:]),
+                              'stageUnit': 'DPC',
+                              'isBaseline': '{isBaseline}'.format(isBaseline=str(specimenRecord["isBaseline"]).lower()),
+                              'strainID': '{strainID}'.format(strainID=specimenRecord["strainID"]),
+                              'specimenID': '{specimenID}'.format(specimenID=specimenRecord["specimenID"]),
+                              'gender': '{gender}'.format(gender=specimenRecord["gender"].lower()),
+                              'zygosity': '{zygosity}'.format(zygosity=specimenRecord["zygosity"]),
+                              'litterId': '{litterId}'.format(litterId=specimenRecord["litterId"]),
+                              'pipeline': '{pipeline}'.format(pipeline=specimenRecord["pipeline"]),
+                              'productionCentre': '{productionCentre}'.format(productionCentre=specimenRecord["productionCenter"]),
+                              'phenotypingCentre': '{phenotypingCentre}'.format(phenotypingCentre=specimenRecord["phenotypingCenter"]),
+                              'project': '{project}'.format(project=specimenRecord["project"]) })
+    else:
+      paramNode = ET.SubElement(specimenSetNode, 'mouse', {
                               'DOB': '{dob}'.format(dob=specimenRecord["dob"]),
                               'colonyID': '{colonyID}'.format(colonyID=specimenRecord["colonyId"]),
                               'isBaseline': '{isBaseline}'.format(isBaseline=str(specimenRecord["isBaseline"]).lower()),
@@ -171,7 +235,7 @@ def createSpecimenRecord(specimenRecord,specimenSetNode,statusCode):
     
   return specimenSetNode
 
-# KLUGE KLUGE KLUGE KLUGE KLUGE KLUGE because these tests were created with no inputs. Yuck
+# BEGIN -- KLUGE KLUGE KLUGE KLUGE KLUGE KLUGE because these tests were created with no inputs. Yuck
 # Hopefully this will be temporary
 def embryoKluge(taskName, parentNode):
     # If this is an embryo gross morphology or placenta task
@@ -265,7 +329,7 @@ def embryoKluge(taskName, parentNode):
     return False
 
   return True
-  # End of metadata kluge
+  # End --  of embryo metadata kluge
 
 # Create experiment XMLs
 def generateExperimentXML(taskInfoLs, centerNode):
@@ -273,17 +337,14 @@ def generateExperimentXML(taskInfoLs, centerNode):
     # It looks like "taskInfo" [ { "animal" [] , "taskInstance" : [] }, { "animal" [] , "taskInstance" : [] }, ...]
     # If an animal has multiple procedures the animal will only appear once.
     # Get the list of mouse info. For KOMP it should always be 1 element
-    
-    #taskInfoLs = resultsPackage["taskInfo"]
     if taskInfoLs == None:
           return 0
     
-    # Else we have some data
-    db.init() # Create database connection for IMPC codes
-    
+    # otherwise, we have some data
     numberOfProcs = 0
     for exps in taskInfoLs:
-        mouseInfoLs = exps["animal"]   # 
+        # For each animal thee are one or more tasks 
+        mouseInfoLs = exps["animal"]
         for mouseInfo in mouseInfoLs:
           procLs = exps["taskInstance"]
           for proc in procLs:
@@ -292,8 +353,8 @@ def generateExperimentXML(taskInfoLs, centerNode):
             
             # for each procedure in the list build up the XML
             numberOfProcs += 1
-            # # root node
-            experimentNode = createExperiment(centerNode,(proc['workflowTaskName'] + ' - ' +  mouseInfo['animalName'] + ' - ' + str(proc["taskInstanceKey"])), proc['dateComplete']) # TODO Add in task key
+            
+            experimentNode = createExperiment(centerNode,(proc['workflowTaskName'] + ' - ' +  mouseInfo['animalName'] + ' - ' + str(proc["taskInstanceKey"])), proc['dateComplete'])
             experimentNode = createSpecimen(experimentNode,mouseInfo['animalName'])
             procedureNode = createProcedure(experimentNode,db.databaseSelectProcedureCode(proc['workflowTaskName']))
             
@@ -301,11 +362,45 @@ def generateExperimentXML(taskInfoLs, centerNode):
             procedureNode = buildParameters(procedureNode,proc)
             procedureNode = buildMetadata(procedureNode,proc)
     
-    db.close()
+    return numberOfProcs
+
+# Create experiment XMLs
+def generateLineCallExperimentXML(taskInfoLs, centerNode):
+    # Given a dictionary parse out the animal info and the procedure info
+    # It looks like "taskInfo" [ { "animal" [] , "taskInstance" : [] }, { "animal" [] , "taskInstance" : [] }, ...]
+    # If an animal has multiple procedures the animal will only appear once.
+    # Get the list of mouse info. For KOMP it should always be 1 element
+    if taskInfoLs == None:
+          return 0
+    
+    # Else we have some data
+    numberOfProcs = 0
+    for exps in taskInfoLs:
+      procLs = exps["taskInstance"]
+      for proc in procLs:
+          if proc["taskStatus"]  == "Failed QC" or proc["taskStatus"]  == "Already submitted":
+                continue # We failed it or we've already submitted it.
+          
+          # for each procedure in the list build up the XML
+          numberOfProcs += 1
+          # for line calls we need the colony ID. This is recorded in CLIMB as an output with the name "JR"
+          #   It is a five digit number preceded by "JR"
+          findColonyId(proc)
+          
+          experimentNode = createExperiment(centerNode,(proc['workflowTaskName'] + ' - ' + str(proc["taskInstanceKey"])), proc['dateComplete']) # TODO Add in task key
+          experimentNode = createColonyId(experimentNode,getColonyId())
+          procedureNode = createProcedure(experimentNode,db.databaseSelectProcedureCode(proc['workflowTaskName']))
+          
+          # Now create the metadata from the inputs and outputs
+          procedureNode = buildParameters(procedureNode,proc)
+          
+          procedureNode = buildMetadata(procedureNode,proc)
+          # Clear the colony Id
+          setColonyId('')
+          
     return numberOfProcs
 
 def buildMetadata(procedureNode,proc):
-      
       # Ugly - If there are no inputs then this may be an embryo lethal ask that was unfortunately created with no inputs.
       if len(proc['inputs']) == 0:
             embryoKluge(proc['workflowTaskName'],procedureNode)
@@ -313,9 +408,10 @@ def buildMetadata(procedureNode,proc):
           
       # Returns a list of tuples (impccode, climb_key, dccType_key)
       setProcedureImpcCode(extractThreeLetterCode(db.databaseSelectProcedureCode(proc['workflowTaskName'])))
+      # Get inputs -- last boolean = true
       metadataDefLs = db.databaseSelectImpcData(getProcedureImpcCode(), True, True)
       
-      # Merge with metadata from the outputs
+      # Merge with metadata from the outputs (last boolean = false)
       metadataDefLs = metadataDefLs + db.databaseSelectImpcData(getProcedureImpcCode(), True, False)
       
       # Go through the inputs and if there is a climb_key match add the value
@@ -324,19 +420,20 @@ def buildMetadata(procedureNode,proc):
             inputKey = input['inputKey']
             impcCode = None
             for i, v in enumerate(metadataDefLs):
-              if v[1] == inputKey:
-                   impcCode = v[0]
+              if v[1] == inputKey: # If the climb key matches, store the IMPC code
+                   impcCode = v[0] # For the input
                   
             if not impcCode == None:
-              # Get the IMPC code from metadataDefLs and the value from input
+              # Get the value from input
               if input['inputValue'] is not None:
                 inputVal = input['inputValue'].strip()
                 if len(inputVal) > 0:  # only if there is a value there.
-                  if db.isExperimenterID(impcCode) == True:
+                  if db.isExperimenterID(impcCode) == True:  # Can't use real names. Must insert numerical value
                     inputVal = db.databaseGetExperimenterIdCode(inputVal)
                   procedureNode = createMetadata(procedureNode, impcCode, inputVal)
       
       # Go through the outputs and if there is a climb_key match add the value
+      # We have to do this because CLIMB does not allow importation of inputs so some matadata are outputs
       outputLs = proc['outputs']
       for output in outputLs:
             outputKey = output['outputKey']
@@ -355,11 +452,17 @@ def buildMetadata(procedureNode,proc):
       return procedureNode
     
 def buildParameters(procedureNode,proc):
-      # Get the metadata from the Inputs
+      # Get the data from the Outputs
+      
+      # Get short version of code e.g. BWT
+      procedureImpcCode = extractThreeLetterCode(
+                                                db.databaseSelectProcedureCode(proc['workflowTaskName']))
+      
       # Returns a list of tuples (impccode, climb_key, dccType_key)
-      parameterDefLs = db.databaseSelectImpcData(extractThreeLetterCode(
-                                                db.databaseSelectProcedureCode(proc['workflowTaskName'])), 
-                                                False, False)
+      parameterDefLs = db.databaseSelectImpcData(procedureImpcCode,False, False)
+      
+      # Now get the full code e.g. IMPC_BWT_001
+      procedureImpcCode = db.databaseSelectProcedureCode(proc['workflowTaskName'])
       
       # Go through the inputs an if there is a climb_key match add the value
       outputLs = proc['outputs']
@@ -372,9 +475,9 @@ def buildParameters(procedureNode,proc):
                 impcCode = v[0]
                 dccType = v[2]
                 break
-                
+        
         if not impcCode == None and output['outputValue'] is not None:
-          # Get the IMPC code from metadataDefLs and the value from input
+          # Get the IMPC code from metadataDefLs and the value from output
           outputVal = output['outputValue']
           
           if outputVal is None:
@@ -387,10 +490,12 @@ def buildParameters(procedureNode,proc):
                 procedureNode = createSimpleParameter(procedureNode, impcCode, outputVal,"")
             elif dccType == 3: # Media - ABR (014) and ERG (047)
                 procedureNode = createSimpleParameter(procedureNode, impcCode, outputVal,"")
-            elif dccType == 4: # Series TBD
+            elif dccType == 4: # Series TBD 
                 procedureNode = createSeriesParameter(procedureNode, impcCode, outputVal,"")
             elif dccType == 5: # SeriesMedia  TBD
-                procedureNode = createSeriesMediaParameter(procedureNode, impcCode, outputVal,"")
+                procedureNode = createSeriesMediaParameter(procedureNode, impcCode, outputVal,"",procedureImpcCode)
+            elif dccType == 8:  # colony ids are stored as ouputs for line calls
+                  setColonyId(outputVal)
             elif dccType == 6: # MediaSample - unsupported
                 print("MediaSample for an output type? Output key:" + str(outputKey))
             else:
@@ -407,10 +512,8 @@ def generateSpecimenXML(animalInfoLs, centerNode):  # List of dictionaries
     if len(animalInfoLs) == 0:
           return
     
-    # Else we have some data
-    db.init() # Create database connection
-    
-    animalInfoGroup = animalInfoLs["animalInfo"]
+    # Otherwise we have some data
+    #animalInfoGroup = animalInfoLs["animalInfo"]
    
     specimenRecord = {}
     # Hardcoded / constants
@@ -419,12 +522,12 @@ def generateSpecimenXML(animalInfoLs, centerNode):  # List of dictionaries
     specimenRecord["phenotypingCenter"] = 'J'
     specimenRecord["project"] = 'JAX'
     
-    for animalInfo in animalInfoGroup:
+    for animalInfo in animalInfoLs:
       # Get the four entities
       animal = animalInfo["animal"]
       line = animalInfo["line"]
       litter = animalInfo["litter"]
-      genotypes = animalInfo["genotypes"]
+      genotypes = animalInfo["genotypes"]   # List of dicts with keys genotypeKey, date, assay, genotype, modifiedBy, dateModified.
       
       specimenRecord["specimenID"] = animal["animalName"]
       specimenRecord["dob"] = animal["dateBorn"][0:10]
@@ -437,10 +540,10 @@ def generateSpecimenXML(animalInfoLs, centerNode):  # List of dictionaries
       specimenRecord["strainID"] = line["references"]
       specimenRecord["zygosity"] = extractGenotype(genotypes)   # must be present
       specimenRecord["litterId"] = litter['birthID']
+      specimenRecord["generation"] = animal['generation']
       
       createSpecimenRecord(specimenRecord,centerNode,"")
 
-    db.close()
     return # root
 
 # UTILITIES
@@ -482,16 +585,7 @@ def getNextSpecimenFilename(dataDir):
     newFileName = 'J.' + datetime.today().strftime('%Y-%m-%d') + '.{counterVal}.specimen.impc.xml'.format(counterVal='{:02d}'.format(max+1))
       
     return dataDir + newFileName;
-    
-def getImpcInfoGivenTypeKey(key, isOutput):
-    return # a dictionary of information about this type
-
-def validateMandatoryParameters():
-    return
-
-def validateMetadata():
-    return
-
+  
 # Take something like IMPC_BWT_001 and return BWT  
 def extractThreeLetterCode(s):
       try:
@@ -499,22 +593,39 @@ def extractThreeLetterCode(s):
       except ValueError:
         return ""
 
-def extractGenotype(genotypes):
-      
-  zygosity = '-/+'
-  # Need algorithm to return the real zygosity
-  #    and convert it to human readable string
-  
-  if zygosity == '+/+':
-       zygosity = 'wild type'
-  elif  zygosity == '-/+' or zygosity == '+/-' :
-      zygosity  = 'heterozygous'
-  elif zygosity == '-/-':
-      zygosity = 'homozygous'
-  elif zygosity == '-/Y':
-      zygosity = 'hemizygous'
-  return zygosity
+""" 
+genotypes = List of dicts with keys genotypeKey, date, assay, genotype, modifiedBy, dateModified.
+"""
 
+def extractGenotype(genotypes):
+  zygosity = '?/?'
+  for genotype in genotypes:
+    if genotype["genotype"] == '+/+':
+        zygosity = 'wild type'
+    elif  genotype["genotype"] == '-/+' or zygosity == '+/-' :
+        zygosity  = 'heterozygous'
+    elif genotype["genotype"] == '-/-':
+        zygosity = 'homozygous'
+    elif genotype["genotype"] == '-/Y':
+        zygosity = 'hemizygous'
+        
+    return zygosity
+
+lineCallProcedures = ["Viability E18.5 Secondary Screen", "Viability E15.5 Secondary Screen", 
+                      "Viability E12.5 Secondary Screen", "Viability E9.5 Secondary Screen", 
+                      "Fertility of Homozygous Knock-out Mice", "Viability Primary Screen v2"]
+
+# Check it against a list of possible line-based procedures
+def   procedureHasAnimals(climbFilter):
+      
+    taskName = climbFilter.get("taskInstance").get("workflowTaskName")
+    hasAnimals = True
+    if taskName in lineCallProcedures:
+          hasAnimals = False
+          
+    return hasAnimals
+  
+  
 #pretty print method
 def indent(elem, level=0):
     i = "\n" + level*"  "
@@ -533,9 +644,6 @@ def indent(elem, level=0):
             elem.tail = j
     return elem
 
-animalStr = ""
-dataDir = "C:\\Users\\michaelm\\Source\\Workspaes\\Teams\\Lab Informatics\\JAXLIMS\\Main\\DccReporter\\data\\"
-resultsStr = ""
 
 if __name__ == '__main__':
     ### Get task info based on the given filter
@@ -543,56 +651,71 @@ if __name__ == '__main__':
     with open("filters.json") as f:
       filterLines = f.read().splitlines()
     
+    
+    db.init()  # Create a db connection for IMPC codes and logging
+    
+    # Each line in the input file can be a filter and 
+    #   can generate a specimen and experiment XML
     for climbFilter in filterLines:
-      # Start the new specimen XML file
-      root = createSpecimenRoot()
-      centerNode = createSpecimenCentre(root)
-      
       # Get the animals and validate
       results = c.getAnimalInfoFromFilter(json.loads(climbFilter))
-      # TODO Check for None or no animalInfo
+     
       animalLs = results["animalInfo"]
-      for animal in animalLs:
+      for animal in reversed(animalLs):  # Remove those animals that failed
         isValid = v.validateAnimal(animal)
         if isValid == False:
               animalLs.remove(animal)
             
       # Generate the specimen portion of the XML  
-      generateSpecimenXML(results, centerNode)
+      root = createSpecimenRoot()
+      centerNode = createSpecimenCentre(root)
+      generateSpecimenXML(animalLs, centerNode)
+      
+      # Write it out
       tree = ET.ElementTree(indent(root))
-      specimenFileName = getNextSpecimenFilename(dataDir)
+      specimenFileName = getNextSpecimenFilename(getDatadir())
       tree.write(specimenFileName, xml_declaration=True, encoding='utf-8')
+
+      # Using the same filter get the task data
+      if procedureHasAnimals(json.loads(climbFilter)): 
+        results = c.getTaskInfoFromFilter(json.loads(climbFilter))    # For procs with animals
+      else:
+        results = c.getProceduresGivenFilter(json.loads(climbFilter))  # For line calls
       
+      # We get the exp filename now so we can log it.
+      expFileName = getNextExperimentFilename(getDatadir())
       
-      
-      # Start the new XML file
-      root = createProcedureRoot()
-      centerNode = createCentre(root)
-      
-      expFileName = getNextExperimentFilename(dataDir)
-      results = c.getTaskInfoFromFilter(json.loads(climbFilter))
-      
-      db.init()
-      
-      print(results)
-      
-      taskLs = results["taskInfo"]   # TODO Cycle through
-      for task in taskLs:
+      taskLs = results["taskInfo"]   # A list of dictionaries
+      for task in taskLs:  # task should be a dictionary { "animal" : [], "taskInstance": []}
         success, message = v.validateProcedure(task)  # Sets the task status to 'Failed QC' if it fails.
         if success == False:
             print("Rejected task: " + message)
         else:
-            if len(task["animal"]) > 0 and len(task["taskInstance"]) > 0:
-              db.recordSubmissionAttempt(expFileName.split('\\')[-1],task["animal"][0], task["taskInstance"][0], 
+            animalName = ''  # Not all tasks have animals
+            if "animal" in task:
+                animalName = task["animal"][0]["animalName"]
+                  
+            if len(task["taskInstance"]) > 0:
+              db.recordSubmissionAttempt(expFileName.split('\\')[-1],animalName, task["taskInstance"][0], 
                                         getProcedureImpcCode(), v.getReviewedDate())
       
-      numberOfProcs = generateExperimentXML(taskLs, centerNode)
+      root = createProcedureRoot()
+      centerNode = createCentre(root)
       
-      db.close()
-      if(numberOfProcs > 0):      
+      if procedureHasAnimals(json.loads(climbFilter)):
+            numberOfProcs = generateExperimentXML(taskLs, centerNode) 
+      else:
+            numberOfProcs = generateLineCallExperimentXML(taskLs, centerNode)
+      
+      
+      if(numberOfProcs > 0):      # write the new XML file
         tree = ET.ElementTree(indent(root))
         tree.write(expFileName, xml_declaration=True, encoding='utf-8')
-          
+    
+    # End of filter loop
+    
+    # All done
+    db.close()      
     
   
     print("SUCCESS")

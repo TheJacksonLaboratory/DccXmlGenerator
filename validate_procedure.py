@@ -226,8 +226,12 @@ def testGenotypeInfo(genotypes):
             if "Generic" not in genotype["assay"] and "Sex Determination Assay" not in genotype["assay"]:
                 zygosity = genotype["genotype"]
                 assayName = genotype["assay"]
-                success = True
-                msg = ""
+                if zygosity not in ['-/-','-/+','+/-','-/Y','+/+']:
+                    success = False
+                    msg = 'Zygostiy {zygosity} is invalid.'.format(zygosity=zygosity)
+                else:
+                    success = True
+                    msg = ""
     
     return success, msg, assayName, zygosity
 
@@ -258,7 +262,6 @@ def testLineInfo(line):
 def createLogEntry(animalInfo, procedureInfo, lineInfo, genotypeInfo, issueStr):
 
     msgDict = {"AnimalName":"", "TaskName":"", "TaskInstanceKey":0, "ImpcCode": "", "StockNumber":"", "DateDue":"", "Issue":"" }
-    db.init()
     
     if animalInfo != None:
         msgDict["AnimalName"] = animalInfo["animalName"]
@@ -285,7 +288,6 @@ def createLogEntry(animalInfo, procedureInfo, lineInfo, genotypeInfo, issueStr):
     msgDict["Issue"] = issueStr
     
     db.databaseInsertQualityErrorMessage(msgDict)
-    db.close()
     return
 
 # A speciemen looks like { "animal": <dictionary>, "line": <dictionary>, "litter": <dictionary>, "genotypes": <list of dictionaries> }
@@ -305,9 +307,13 @@ def validateAnimal(specimen):
 
 def validateProcedure(proc):
     
-    specimenLs = proc["animal"]
-    specimen = specimenLs[0]  # TODO - Handle multiple mice?
-    lineInfo = { "stock" : specimen["stock"] }
+    lineInfo = None
+    specimen = None
+    if "animal" in proc:
+        specimenLs = proc["animal"]
+        specimen = specimenLs[0]  # TODO - Handle multiple mice?
+        lineInfo = { "stock" : specimen["stock"] }
+        
     taskLs = proc["taskInstance"] 
     if len(taskLs) == 0:
         return False,"No task returned by query" 
@@ -348,7 +354,9 @@ def validateProcedure(proc):
     
     #success, msg = testInputs(task) # Embryo lethal tasks were erronoeusly created with no inputs
     
-    lastReviewedDate = db.getLastReviewedDate(specimen["animalName"],task["workflowTaskName"])
+    # TBD - Need to task key  for line submissions
+    # lastReviewedDate = db.getLastReviewedDate(specimen["animalName"],task["workflowTaskName"])
+    lastReviewedDate = db.getLastReviewedDate(task["taskInstanceKey"])
     reviewedDateStr = getReviewedDate()
     currentReviewedDate = datetime.strptime(reviewedDateStr, "%Y-%m-%d")
     
