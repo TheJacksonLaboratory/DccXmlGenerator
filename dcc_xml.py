@@ -59,6 +59,10 @@ def setColonyId(colonyId):
   global g_ColonyId
   g_ColonyId = colonyId
 
+def getBackgroundStrainId():
+  return 'MGI:3056279'
+
+
 # By convention if a task with no mice needs to record the line
 #   then she stores it in an output named "JR". But she only stores the five digit code
 def findColonyId(proc):
@@ -206,7 +210,7 @@ def createSpecimenRecord(specimenRecord,specimenSetNode,statusCode):
                               'stage': '{stage}'.format(stage=specimenRecord["generation"][1:]),
                               'stageUnit': 'DPC',
                               'isBaseline': '{isBaseline}'.format(isBaseline=str(specimenRecord["isBaseline"]).lower()),
-                              'strainID': '{strainID}'.format(strainID=specimenRecord["strainID"]),
+                              'strainID': '{strainID}'.format(strainID=getBackgroundStrainId()),
                               'specimenID': '{specimenID}'.format(specimenID=specimenRecord["specimenID"]),
                               'gender': '{gender}'.format(gender=specimenRecord["gender"].lower()),
                               'zygosity': '{zygosity}'.format(zygosity=specimenRecord["zygosity"]),
@@ -648,7 +652,7 @@ def indent(elem, level=0):
 if __name__ == '__main__':
     ### Get task info based on the given filter
     # Get filter from file - temporary
-    with open("filters.json") as f:
+    with open("filters-with-mice.json") as f:
       filterLines = f.read().splitlines()
     
     
