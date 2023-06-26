@@ -29,10 +29,11 @@ import json
 import query_database as db
 
 from datetime import datetime
+from zipfile import ZipFile
 
 from os import listdir
 import glob
-from os.path import isfile, join
+from os.path import isfile, join, basename
 import time
 
 import xml.etree.ElementTree as ET
@@ -114,9 +115,8 @@ def createSpecimen(experimentNode,animalName):
     return experimentNode # experimentNode
 		
 def createColonyId(experimentNode,colonyId):
-    specimenNode = ET.SubElement(experimentNode, 'colonyId')
-    specimenNode.text = colonyId
-    return experimentNode # experimentNode
+    lineNode = ET.SubElement(experimentNode, 'line', {'colonyID': '{jr}'.format(jr=colonyId)} )
+    return lineNode # experimentNode
 
 def createProcedure(experimentNode, procId):
     procedureNode = ET.SubElement(experimentNode, 'procedure', {'procedureID': '{proc}'.format(proc=procId) })
@@ -391,9 +391,10 @@ def generateLineCallExperimentXML(taskInfoLs, centerNode):
           #   It is a five digit number preceded by "JR"
           findColonyId(proc)
           
-          experimentNode = createExperiment(centerNode,(proc['workflowTaskName'] + ' - ' + str(proc["taskInstanceKey"])), proc['dateComplete']) # TODO Add in task key
-          experimentNode = createColonyId(experimentNode,getColonyId())
-          procedureNode = createProcedure(experimentNode,db.databaseSelectProcedureCode(proc['workflowTaskName']))
+          #experimentNode = createExperiment(centerNode,(proc['workflowTaskName'] + ' - ' + str(proc["taskInstanceKey"])), proc['dateComplete']) # TODO Add in task key
+          #experimentNode = createColonyId(experimentNode,getColonyId())
+          lineNode = createColonyId(centerNode,getColonyId())
+          procedureNode = createProcedure(lineNode,db.databaseSelectProcedureCode(proc['workflowTaskName']))
           
           # Now create the metadata from the inputs and outputs
           procedureNode = buildParameters(procedureNode,proc)
@@ -462,14 +463,70 @@ def buildParameters(procedureNode,proc):
       procedureImpcCode = extractThreeLetterCode(
                                                 db.databaseSelectProcedureCode(proc['workflowTaskName']))
       
+      # Returns a list of tuples (impccode, climb_key, dccType_key) from komp.cv_dcctypes
+      parameterDefLs = db.databaseSelectImpcData(procedureImpcCode,False, False)
+      
+      # Now get the full code e.g. IMPC_BWT_001
+      procedureImpcCode = db.databaseSelectProcedureCode(proc['workflowTaskName'])
+      
+      # Go through the outputs and if there is a climb_key match add the value
+      outputLs = proc['outputs']
+      # TBD - Sort by _DccType_key because simples must precede and series?
+      for i, v in enumerate(parameterDefLs):
+        impcCode = None
+        dccType = None
+        for output in outputLs:
+          outputKey = output['outputKey']
+          if v[1] == outputKey:
+                  impcCode = v[0]
+                  dccType = v[2]
+                  break
+                
+        outputVal=None
+        if not impcCode == None and output['outputValue'] is not None:
+          # Get the IMPC code from metadataDefLs and the value from output
+          outputVal = output['outputValue']
+          
+        if outputVal is None:
+              continue
+              
+        if len(outputVal.strip()) > 0:
+          if dccType == 1:
+              procedureNode = createSimpleParameter(procedureNode, impcCode, outputVal,"")
+          elif dccType == 2: #  Ontology TBD
+              procedureNode = createSimpleParameter(procedureNode, impcCode, outputVal,"")
+          elif dccType == 3: # Media - ABR (014) and ERG (047)
+              procedureNode = createSimpleParameter(procedureNode, impcCode, outputVal,"")
+          elif dccType == 4: # Series TBD 
+              procedureNode = createSeriesParameter(procedureNode, impcCode, outputVal,"")
+          elif dccType == 5: # SeriesMedia  TBD
+              procedureNode = createSeriesMediaParameter(procedureNode, impcCode, outputVal,"",procedureImpcCode)
+          elif dccType == 8:  # colony ids are stored as ouputs for line calls
+                setColonyId(outputVal)
+          elif dccType == 6: # MediaSample - unsupported
+              print("MediaSample for an output type? Output key:" + str(outputKey))
+          else:
+              print("Metadata for an output? Output key:" + str(outputKey))
+                    
+              
+      return procedureNode
+    
+def orig_buildParameters(procedureNode,proc):
+      # Get the data from the Outputs
+      
+      # Get short version of code e.g. BWT
+      procedureImpcCode = extractThreeLetterCode(
+                                                db.databaseSelectProcedureCode(proc['workflowTaskName']))
+      
       # Returns a list of tuples (impccode, climb_key, dccType_key)
       parameterDefLs = db.databaseSelectImpcData(procedureImpcCode,False, False)
       
       # Now get the full code e.g. IMPC_BWT_001
       procedureImpcCode = db.databaseSelectProcedureCode(proc['workflowTaskName'])
       
-      # Go through the inputs an if there is a climb_key match add the value
+      # Go through the outputs an if there is a climb_key match add the value
       outputLs = proc['outputs']
+      # TBD - Sort by _DccType_key because simples must precede and series?
       for output in outputLs:
         outputKey = output['outputKey']
         impcCode = None
@@ -652,9 +709,9 @@ def indent(elem, level=0):
 if __name__ == '__main__':
     ### Get task info based on the given filter
     # Get filter from file - temporary
-    with open("filters-with-mice.json") as f:
+    #with open("filters-with-mice.json") as f:
+    with open("filters.json") as f:
       filterLines = f.read().splitlines()
-    
     
     db.init()  # Create a db connection for IMPC codes and logging
     
@@ -679,6 +736,14 @@ if __name__ == '__main__':
       tree = ET.ElementTree(indent(root))
       specimenFileName = getNextSpecimenFilename(getDatadir())
       tree.write(specimenFileName, xml_declaration=True, encoding='utf-8')
+      
+      # Now zip it up.
+      zipfilename = specimenFileName.replace('specimen.','').replace('xml','zip')
+      with ZipFile(zipfilename,'w') as zipper:
+        zipper.write(specimenFileName,basename(specimenFileName))
+        zipper.close()
+        
+      
 
       # Using the same filter get the task data
       if procedureHasAnimals(json.loads(climbFilter)): 
@@ -715,7 +780,12 @@ if __name__ == '__main__':
       if(numberOfProcs > 0):      # write the new XML file
         tree = ET.ElementTree(indent(root))
         tree.write(expFileName, xml_declaration=True, encoding='utf-8')
-    
+        
+        # Now zip it up.
+        zipfilename = expFileName.replace('experiment.','').replace('xml','zip')
+        with ZipFile(zipfilename,'w') as zipper:
+          zipper.write(expFileName,basename(expFileName))
+          zipper.close()
     # End of filter loop
     
     # All done

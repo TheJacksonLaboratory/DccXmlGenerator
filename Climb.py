@@ -471,16 +471,54 @@ def getProceduresGivenFilter(taskNameFilter):
     
     return taskInfoReturnDictLs
 
+"""
+{
+        "taskInputKey": 3497,
+        "inputKey": 326,
+        "taskInstanceKey": 8132,
+        "inputValue": null,
+        "inputName": "Date equipment last calibrated",
+        "materialKeys": [],
+        "workflowTaskKey": 17,
+        "workflowTaskName": "E9.5 Embryo Gross Morphology",
+        "createdBy": "ccm",
+        "dateCreated": "2022-09-01T17:30:13.21",
+        "modifiedBy": "ccm",
+        "dateModified": "2022-09-01T17:30:13.21"
+      },
+"""
 def cleanupInputs(inputsLs):
     for inputObj in inputsLs:
         del inputObj["taskInstanceKey"]
         del inputObj["materialKeys"]
         del inputObj["createdBy"]
         del inputObj["dateCreated"]
-        del inputObj["workGroupKey"]
-        del inputObj["validatedInputValue"]
+        #del inputObj["workGroupKey"]
+        #del inputObj["validatedInputValue"]
     return inputsLs
 
+    """_
+     {
+        "taskOutputKey": 9358,
+        "taskOutputSetKey": 425,
+        "taskInstanceKey": 993,
+        "outputKey": 8,
+        "outputName": "Allantois morphology",
+        "outputValue": "Normal",
+        "collectedDate": "",
+        "collectedBy": null,
+        "taskAlias": "E9.5 Embryo Gross Morphology",
+        "workflowTaskKey": 17,
+        "workflowTaskName": "E9.5 Embryo Gross Morphology",
+        "materialKeys": [
+          437
+        ],
+        "createdBy": "cynthiac",
+        "dateCreated": "2021-04-08T17:45:00.447",
+        "modifiedBy": "system",
+        "dateModified": "2023-06-16T00:17:02.89"
+      }
+    """
 def cleanupOutputs(outputLs):
     for outputObj in outputLs:
         del outputObj["taskOutputSetKey"]
