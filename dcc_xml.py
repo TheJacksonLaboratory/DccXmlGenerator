@@ -60,17 +60,26 @@ def setColonyId(colonyId):
   global g_ColonyId
   g_ColonyId = colonyId
 
-def getBackgroundStrainId():
-  return 'MGI:3056279'
-
 
 # By convention if a task with no mice needs to record the line
 #   then she stores it in an output named "JR". But she only stores the five digit code
 def findColonyId(proc):
-      outputLs = proc['outputs']
-      for output in outputLs:
-        if output["outputName"] == 'JR':           
-          setColonyId(output["outputName"] + output["outputValue"])
+  outputLs = proc["outputs"]
+  if outputLs == None or len(outputLs) == 0:
+      return ""
+  
+  for output in outputLs:
+      # For line calls we need the JR# - or StockNumber - so lets store it for later -- just one more kluge
+      if output["outputName"] == "JR":
+          setColonyId('JR' + output["outputValue"])
+        
+  return getColonyId()
+  
+
+def getBackgroundStrainId():
+  return 'MGI:3056279'
+
+
 
 # TODO - get from YAML file            
 def getDatadir():
@@ -184,7 +193,7 @@ def createSeriesParameter(procedureNode,impcCode, strVal,statusCode):
   
     paramNode = ET.SubElement(procedureNode, 'seriesParameter', { 'parameterID': '{code}'.format(code=impcCode)})
     
-    incrementValue = 'litterID1'   # TODO - make smarter 
+    incrementValue = 'noLitter'   # TODO - make smarter 
     valueNode = ET.SubElement(paramNode, 'value', {'incrementValue': incrementValue})
     valueNode.text = strVal
     
@@ -385,14 +394,11 @@ def generateLineCallExperimentXML(taskInfoLs, centerNode):
           if proc["taskStatus"]  == "Failed QC" or proc["taskStatus"]  == "Already submitted":
                 continue # We failed it or we've already submitted it.
           
-          # for each procedure in the list build up the XML
-          numberOfProcs += 1
-          # for line calls we need the colony ID. This is recorded in CLIMB as an output with the name "JR"
-          #   It is a five digit number preceded by "JR"
           findColonyId(proc)
           
-          #experimentNode = createExperiment(centerNode,(proc['workflowTaskName'] + ' - ' + str(proc["taskInstanceKey"])), proc['dateComplete']) # TODO Add in task key
-          #experimentNode = createColonyId(experimentNode,getColonyId())
+          # for each procedure in the list build up the XML
+          numberOfProcs += 1
+          
           lineNode = createColonyId(centerNode,getColonyId())
           procedureNode = createProcedure(lineNode,db.databaseSelectProcedureCode(proc['workflowTaskName']))
           
@@ -401,7 +407,7 @@ def generateLineCallExperimentXML(taskInfoLs, centerNode):
           
           procedureNode = buildMetadata(procedureNode,proc)
           # Clear the colony Id
-          setColonyId('')
+          #setColonyId('')
           
     return numberOfProcs
 
@@ -507,60 +513,6 @@ def buildParameters(procedureNode,proc):
               print("MediaSample for an output type? Output key:" + str(outputKey))
           else:
               print("Metadata for an output? Output key:" + str(outputKey))
-                    
-              
-      return procedureNode
-    
-def orig_buildParameters(procedureNode,proc):
-      # Get the data from the Outputs
-      
-      # Get short version of code e.g. BWT
-      procedureImpcCode = extractThreeLetterCode(
-                                                db.databaseSelectProcedureCode(proc['workflowTaskName']))
-      
-      # Returns a list of tuples (impccode, climb_key, dccType_key)
-      parameterDefLs = db.databaseSelectImpcData(procedureImpcCode,False, False)
-      
-      # Now get the full code e.g. IMPC_BWT_001
-      procedureImpcCode = db.databaseSelectProcedureCode(proc['workflowTaskName'])
-      
-      # Go through the outputs an if there is a climb_key match add the value
-      outputLs = proc['outputs']
-      # TBD - Sort by _DccType_key because simples must precede and series?
-      for output in outputLs:
-        outputKey = output['outputKey']
-        impcCode = None
-        dccType = None
-        for i, v in enumerate(parameterDefLs):
-          if v[1] == outputKey:
-                impcCode = v[0]
-                dccType = v[2]
-                break
-        
-        if not impcCode == None and output['outputValue'] is not None:
-          # Get the IMPC code from metadataDefLs and the value from output
-          outputVal = output['outputValue']
-          
-          if outputVal is None:
-                continue
-              
-          if len(outputVal.strip()) > 0:
-            if dccType == 1:
-                procedureNode = createSimpleParameter(procedureNode, impcCode, outputVal,"")
-            elif dccType == 2: #  Ontology TBD
-                procedureNode = createSimpleParameter(procedureNode, impcCode, outputVal,"")
-            elif dccType == 3: # Media - ABR (014) and ERG (047)
-                procedureNode = createSimpleParameter(procedureNode, impcCode, outputVal,"")
-            elif dccType == 4: # Series TBD 
-                procedureNode = createSeriesParameter(procedureNode, impcCode, outputVal,"")
-            elif dccType == 5: # SeriesMedia  TBD
-                procedureNode = createSeriesMediaParameter(procedureNode, impcCode, outputVal,"",procedureImpcCode)
-            elif dccType == 8:  # colony ids are stored as ouputs for line calls
-                  setColonyId(outputVal)
-            elif dccType == 6: # MediaSample - unsupported
-                print("MediaSample for an output type? Output key:" + str(outputKey))
-            else:
-                print("Metadata for an output? Output key:" + str(outputKey))
                     
               
       return procedureNode
@@ -720,7 +672,7 @@ if __name__ == '__main__':
     for climbFilter in filterLines:
       # Get the animals and validate
       results = c.getAnimalInfoFromFilter(json.loads(climbFilter))
-     
+      
       animalLs = results["animalInfo"]
       for animal in reversed(animalLs):  # Remove those animals that failed
         isValid = v.validateAnimal(animal)
@@ -743,29 +695,35 @@ if __name__ == '__main__':
         zipper.write(specimenFileName,basename(specimenFileName))
         zipper.close()
         
-      
-
       # Using the same filter get the task data
       if procedureHasAnimals(json.loads(climbFilter)): 
         results = c.getTaskInfoFromFilter(json.loads(climbFilter))    # For procs with animals
       else:
         results = c.getProceduresGivenFilter(json.loads(climbFilter))  # For line calls
       
+      with open("results.json","w") as outfile:
+        outfile.write(json.dumps(results,indent=4))
+        
       # We get the exp filename now so we can log it.
       expFileName = getNextExperimentFilename(getDatadir())
       
-      taskLs = results["taskInfo"]   # A list of dictionaries
+      taskLs = results["taskInfo"]  # A list of dictionaries
       for task in taskLs:  # task should be a dictionary { "animal" : [], "taskInstance": []}
+        animalName = ''  # Not all tasks have animals
         success, message = v.validateProcedure(task)  # Sets the task status to 'Failed QC' if it fails.
         if success == False:
             print("Rejected task: " + message)
         else:
-            animalName = ''  # Not all tasks have animals
             if "animal" in task:
                 animalName = task["animal"][0]["animalName"]
-                  
-            if len(task["taskInstance"]) > 0:
-              db.recordSubmissionAttempt(expFileName.split('\\')[-1],animalName, task["taskInstance"][0], 
+            else:
+                animalName = findColonyId(task["taskInstance"][0])  # It' too bad but the colony id is stored at 
+                                                                    #   the output level rather than the task level.          
+        if animalName == '' or animalName is None: # Need a JR or animal name
+          continue  # No more processing
+                   
+        if len(task["taskInstance"]) > 0:
+          db.recordSubmissionAttempt(expFileName.split('\\')[-1],animalName, task["taskInstance"][0], 
                                         getProcedureImpcCode(), v.getReviewedDate())
       
       root = createProcedureRoot()

@@ -85,7 +85,7 @@ def escapeHtmlCharacter(html):
     return html
 
 def getTaskNames():
-    taskNames = ['Eye Morphology', 'Body Weight', 'First Body Weight', 'Open Field', 'Grip Strength', 'Light/Dark', 'Holeboard', 'EKGv3', 'GTT', 'Body Composition', 'Heart Weight', 'Clinical Blood Chemistry', 'Hematology', 'SHIRPA', 'Startle/PPI', 'Dysmorphology', 'ABR', 'ERGv2']
+    #taskNames = ['Eye Morphology', 'Body Weight', 'First Body Weight', 'Open Field', 'Grip Strength', 'Light/Dark', 'Holeboard', 'EKGv3', 'GTT', 'Body Composition', 'Heart Weight', 'Clinical Blood Chemistry', 'Hematology', 'SHIRPA', 'Startle/PPI', 'Dysmorphology', 'ABR', 'ERGv2']
     taskNames = ['E12.5 Embryo Gross Morphology', 'E12.5 Placenta Morphology', 'E15.5 Embryo Gross Morphology', 'E15.5 Placenta Morphology', 'E18.5 Embryo Gross Morphology', 'E18.5 Placenta Morphology', 'E9.5 Embryo Gross Morphology', 'E9.5 Placenta Morphology']
     return taskNames
     
@@ -385,7 +385,6 @@ def getProceduresGivenFilter(taskNameFilter):
     # end of filters (we can expand as needed)
     
     taskInfoLs = [] # Response from CLIMB
-    taskInfoReturnLs = { "taskInstance" : [] }  # What we build up
     taskInfoReturnDictLs = { "taskInfo":[] } # What we return - a list of dictionaries
     
     call_header = {'Authorization' : 'Bearer ' + token()}
@@ -446,16 +445,10 @@ def getProceduresGivenFilter(taskNameFilter):
             outputsOnly = cleanupOutputs(outputsOnly)
             taskinstance["outputs"] = outputsOnly
             
-            taskInfoReturnLs["taskInstance"].append(taskinstance)
-        
-        taskInfoReturnDictLs["taskInfo"].append(taskInfoReturnLs) 
+            # List inside a dict inside a list
+            taskInfoReturnDictLs["taskInfo"].append({'taskInstance' : [taskinstance]}) 
         # A list containing one element that is a dict that is a llst of taskInstances
-        
-        #f = open('out.txt','w')
-        #print(taskInfoReturnDictLs,file=f)
-        #f.close()
-        
-            
+ 
     except requests.exceptions.Timeout as e: 
         #print(e.message())
         raise 
@@ -472,6 +465,7 @@ def getProceduresGivenFilter(taskNameFilter):
     return taskInfoReturnDictLs
 
 """
+
 {
         "taskInputKey": 3497,
         "inputKey": 326,

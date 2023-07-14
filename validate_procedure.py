@@ -16,6 +16,7 @@ g_CollectedBy = ""      #i.e. Experimenter ID
 g_DateCollected = ""    # date of test
 g_ReviewedBy = ""       # Reviewer - means the task has ben review
 g_ReviewedDate = ""     # We store the reviewed date and if the new one is newer we submit it. Else we ignore it.
+g_colonyId = ""         # We store the JR number as the colonyID for building the XML and recording the submission for line based calls.
 
 # Is the procedure completed or cancelled? i.e. not 'Active'
 def testTaskStatus(proc):
@@ -131,7 +132,7 @@ def testOutputs(proc):
             setCollectedBy(output)
         if testCollectedDate(output) == True:
             setDateCollected(output)
-        
+       
     return success, msg
     
 def validateMouseFields(specimenRecord):
