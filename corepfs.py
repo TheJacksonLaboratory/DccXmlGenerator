@@ -11,7 +11,7 @@ baseURL = 'https://jacksonlabstest.platformforscience.com/DEV_KOMP/odata/'
 endpoint = 'KOMP_REQUEST?$expand=REV_MOUSESAMPLELOT_KOMPREQUEST($expand=SAMPLE/pfs.MOUSE_SAMPLE)&$count=true'
 
 username = 'michael.mcfarland@jax.org'
-password = 'G00dBunny!'
+password = ''
 
 def getKompMice():
     
