@@ -15,6 +15,7 @@ This module provides the necessary fucntions to query and update genotypes in CL
 For RESTful info see: https://api.climb.bio/docs/index.html
 """
 
+g_WorkgroupName = 'KOMP-JAX Lab'
 myToken = ''
 
 def username():
@@ -45,10 +46,10 @@ def getToken(username, password):
         #print(e.message())
         raise SystemExit(e)
     
-def getTokenEx(username, password):
+def getTokenEx():
     try:
         """ Given a username and password, return an access token good for an hour."""
-        response = requests.get('http://bhclimb01wd.jax.org:8000/api/Token/2346')
+        response = requests.get('http://bhlit01wd.jax.org:8000/api/Token/2346')
         token = response.json()
         return token
     except requests.exceptions.Timeout as e: 
@@ -72,11 +73,11 @@ def setMyToken(token):
 def token():
     global myToken
     if myToken == '':
-        myToken = getTokenEx(username(), password())
+        myToken = getTokenEx()
     return myToken
 
 def endpoint():
-    return 'http://bhclimb01wd.jax.org:8000/api'
+    return 'http://bhlit01wd.jax.org:8000/api'
     #return 'https://api.climb.bio/api'
 
 def escapeHtmlCharacter(html):
@@ -121,8 +122,11 @@ def getWorkgroups():
     except requests.exceptions.RequestException as e:  # All others
         #print(e.message())
         raise 
-
-def setWorkgroup(workgroupName):
+    
+def setWorkgroup(workgroupName=None):
+    if workgroupName == None or workgroupName == '':
+        workgroupName=g_WorkgroupName
+        
     dict_list = getWorkgroups()
     success = False
 
@@ -137,7 +141,7 @@ def setWorkgroup(workgroupName):
         raise SystemExit(f'"Could not change workgroup to {workgroupName}')
 
     # Remember to get a new access token!
-
+    setMyToken(getTokenEx())
 
 ################################################################################
 def getClimbUsers():
@@ -258,6 +262,7 @@ def getTaskInfoFromFilter(taskInfoFiler):
     return taskInfoLs
 
 def getAnimalInfoFromFilter(animalInfoFilter):
+    print(json.dumps(animalInfoFilter))
     animalInfoLs = []
     call_header = {'Authorization' : 'Bearer ' + token()}
     try:
@@ -595,6 +600,6 @@ def createUserCsv(userDictLs):
 
 if __name__ == '__main__':
     setWorkgroup('KOMP-JAX Lab')
-    setMyToken(getTokenEx('mike', '1banana1'))
+    setMyToken(getTokenEx())
     getProceduresGivenFilter(json.loads('{ "taskInstance": { "workflowTaskName": "Viability Primary Screen v2", "workflowTaskStatus":"Complete", "isReviewed": true}, "animal": "", "lines": [] }'))
     print("SUCCESS")

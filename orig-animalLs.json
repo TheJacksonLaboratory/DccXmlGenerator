@@ -1,0 +1,1925 @@
+[
+    {
+        "animal": {
+            "animalName": "MN1",
+            "dateBorn": "2023-05-06",
+            "sex": "M",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "000646"
+        },
+        "litter": {
+            "birthID": "1"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalId": 32282,
+            "materialKey": 32792,
+            "animalName": "A-560",
+            "exitReason": null,
+            "physicalMarker": null,
+            "dateBorn": "2022-02-21T05:00:00",
+            "dateExit": null,
+            "externalIdentifier": null,
+            "comments": null,
+            "species": "Mouse",
+            "sex": "Male",
+            "generation": "E18.5",
+            "markerType": "Ear Notch",
+            "arrivalDate": "2022-02-21T05:00:00",
+            "clinicalObservationsCount": 0,
+            "status": "Alive",
+            "taskInstanceCount": 3,
+            "modifiedBy": "kjp",
+            "dateModified": "2023-02-24T15:42:02.37"
+        },
+        "line": {
+            "lineKey": 89,
+            "isActive": true,
+            "name": "C57BL/6NJ-Ddx31<em1(IMPC)J>/Mmjax",
+            "shortName": "Ddx31",
+            "stock": "034083",
+            "lineType": "Endonuclease mediated mutation (em)",
+            "lineStatus": "Embryo Lethal Complete",
+            "species": "Mouse",
+            "construct": null,
+            "genotypeAssaysCount": 2,
+            "genotypeAssays": [
+                "Ddx31<em1(IMPC)J>",
+                "Smcx/Smcy-Sex Determination Assay"
+            ],
+            "technician": "ccm",
+            "parentLine": null,
+            "backgroundLine": null,
+            "breedingStrategy": "Het x WT",
+            "development": null,
+            "externalLink": null,
+            "references": "MGI:2682639",
+            "comment": null,
+            "defaultLocation": "All GRS Locations",
+            "createdBy": "rsadmin",
+            "dateCreated": "2021-01-27T16:32:56.177",
+            "modifiedBy": "mike",
+            "dateModified": "2023-03-07T20:03:03.05"
+        },
+        "litter": {
+            "birthID": null,
+            "matingID": null,
+            "housingID": null,
+            "weanDate": null
+        },
+        "genotypes": [
+            {
+                "genotypeKey": 91648,
+                "date": "May 12 2022  4:00AM",
+                "assay": "Ddx31<em1>(IMPC)J>",
+                "genotype": "-/-",
+                "modifiedBy": "ccm",
+                "dateModified": "2022-05-12T14:31:21.793"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalId": 32384,
+            "materialKey": 32894,
+            "animalName": "A-662",
+            "exitReason": null,
+            "physicalMarker": null,
+            "dateBorn": "2022-03-07T05:00:00",
+            "dateExit": null,
+            "externalIdentifier": null,
+            "comments": null,
+            "species": "Mouse",
+            "sex": "Male",
+            "generation": "E18.5",
+            "markerType": "Ear Notch",
+            "arrivalDate": "2022-03-07T05:00:00",
+            "clinicalObservationsCount": 0,
+            "status": "Alive",
+            "taskInstanceCount": 3,
+            "modifiedBy": "kjp",
+            "dateModified": "2022-05-26T17:44:25.01"
+        },
+        "line": {
+            "lineKey": 148,
+            "isActive": true,
+            "name": "C57BL/6NJ-Bicra<em1(IMPC)J>/Mmjax",
+            "shortName": "Bicra",
+            "stock": "035759",
+            "lineType": "Endonuclease mediated mutation (em)",
+            "lineStatus": "Embryo Lethal Complete",
+            "species": "Mouse",
+            "construct": null,
+            "genotypeAssaysCount": 2,
+            "genotypeAssays": [
+                "Bicra<em1(IMPC)J>",
+                "Smcx/Smcy-Sex Determination Assay"
+            ],
+            "technician": "ccm",
+            "parentLine": null,
+            "backgroundLine": "C57BL6/NJ",
+            "breedingStrategy": "Het X WT",
+            "development": null,
+            "externalLink": null,
+            "references": "MGI:2154263",
+            "comment": null,
+            "defaultLocation": "All GRS Locations",
+            "createdBy": "ccm",
+            "dateCreated": "2021-09-24T16:27:53.767",
+            "modifiedBy": "mike",
+            "dateModified": "2022-10-26T15:59:06.517"
+        },
+        "litter": {
+            "birthID": null,
+            "matingID": null,
+            "housingID": null,
+            "weanDate": null
+        },
+        "genotypes": [
+            {
+                "genotypeKey": 91561,
+                "date": "May 11 2022  4:00AM",
+                "assay": "Bicra<em1(IMPC)J>",
+                "genotype": "-/-",
+                "modifiedBy": "ccm",
+                "dateModified": "2022-05-11T18:00:18.293"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalId": 32402,
+            "materialKey": 32912,
+            "animalName": "A-680",
+            "exitReason": null,
+            "physicalMarker": null,
+            "dateBorn": "2022-03-07T05:00:00",
+            "dateExit": null,
+            "externalIdentifier": null,
+            "comments": null,
+            "species": "Mouse",
+            "sex": "Male",
+            "generation": "E18.5",
+            "markerType": "Ear Notch",
+            "arrivalDate": "2022-03-07T05:00:00",
+            "clinicalObservationsCount": 0,
+            "status": "Alive",
+            "taskInstanceCount": 3,
+            "modifiedBy": "kjp",
+            "dateModified": "2023-02-24T15:42:02.37"
+        },
+        "line": {
+            "lineKey": 89,
+            "isActive": true,
+            "name": "C57BL/6NJ-Ddx31<em1(IMPC)J>/Mmjax",
+            "shortName": "Ddx31",
+            "stock": "034083",
+            "lineType": "Endonuclease mediated mutation (em)",
+            "lineStatus": "Embryo Lethal Complete",
+            "species": "Mouse",
+            "construct": null,
+            "genotypeAssaysCount": 2,
+            "genotypeAssays": [
+                "Ddx31<em1(IMPC)J>",
+                "Smcx/Smcy-Sex Determination Assay"
+            ],
+            "technician": "ccm",
+            "parentLine": null,
+            "backgroundLine": null,
+            "breedingStrategy": "Het x WT",
+            "development": null,
+            "externalLink": null,
+            "references": "MGI:2682639",
+            "comment": null,
+            "defaultLocation": "All GRS Locations",
+            "createdBy": "rsadmin",
+            "dateCreated": "2021-01-27T16:32:56.177",
+            "modifiedBy": "mike",
+            "dateModified": "2023-03-07T20:03:03.05"
+        },
+        "litter": {
+            "birthID": null,
+            "matingID": null,
+            "housingID": null,
+            "weanDate": null
+        },
+        "genotypes": [
+            {
+                "genotypeKey": 91619,
+                "date": "May 12 2022  4:00AM",
+                "assay": "Ddx31<em1>(IMPC)J>",
+                "genotype": "-/-",
+                "modifiedBy": "ccm",
+                "dateModified": "2022-05-12T14:12:22.93"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalId": 32404,
+            "materialKey": 32914,
+            "animalName": "A-682",
+            "exitReason": null,
+            "physicalMarker": null,
+            "dateBorn": "2022-03-07T05:00:00",
+            "dateExit": null,
+            "externalIdentifier": null,
+            "comments": null,
+            "species": "Mouse",
+            "sex": "Male",
+            "generation": "E18.5",
+            "markerType": "Ear Notch",
+            "arrivalDate": "2022-03-07T05:00:00",
+            "clinicalObservationsCount": 0,
+            "status": "Alive",
+            "taskInstanceCount": 3,
+            "modifiedBy": "kjp",
+            "dateModified": "2023-02-24T15:42:02.37"
+        },
+        "line": {
+            "lineKey": 89,
+            "isActive": true,
+            "name": "C57BL/6NJ-Ddx31<em1(IMPC)J>/Mmjax",
+            "shortName": "Ddx31",
+            "stock": "034083",
+            "lineType": "Endonuclease mediated mutation (em)",
+            "lineStatus": "Embryo Lethal Complete",
+            "species": "Mouse",
+            "construct": null,
+            "genotypeAssaysCount": 2,
+            "genotypeAssays": [
+                "Ddx31<em1(IMPC)J>",
+                "Smcx/Smcy-Sex Determination Assay"
+            ],
+            "technician": "ccm",
+            "parentLine": null,
+            "backgroundLine": null,
+            "breedingStrategy": "Het x WT",
+            "development": null,
+            "externalLink": null,
+            "references": "MGI:2682639",
+            "comment": null,
+            "defaultLocation": "All GRS Locations",
+            "createdBy": "rsadmin",
+            "dateCreated": "2021-01-27T16:32:56.177",
+            "modifiedBy": "mike",
+            "dateModified": "2023-03-07T20:03:03.05"
+        },
+        "litter": {
+            "birthID": null,
+            "matingID": null,
+            "housingID": null,
+            "weanDate": null
+        },
+        "genotypes": [
+            {
+                "genotypeKey": 91620,
+                "date": "May 12 2022  4:00AM",
+                "assay": "Ddx31<em1>(IMPC)J>",
+                "genotype": "-/-",
+                "modifiedBy": "ccm",
+                "dateModified": "2022-05-12T14:12:22.93"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalId": 32417,
+            "materialKey": 32927,
+            "animalName": "A-688",
+            "exitReason": null,
+            "physicalMarker": null,
+            "dateBorn": "2022-03-07T05:00:00",
+            "dateExit": null,
+            "externalIdentifier": null,
+            "comments": null,
+            "species": "Mouse",
+            "sex": "Male",
+            "generation": "E18.5",
+            "markerType": "Ear Notch",
+            "arrivalDate": "2022-03-07T05:00:00",
+            "clinicalObservationsCount": 0,
+            "status": "Alive",
+            "taskInstanceCount": 3,
+            "modifiedBy": "kjp",
+            "dateModified": "2023-02-24T15:42:02.37"
+        },
+        "line": {
+            "lineKey": 89,
+            "isActive": true,
+            "name": "C57BL/6NJ-Ddx31<em1(IMPC)J>/Mmjax",
+            "shortName": "Ddx31",
+            "stock": "034083",
+            "lineType": "Endonuclease mediated mutation (em)",
+            "lineStatus": "Embryo Lethal Complete",
+            "species": "Mouse",
+            "construct": null,
+            "genotypeAssaysCount": 2,
+            "genotypeAssays": [
+                "Ddx31<em1(IMPC)J>",
+                "Smcx/Smcy-Sex Determination Assay"
+            ],
+            "technician": "ccm",
+            "parentLine": null,
+            "backgroundLine": null,
+            "breedingStrategy": "Het x WT",
+            "development": null,
+            "externalLink": null,
+            "references": "MGI:2682639",
+            "comment": null,
+            "defaultLocation": "All GRS Locations",
+            "createdBy": "rsadmin",
+            "dateCreated": "2021-01-27T16:32:56.177",
+            "modifiedBy": "mike",
+            "dateModified": "2023-03-07T20:03:03.05"
+        },
+        "litter": {
+            "birthID": null,
+            "matingID": null,
+            "housingID": null,
+            "weanDate": null
+        },
+        "genotypes": [
+            {
+                "genotypeKey": 91621,
+                "date": "May 12 2022  4:00AM",
+                "assay": "Ddx31<em1>(IMPC)J>",
+                "genotype": "inc.",
+                "modifiedBy": "ccm",
+                "dateModified": "2022-05-12T14:20:47.03"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalId": 32419,
+            "materialKey": 32929,
+            "animalName": "A-690",
+            "exitReason": null,
+            "physicalMarker": null,
+            "dateBorn": "2022-03-07T05:00:00",
+            "dateExit": null,
+            "externalIdentifier": null,
+            "comments": null,
+            "species": "Mouse",
+            "sex": "Male",
+            "generation": "E18.5",
+            "markerType": "Ear Notch",
+            "arrivalDate": "2022-03-07T05:00:00",
+            "clinicalObservationsCount": 0,
+            "status": "Alive",
+            "taskInstanceCount": 3,
+            "modifiedBy": "kjp",
+            "dateModified": "2023-02-24T15:42:02.37"
+        },
+        "line": {
+            "lineKey": 89,
+            "isActive": true,
+            "name": "C57BL/6NJ-Ddx31<em1(IMPC)J>/Mmjax",
+            "shortName": "Ddx31",
+            "stock": "034083",
+            "lineType": "Endonuclease mediated mutation (em)",
+            "lineStatus": "Embryo Lethal Complete",
+            "species": "Mouse",
+            "construct": null,
+            "genotypeAssaysCount": 2,
+            "genotypeAssays": [
+                "Ddx31<em1(IMPC)J>",
+                "Smcx/Smcy-Sex Determination Assay"
+            ],
+            "technician": "ccm",
+            "parentLine": null,
+            "backgroundLine": null,
+            "breedingStrategy": "Het x WT",
+            "development": null,
+            "externalLink": null,
+            "references": "MGI:2682639",
+            "comment": null,
+            "defaultLocation": "All GRS Locations",
+            "createdBy": "rsadmin",
+            "dateCreated": "2021-01-27T16:32:56.177",
+            "modifiedBy": "mike",
+            "dateModified": "2023-03-07T20:03:03.05"
+        },
+        "litter": {
+            "birthID": null,
+            "matingID": null,
+            "housingID": null,
+            "weanDate": null
+        },
+        "genotypes": [
+            {
+                "genotypeKey": 91625,
+                "date": "May 12 2022  4:00AM",
+                "assay": "Ddx31<em1>(IMPC)J>",
+                "genotype": "-/-",
+                "modifiedBy": "ccm",
+                "dateModified": "2022-05-12T14:21:37.607"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalId": 32425,
+            "materialKey": 32935,
+            "animalName": "A-696",
+            "exitReason": null,
+            "physicalMarker": null,
+            "dateBorn": "2022-03-07T05:00:00",
+            "dateExit": null,
+            "externalIdentifier": null,
+            "comments": null,
+            "species": "Mouse",
+            "sex": "Male",
+            "generation": "E18.5",
+            "markerType": "Ear Notch",
+            "arrivalDate": "2022-03-07T05:00:00",
+            "clinicalObservationsCount": 0,
+            "status": "Alive",
+            "taskInstanceCount": 3,
+            "modifiedBy": "kjp",
+            "dateModified": "2023-02-24T15:42:02.37"
+        },
+        "line": {
+            "lineKey": 89,
+            "isActive": true,
+            "name": "C57BL/6NJ-Ddx31<em1(IMPC)J>/Mmjax",
+            "shortName": "Ddx31",
+            "stock": "034083",
+            "lineType": "Endonuclease mediated mutation (em)",
+            "lineStatus": "Embryo Lethal Complete",
+            "species": "Mouse",
+            "construct": null,
+            "genotypeAssaysCount": 2,
+            "genotypeAssays": [
+                "Ddx31<em1(IMPC)J>",
+                "Smcx/Smcy-Sex Determination Assay"
+            ],
+            "technician": "ccm",
+            "parentLine": null,
+            "backgroundLine": null,
+            "breedingStrategy": "Het x WT",
+            "development": null,
+            "externalLink": null,
+            "references": "MGI:2682639",
+            "comment": null,
+            "defaultLocation": "All GRS Locations",
+            "createdBy": "rsadmin",
+            "dateCreated": "2021-01-27T16:32:56.177",
+            "modifiedBy": "mike",
+            "dateModified": "2023-03-07T20:03:03.05"
+        },
+        "litter": {
+            "birthID": null,
+            "matingID": null,
+            "housingID": null,
+            "weanDate": null
+        },
+        "genotypes": [
+            {
+                "genotypeKey": 91628,
+                "date": "May 12 2022  4:00AM",
+                "assay": "Ddx31<em1>(IMPC)J>",
+                "genotype": "-/-",
+                "modifiedBy": "ccm",
+                "dateModified": "2022-05-12T14:25:29.647"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalId": 32432,
+            "materialKey": 32942,
+            "animalName": "A-703",
+            "exitReason": null,
+            "physicalMarker": null,
+            "dateBorn": "2022-03-07T05:00:00",
+            "dateExit": null,
+            "externalIdentifier": null,
+            "comments": null,
+            "species": "Mouse",
+            "sex": "Male",
+            "generation": "E18.5",
+            "markerType": "Ear Notch",
+            "arrivalDate": "2022-03-07T05:00:00",
+            "clinicalObservationsCount": 0,
+            "status": "Alive",
+            "taskInstanceCount": 3,
+            "modifiedBy": "kjp",
+            "dateModified": "2023-02-24T15:42:02.37"
+        },
+        "line": {
+            "lineKey": 89,
+            "isActive": true,
+            "name": "C57BL/6NJ-Ddx31<em1(IMPC)J>/Mmjax",
+            "shortName": "Ddx31",
+            "stock": "034083",
+            "lineType": "Endonuclease mediated mutation (em)",
+            "lineStatus": "Embryo Lethal Complete",
+            "species": "Mouse",
+            "construct": null,
+            "genotypeAssaysCount": 2,
+            "genotypeAssays": [
+                "Ddx31<em1(IMPC)J>",
+                "Smcx/Smcy-Sex Determination Assay"
+            ],
+            "technician": "ccm",
+            "parentLine": null,
+            "backgroundLine": null,
+            "breedingStrategy": "Het x WT",
+            "development": null,
+            "externalLink": null,
+            "references": "MGI:2682639",
+            "comment": null,
+            "defaultLocation": "All GRS Locations",
+            "createdBy": "rsadmin",
+            "dateCreated": "2021-01-27T16:32:56.177",
+            "modifiedBy": "mike",
+            "dateModified": "2023-03-07T20:03:03.05"
+        },
+        "litter": {
+            "birthID": null,
+            "matingID": null,
+            "housingID": null,
+            "weanDate": null
+        },
+        "genotypes": [
+            {
+                "genotypeKey": 91629,
+                "date": "May 12 2022  4:00AM",
+                "assay": "Ddx31<em1>(IMPC)J>",
+                "genotype": "-/-",
+                "modifiedBy": "ccm",
+                "dateModified": "2022-05-12T14:25:29.65"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalId": 32627,
+            "materialKey": 33152,
+            "animalName": "A-898",
+            "exitReason": null,
+            "physicalMarker": null,
+            "dateBorn": "2022-03-28T04:00:00",
+            "dateExit": null,
+            "externalIdentifier": null,
+            "comments": null,
+            "species": "Mouse",
+            "sex": "Female",
+            "generation": "E18.5",
+            "markerType": "Ear Notch",
+            "arrivalDate": "2022-03-28T04:00:00",
+            "clinicalObservationsCount": 0,
+            "status": "Alive",
+            "taskInstanceCount": 3,
+            "modifiedBy": "kjp",
+            "dateModified": "2023-02-24T15:42:02.37"
+        },
+        "line": {
+            "lineKey": 89,
+            "isActive": true,
+            "name": "C57BL/6NJ-Ddx31<em1(IMPC)J>/Mmjax",
+            "shortName": "Ddx31",
+            "stock": "034083",
+            "lineType": "Endonuclease mediated mutation (em)",
+            "lineStatus": "Embryo Lethal Complete",
+            "species": "Mouse",
+            "construct": null,
+            "genotypeAssaysCount": 2,
+            "genotypeAssays": [
+                "Ddx31<em1(IMPC)J>",
+                "Smcx/Smcy-Sex Determination Assay"
+            ],
+            "technician": "ccm",
+            "parentLine": null,
+            "backgroundLine": null,
+            "breedingStrategy": "Het x WT",
+            "development": null,
+            "externalLink": null,
+            "references": "MGI:2682639",
+            "comment": null,
+            "defaultLocation": "All GRS Locations",
+            "createdBy": "rsadmin",
+            "dateCreated": "2021-01-27T16:32:56.177",
+            "modifiedBy": "mike",
+            "dateModified": "2023-03-07T20:03:03.05"
+        },
+        "litter": {
+            "birthID": null,
+            "matingID": null,
+            "housingID": null,
+            "weanDate": null
+        },
+        "genotypes": [
+            {
+                "genotypeKey": 91602,
+                "date": "May 12 2022  4:00AM",
+                "assay": "Ddx31<em1>(IMPC)J>",
+                "genotype": "+/+",
+                "modifiedBy": "ccm",
+                "dateModified": "2022-05-12T13:59:37.45"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalId": 32628,
+            "materialKey": 33153,
+            "animalName": "A-899",
+            "exitReason": null,
+            "physicalMarker": null,
+            "dateBorn": "2022-03-28T04:00:00",
+            "dateExit": null,
+            "externalIdentifier": null,
+            "comments": null,
+            "species": "Mouse",
+            "sex": "Female",
+            "generation": "E18.5",
+            "markerType": "Ear Notch",
+            "arrivalDate": "2022-03-28T04:00:00",
+            "clinicalObservationsCount": 0,
+            "status": "Alive",
+            "taskInstanceCount": 3,
+            "modifiedBy": "kjp",
+            "dateModified": "2023-02-24T15:42:02.37"
+        },
+        "line": {
+            "lineKey": 89,
+            "isActive": true,
+            "name": "C57BL/6NJ-Ddx31<em1(IMPC)J>/Mmjax",
+            "shortName": "Ddx31",
+            "stock": "034083",
+            "lineType": "Endonuclease mediated mutation (em)",
+            "lineStatus": "Embryo Lethal Complete",
+            "species": "Mouse",
+            "construct": null,
+            "genotypeAssaysCount": 2,
+            "genotypeAssays": [
+                "Ddx31<em1(IMPC)J>",
+                "Smcx/Smcy-Sex Determination Assay"
+            ],
+            "technician": "ccm",
+            "parentLine": null,
+            "backgroundLine": null,
+            "breedingStrategy": "Het x WT",
+            "development": null,
+            "externalLink": null,
+            "references": "MGI:2682639",
+            "comment": null,
+            "defaultLocation": "All GRS Locations",
+            "createdBy": "rsadmin",
+            "dateCreated": "2021-01-27T16:32:56.177",
+            "modifiedBy": "mike",
+            "dateModified": "2023-03-07T20:03:03.05"
+        },
+        "litter": {
+            "birthID": null,
+            "matingID": null,
+            "housingID": null,
+            "weanDate": null
+        },
+        "genotypes": [
+            {
+                "genotypeKey": 91604,
+                "date": "May 12 2022  4:00AM",
+                "assay": "Ddx31<em1>(IMPC)J>",
+                "genotype": "-/-",
+                "modifiedBy": "ccm",
+                "dateModified": "2022-05-12T14:00:02.867"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalId": 32630,
+            "materialKey": 33155,
+            "animalName": "A-901",
+            "exitReason": null,
+            "physicalMarker": null,
+            "dateBorn": "2022-03-28T04:00:00",
+            "dateExit": null,
+            "externalIdentifier": null,
+            "comments": null,
+            "species": "Mouse",
+            "sex": "Male",
+            "generation": "E18.5",
+            "markerType": "Ear Notch",
+            "arrivalDate": "2022-03-28T04:00:00",
+            "clinicalObservationsCount": 0,
+            "status": "Alive",
+            "taskInstanceCount": 3,
+            "modifiedBy": "kjp",
+            "dateModified": "2023-02-24T15:42:02.37"
+        },
+        "line": {
+            "lineKey": 89,
+            "isActive": true,
+            "name": "C57BL/6NJ-Ddx31<em1(IMPC)J>/Mmjax",
+            "shortName": "Ddx31",
+            "stock": "034083",
+            "lineType": "Endonuclease mediated mutation (em)",
+            "lineStatus": "Embryo Lethal Complete",
+            "species": "Mouse",
+            "construct": null,
+            "genotypeAssaysCount": 2,
+            "genotypeAssays": [
+                "Ddx31<em1(IMPC)J>",
+                "Smcx/Smcy-Sex Determination Assay"
+            ],
+            "technician": "ccm",
+            "parentLine": null,
+            "backgroundLine": null,
+            "breedingStrategy": "Het x WT",
+            "development": null,
+            "externalLink": null,
+            "references": "MGI:2682639",
+            "comment": null,
+            "defaultLocation": "All GRS Locations",
+            "createdBy": "rsadmin",
+            "dateCreated": "2021-01-27T16:32:56.177",
+            "modifiedBy": "mike",
+            "dateModified": "2023-03-07T20:03:03.05"
+        },
+        "litter": {
+            "birthID": null,
+            "matingID": null,
+            "housingID": null,
+            "weanDate": null
+        },
+        "genotypes": [
+            {
+                "genotypeKey": 91603,
+                "date": "May 12 2022  4:00AM",
+                "assay": "Ddx31<em1>(IMPC)J>",
+                "genotype": "+/+",
+                "modifiedBy": "ccm",
+                "dateModified": "2022-05-12T13:59:37.45"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalId": 32712,
+            "materialKey": 33387,
+            "animalName": "A-983",
+            "exitReason": null,
+            "physicalMarker": null,
+            "dateBorn": "2022-04-12T04:00:00",
+            "dateExit": null,
+            "externalIdentifier": null,
+            "comments": null,
+            "species": "Mouse",
+            "sex": "Male",
+            "generation": "E18.5",
+            "markerType": "Ear Notch",
+            "arrivalDate": "2022-04-12T04:00:00",
+            "clinicalObservationsCount": 0,
+            "status": "Alive",
+            "taskInstanceCount": 3,
+            "modifiedBy": "KJP",
+            "dateModified": "2022-05-26T17:47:29.333"
+        },
+        "line": {
+            "lineKey": 148,
+            "isActive": true,
+            "name": "C57BL/6NJ-Bicra<em1(IMPC)J>/Mmjax",
+            "shortName": "Bicra",
+            "stock": "035759",
+            "lineType": "Endonuclease mediated mutation (em)",
+            "lineStatus": "Embryo Lethal Complete",
+            "species": "Mouse",
+            "construct": null,
+            "genotypeAssaysCount": 2,
+            "genotypeAssays": [
+                "Bicra<em1(IMPC)J>",
+                "Smcx/Smcy-Sex Determination Assay"
+            ],
+            "technician": "ccm",
+            "parentLine": null,
+            "backgroundLine": "C57BL6/NJ",
+            "breedingStrategy": "Het X WT",
+            "development": null,
+            "externalLink": null,
+            "references": "MGI:2154263",
+            "comment": null,
+            "defaultLocation": "All GRS Locations",
+            "createdBy": "ccm",
+            "dateCreated": "2021-09-24T16:27:53.767",
+            "modifiedBy": "mike",
+            "dateModified": "2022-10-26T15:59:06.517"
+        },
+        "litter": {
+            "birthID": null,
+            "matingID": null,
+            "housingID": null,
+            "weanDate": null
+        },
+        "genotypes": [
+            {
+                "genotypeKey": 91552,
+                "date": "May 11 2022  4:00AM",
+                "assay": "Bicra<em1(IMPC)J>",
+                "genotype": "-/-",
+                "modifiedBy": "ccm",
+                "dateModified": "2022-05-11T17:52:31.273"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalId": 32713,
+            "materialKey": 33388,
+            "animalName": "A-984",
+            "exitReason": null,
+            "physicalMarker": null,
+            "dateBorn": "2022-04-12T04:00:00",
+            "dateExit": null,
+            "externalIdentifier": null,
+            "comments": null,
+            "species": "Mouse",
+            "sex": "Female",
+            "generation": "E18.5",
+            "markerType": "Ear Notch",
+            "arrivalDate": "2022-04-12T04:00:00",
+            "clinicalObservationsCount": 0,
+            "status": "Alive",
+            "taskInstanceCount": 3,
+            "modifiedBy": "KJP",
+            "dateModified": "2022-05-26T17:47:29.333"
+        },
+        "line": {
+            "lineKey": 148,
+            "isActive": true,
+            "name": "C57BL/6NJ-Bicra<em1(IMPC)J>/Mmjax",
+            "shortName": "Bicra",
+            "stock": "035759",
+            "lineType": "Endonuclease mediated mutation (em)",
+            "lineStatus": "Embryo Lethal Complete",
+            "species": "Mouse",
+            "construct": null,
+            "genotypeAssaysCount": 2,
+            "genotypeAssays": [
+                "Bicra<em1(IMPC)J>",
+                "Smcx/Smcy-Sex Determination Assay"
+            ],
+            "technician": "ccm",
+            "parentLine": null,
+            "backgroundLine": "C57BL6/NJ",
+            "breedingStrategy": "Het X WT",
+            "development": null,
+            "externalLink": null,
+            "references": "MGI:2154263",
+            "comment": null,
+            "defaultLocation": "All GRS Locations",
+            "createdBy": "ccm",
+            "dateCreated": "2021-09-24T16:27:53.767",
+            "modifiedBy": "mike",
+            "dateModified": "2022-10-26T15:59:06.517"
+        },
+        "litter": {
+            "birthID": null,
+            "matingID": null,
+            "housingID": null,
+            "weanDate": null
+        },
+        "genotypes": [
+            {
+                "genotypeKey": 91553,
+                "date": "May 11 2022  4:00AM",
+                "assay": "Bicra<em1(IMPC)J>",
+                "genotype": "-/-",
+                "modifiedBy": "ccm",
+                "dateModified": "2022-05-11T17:52:31.273"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalId": 32715,
+            "materialKey": 33390,
+            "animalName": "A-986",
+            "exitReason": null,
+            "physicalMarker": null,
+            "dateBorn": "2022-04-12T04:00:00",
+            "dateExit": null,
+            "externalIdentifier": null,
+            "comments": null,
+            "species": "Mouse",
+            "sex": "Male",
+            "generation": "E18.5",
+            "markerType": "Ear Notch",
+            "arrivalDate": "2022-04-12T04:00:00",
+            "clinicalObservationsCount": 0,
+            "status": "Alive",
+            "taskInstanceCount": 3,
+            "modifiedBy": "KJP",
+            "dateModified": "2022-05-26T17:47:29.333"
+        },
+        "line": {
+            "lineKey": 148,
+            "isActive": true,
+            "name": "C57BL/6NJ-Bicra<em1(IMPC)J>/Mmjax",
+            "shortName": "Bicra",
+            "stock": "035759",
+            "lineType": "Endonuclease mediated mutation (em)",
+            "lineStatus": "Embryo Lethal Complete",
+            "species": "Mouse",
+            "construct": null,
+            "genotypeAssaysCount": 2,
+            "genotypeAssays": [
+                "Bicra<em1(IMPC)J>",
+                "Smcx/Smcy-Sex Determination Assay"
+            ],
+            "technician": "ccm",
+            "parentLine": null,
+            "backgroundLine": "C57BL6/NJ",
+            "breedingStrategy": "Het X WT",
+            "development": null,
+            "externalLink": null,
+            "references": "MGI:2154263",
+            "comment": null,
+            "defaultLocation": "All GRS Locations",
+            "createdBy": "ccm",
+            "dateCreated": "2021-09-24T16:27:53.767",
+            "modifiedBy": "mike",
+            "dateModified": "2022-10-26T15:59:06.517"
+        },
+        "litter": {
+            "birthID": null,
+            "matingID": null,
+            "housingID": null,
+            "weanDate": null
+        },
+        "genotypes": [
+            {
+                "genotypeKey": 91554,
+                "date": "May 11 2022  4:00AM",
+                "assay": "Bicra<em1(IMPC)J>",
+                "genotype": "-/-",
+                "modifiedBy": "ccm",
+                "dateModified": "2022-05-11T17:52:31.273"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalId": 32759,
+            "materialKey": 33464,
+            "animalName": "A-1030",
+            "exitReason": null,
+            "physicalMarker": null,
+            "dateBorn": "2022-04-18T04:00:00",
+            "dateExit": null,
+            "externalIdentifier": null,
+            "comments": null,
+            "species": "Mouse",
+            "sex": "Male",
+            "generation": "E18.5",
+            "markerType": "Ear Notch",
+            "arrivalDate": "2022-04-18T04:00:00",
+            "clinicalObservationsCount": 0,
+            "status": "Alive",
+            "taskInstanceCount": 3,
+            "modifiedBy": "kjp",
+            "dateModified": "2022-05-26T17:48:39.92"
+        },
+        "line": {
+            "lineKey": 148,
+            "isActive": true,
+            "name": "C57BL/6NJ-Bicra<em1(IMPC)J>/Mmjax",
+            "shortName": "Bicra",
+            "stock": "035759",
+            "lineType": "Endonuclease mediated mutation (em)",
+            "lineStatus": "Embryo Lethal Complete",
+            "species": "Mouse",
+            "construct": null,
+            "genotypeAssaysCount": 2,
+            "genotypeAssays": [
+                "Bicra<em1(IMPC)J>",
+                "Smcx/Smcy-Sex Determination Assay"
+            ],
+            "technician": "ccm",
+            "parentLine": null,
+            "backgroundLine": "C57BL6/NJ",
+            "breedingStrategy": "Het X WT",
+            "development": null,
+            "externalLink": null,
+            "references": "MGI:2154263",
+            "comment": null,
+            "defaultLocation": "All GRS Locations",
+            "createdBy": "ccm",
+            "dateCreated": "2021-09-24T16:27:53.767",
+            "modifiedBy": "mike",
+            "dateModified": "2022-10-26T15:59:06.517"
+        },
+        "litter": {
+            "birthID": null,
+            "matingID": null,
+            "housingID": null,
+            "weanDate": null
+        },
+        "genotypes": [
+            {
+                "genotypeKey": 102109,
+                "date": "Feb 24 2023  5:00AM",
+                "assay": "Bicra<em1(IMPC)J>",
+                "genotype": "-/-",
+                "modifiedBy": "kjp",
+                "dateModified": "2023-02-24T15:29:08.903"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalId": 32761,
+            "materialKey": 33466,
+            "animalName": "A-1032",
+            "exitReason": null,
+            "physicalMarker": null,
+            "dateBorn": "2022-04-18T04:00:00",
+            "dateExit": null,
+            "externalIdentifier": null,
+            "comments": null,
+            "species": "Mouse",
+            "sex": "Male",
+            "generation": "E18.5",
+            "markerType": "Ear Notch",
+            "arrivalDate": "2022-04-18T04:00:00",
+            "clinicalObservationsCount": 0,
+            "status": "Alive",
+            "taskInstanceCount": 3,
+            "modifiedBy": "kjp",
+            "dateModified": "2022-05-26T17:48:39.92"
+        },
+        "line": {
+            "lineKey": 148,
+            "isActive": true,
+            "name": "C57BL/6NJ-Bicra<em1(IMPC)J>/Mmjax",
+            "shortName": "Bicra",
+            "stock": "035759",
+            "lineType": "Endonuclease mediated mutation (em)",
+            "lineStatus": "Embryo Lethal Complete",
+            "species": "Mouse",
+            "construct": null,
+            "genotypeAssaysCount": 2,
+            "genotypeAssays": [
+                "Bicra<em1(IMPC)J>",
+                "Smcx/Smcy-Sex Determination Assay"
+            ],
+            "technician": "ccm",
+            "parentLine": null,
+            "backgroundLine": "C57BL6/NJ",
+            "breedingStrategy": "Het X WT",
+            "development": null,
+            "externalLink": null,
+            "references": "MGI:2154263",
+            "comment": null,
+            "defaultLocation": "All GRS Locations",
+            "createdBy": "ccm",
+            "dateCreated": "2021-09-24T16:27:53.767",
+            "modifiedBy": "mike",
+            "dateModified": "2022-10-26T15:59:06.517"
+        },
+        "litter": {
+            "birthID": null,
+            "matingID": null,
+            "housingID": null,
+            "weanDate": null
+        },
+        "genotypes": [
+            {
+                "genotypeKey": 91541,
+                "date": "May 11 2022  4:00AM",
+                "assay": "Bicra<em1(IMPC)J>",
+                "genotype": "-/-",
+                "modifiedBy": "ccm",
+                "dateModified": "2022-05-11T17:46:01.827"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalId": 33054,
+            "materialKey": 33822,
+            "animalName": "A-1325",
+            "exitReason": null,
+            "physicalMarker": null,
+            "dateBorn": "2022-05-09T04:00:00",
+            "dateExit": null,
+            "externalIdentifier": null,
+            "comments": null,
+            "species": "Mouse",
+            "sex": "Male",
+            "generation": "E18.5",
+            "markerType": "Ear Notch",
+            "arrivalDate": "2022-02-24T05:00:00",
+            "clinicalObservationsCount": 0,
+            "status": "Alive",
+            "taskInstanceCount": 3,
+            "modifiedBy": "kjp",
+            "dateModified": "2022-07-19T16:17:48.03"
+        },
+        "line": {
+            "lineKey": 184,
+            "isActive": true,
+            "name": "C57BL/6NJ-Zfp750<em1(IMPC)J>/Mmjax",
+            "shortName": "Zfp750",
+            "stock": "036489",
+            "lineType": "Endonuclease mediated mutation (em)",
+            "lineStatus": "Embryo Lethal Complete",
+            "species": "Mouse",
+            "construct": null,
+            "genotypeAssaysCount": 2,
+            "genotypeAssays": [
+                "Zfp750<em1(IMPC)J>",
+                "Smcx/Smcy-Sex Determination Assay"
+            ],
+            "technician": "ccm",
+            "parentLine": null,
+            "backgroundLine": "C57BL/6NJ",
+            "breedingStrategy": "Het X Wt",
+            "development": null,
+            "externalLink": null,
+            "references": "MGI:2442210",
+            "comment": null,
+            "defaultLocation": "All GRS Locations",
+            "createdBy": "ccm",
+            "dateCreated": "2022-02-24T20:11:17.007",
+            "modifiedBy": "kjp",
+            "dateModified": "2022-12-28T17:37:54.783"
+        },
+        "litter": {
+            "birthID": null,
+            "matingID": null,
+            "housingID": null,
+            "weanDate": null
+        },
+        "genotypes": [
+            {
+                "genotypeKey": 92516,
+                "date": "Jul 11 2022  4:00AM",
+                "assay": "Zfp750<em1(IMPC)J>",
+                "genotype": "+/+",
+                "modifiedBy": "ccm",
+                "dateModified": "2022-07-11T15:30:09.23"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalId": 33055,
+            "materialKey": 33823,
+            "animalName": "A-1326",
+            "exitReason": null,
+            "physicalMarker": null,
+            "dateBorn": "2022-05-09T04:00:00",
+            "dateExit": null,
+            "externalIdentifier": null,
+            "comments": null,
+            "species": "Mouse",
+            "sex": "Female",
+            "generation": "E18.5",
+            "markerType": "Ear Notch",
+            "arrivalDate": "2022-02-24T05:00:00",
+            "clinicalObservationsCount": 0,
+            "status": "Alive",
+            "taskInstanceCount": 3,
+            "modifiedBy": "kjp",
+            "dateModified": "2022-07-19T16:17:48.03"
+        },
+        "line": {
+            "lineKey": 184,
+            "isActive": true,
+            "name": "C57BL/6NJ-Zfp750<em1(IMPC)J>/Mmjax",
+            "shortName": "Zfp750",
+            "stock": "036489",
+            "lineType": "Endonuclease mediated mutation (em)",
+            "lineStatus": "Embryo Lethal Complete",
+            "species": "Mouse",
+            "construct": null,
+            "genotypeAssaysCount": 2,
+            "genotypeAssays": [
+                "Zfp750<em1(IMPC)J>",
+                "Smcx/Smcy-Sex Determination Assay"
+            ],
+            "technician": "ccm",
+            "parentLine": null,
+            "backgroundLine": "C57BL/6NJ",
+            "breedingStrategy": "Het X Wt",
+            "development": null,
+            "externalLink": null,
+            "references": "MGI:2442210",
+            "comment": null,
+            "defaultLocation": "All GRS Locations",
+            "createdBy": "ccm",
+            "dateCreated": "2022-02-24T20:11:17.007",
+            "modifiedBy": "kjp",
+            "dateModified": "2022-12-28T17:37:54.783"
+        },
+        "litter": {
+            "birthID": null,
+            "matingID": null,
+            "housingID": null,
+            "weanDate": null
+        },
+        "genotypes": [
+            {
+                "genotypeKey": 92519,
+                "date": "Jul 11 2022  4:00AM",
+                "assay": "Zfp750<em1(IMPC)J>",
+                "genotype": "-/-",
+                "modifiedBy": "ccm",
+                "dateModified": "2022-07-11T15:31:02.51"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalId": 33056,
+            "materialKey": 33824,
+            "animalName": "A-1327",
+            "exitReason": null,
+            "physicalMarker": null,
+            "dateBorn": "2022-05-09T04:00:00",
+            "dateExit": null,
+            "externalIdentifier": null,
+            "comments": null,
+            "species": "Mouse",
+            "sex": "Female",
+            "generation": "E18.5",
+            "markerType": "Ear Notch",
+            "arrivalDate": "2022-02-24T05:00:00",
+            "clinicalObservationsCount": 0,
+            "status": "Alive",
+            "taskInstanceCount": 3,
+            "modifiedBy": "kjp",
+            "dateModified": "2023-02-24T15:39:20.97"
+        },
+        "line": {
+            "lineKey": 184,
+            "isActive": true,
+            "name": "C57BL/6NJ-Zfp750<em1(IMPC)J>/Mmjax",
+            "shortName": "Zfp750",
+            "stock": "036489",
+            "lineType": "Endonuclease mediated mutation (em)",
+            "lineStatus": "Embryo Lethal Complete",
+            "species": "Mouse",
+            "construct": null,
+            "genotypeAssaysCount": 2,
+            "genotypeAssays": [
+                "Zfp750<em1(IMPC)J>",
+                "Smcx/Smcy-Sex Determination Assay"
+            ],
+            "technician": "ccm",
+            "parentLine": null,
+            "backgroundLine": "C57BL/6NJ",
+            "breedingStrategy": "Het X Wt",
+            "development": null,
+            "externalLink": null,
+            "references": "MGI:2442210",
+            "comment": null,
+            "defaultLocation": "All GRS Locations",
+            "createdBy": "ccm",
+            "dateCreated": "2022-02-24T20:11:17.007",
+            "modifiedBy": "kjp",
+            "dateModified": "2022-12-28T17:37:54.783"
+        },
+        "litter": {
+            "birthID": null,
+            "matingID": null,
+            "housingID": null,
+            "weanDate": null
+        },
+        "genotypes": [
+            {
+                "genotypeKey": 92520,
+                "date": "Jul 11 2022  4:00AM",
+                "assay": "Zfp750<em1(IMPC)J>",
+                "genotype": "-/-",
+                "modifiedBy": "ccm",
+                "dateModified": "2022-07-11T15:31:02.51"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalId": 33058,
+            "materialKey": 33826,
+            "animalName": "A-1329",
+            "exitReason": null,
+            "physicalMarker": null,
+            "dateBorn": "2022-05-09T04:00:00",
+            "dateExit": null,
+            "externalIdentifier": null,
+            "comments": null,
+            "species": "Mouse",
+            "sex": "Female",
+            "generation": "E18.5",
+            "markerType": "Ear Notch",
+            "arrivalDate": "2022-02-24T05:00:00",
+            "clinicalObservationsCount": 0,
+            "status": "Alive",
+            "taskInstanceCount": 3,
+            "modifiedBy": "kjp",
+            "dateModified": "2022-07-19T16:17:48.03"
+        },
+        "line": {
+            "lineKey": 184,
+            "isActive": true,
+            "name": "C57BL/6NJ-Zfp750<em1(IMPC)J>/Mmjax",
+            "shortName": "Zfp750",
+            "stock": "036489",
+            "lineType": "Endonuclease mediated mutation (em)",
+            "lineStatus": "Embryo Lethal Complete",
+            "species": "Mouse",
+            "construct": null,
+            "genotypeAssaysCount": 2,
+            "genotypeAssays": [
+                "Zfp750<em1(IMPC)J>",
+                "Smcx/Smcy-Sex Determination Assay"
+            ],
+            "technician": "ccm",
+            "parentLine": null,
+            "backgroundLine": "C57BL/6NJ",
+            "breedingStrategy": "Het X Wt",
+            "development": null,
+            "externalLink": null,
+            "references": "MGI:2442210",
+            "comment": null,
+            "defaultLocation": "All GRS Locations",
+            "createdBy": "ccm",
+            "dateCreated": "2022-02-24T20:11:17.007",
+            "modifiedBy": "kjp",
+            "dateModified": "2022-12-28T17:37:54.783"
+        },
+        "litter": {
+            "birthID": null,
+            "matingID": null,
+            "housingID": null,
+            "weanDate": null
+        },
+        "genotypes": [
+            {
+                "genotypeKey": 92521,
+                "date": "Jul 11 2022  4:00AM",
+                "assay": "Zfp750<em1(IMPC)J>",
+                "genotype": "-/-",
+                "modifiedBy": "ccm",
+                "dateModified": "2022-07-11T15:31:02.51"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalId": 33059,
+            "materialKey": 33827,
+            "animalName": "A-1330",
+            "exitReason": null,
+            "physicalMarker": null,
+            "dateBorn": "2022-05-09T04:00:00",
+            "dateExit": null,
+            "externalIdentifier": null,
+            "comments": null,
+            "species": "Mouse",
+            "sex": "Female",
+            "generation": "E18.5",
+            "markerType": "Ear Notch",
+            "arrivalDate": "2022-02-24T05:00:00",
+            "clinicalObservationsCount": 0,
+            "status": "Alive",
+            "taskInstanceCount": 3,
+            "modifiedBy": "kjp",
+            "dateModified": "2022-07-19T16:17:48.03"
+        },
+        "line": {
+            "lineKey": 184,
+            "isActive": true,
+            "name": "C57BL/6NJ-Zfp750<em1(IMPC)J>/Mmjax",
+            "shortName": "Zfp750",
+            "stock": "036489",
+            "lineType": "Endonuclease mediated mutation (em)",
+            "lineStatus": "Embryo Lethal Complete",
+            "species": "Mouse",
+            "construct": null,
+            "genotypeAssaysCount": 2,
+            "genotypeAssays": [
+                "Zfp750<em1(IMPC)J>",
+                "Smcx/Smcy-Sex Determination Assay"
+            ],
+            "technician": "ccm",
+            "parentLine": null,
+            "backgroundLine": "C57BL/6NJ",
+            "breedingStrategy": "Het X Wt",
+            "development": null,
+            "externalLink": null,
+            "references": "MGI:2442210",
+            "comment": null,
+            "defaultLocation": "All GRS Locations",
+            "createdBy": "ccm",
+            "dateCreated": "2022-02-24T20:11:17.007",
+            "modifiedBy": "kjp",
+            "dateModified": "2022-12-28T17:37:54.783"
+        },
+        "litter": {
+            "birthID": null,
+            "matingID": null,
+            "housingID": null,
+            "weanDate": null
+        },
+        "genotypes": [
+            {
+                "genotypeKey": 92522,
+                "date": "Jul 11 2022  4:00AM",
+                "assay": "Zfp750<em1(IMPC)J>",
+                "genotype": "-/-",
+                "modifiedBy": "ccm",
+                "dateModified": "2022-07-11T15:31:02.51"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalId": 33060,
+            "materialKey": 33828,
+            "animalName": "A-1331",
+            "exitReason": null,
+            "physicalMarker": null,
+            "dateBorn": "2022-05-09T04:00:00",
+            "dateExit": null,
+            "externalIdentifier": null,
+            "comments": null,
+            "species": "Mouse",
+            "sex": "Female",
+            "generation": "E18.5",
+            "markerType": "Ear Notch",
+            "arrivalDate": "2022-02-24T05:00:00",
+            "clinicalObservationsCount": 0,
+            "status": "Alive",
+            "taskInstanceCount": 3,
+            "modifiedBy": "kjp",
+            "dateModified": "2022-07-19T16:17:48.03"
+        },
+        "line": {
+            "lineKey": 184,
+            "isActive": true,
+            "name": "C57BL/6NJ-Zfp750<em1(IMPC)J>/Mmjax",
+            "shortName": "Zfp750",
+            "stock": "036489",
+            "lineType": "Endonuclease mediated mutation (em)",
+            "lineStatus": "Embryo Lethal Complete",
+            "species": "Mouse",
+            "construct": null,
+            "genotypeAssaysCount": 2,
+            "genotypeAssays": [
+                "Zfp750<em1(IMPC)J>",
+                "Smcx/Smcy-Sex Determination Assay"
+            ],
+            "technician": "ccm",
+            "parentLine": null,
+            "backgroundLine": "C57BL/6NJ",
+            "breedingStrategy": "Het X Wt",
+            "development": null,
+            "externalLink": null,
+            "references": "MGI:2442210",
+            "comment": null,
+            "defaultLocation": "All GRS Locations",
+            "createdBy": "ccm",
+            "dateCreated": "2022-02-24T20:11:17.007",
+            "modifiedBy": "kjp",
+            "dateModified": "2022-12-28T17:37:54.783"
+        },
+        "litter": {
+            "birthID": null,
+            "matingID": null,
+            "housingID": null,
+            "weanDate": null
+        },
+        "genotypes": [
+            {
+                "genotypeKey": 92517,
+                "date": "Jul 11 2022  4:00AM",
+                "assay": "Zfp750<em1(IMPC)J>",
+                "genotype": "+/+",
+                "modifiedBy": "ccm",
+                "dateModified": "2022-07-11T15:30:09.23"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalId": 33081,
+            "materialKey": 33849,
+            "animalName": "A-1352",
+            "exitReason": null,
+            "physicalMarker": null,
+            "dateBorn": "2022-05-11T04:00:00",
+            "dateExit": null,
+            "externalIdentifier": null,
+            "comments": null,
+            "species": "Mouse",
+            "sex": "Male",
+            "generation": "E18.5",
+            "markerType": "Ear Notch",
+            "arrivalDate": "2022-05-11T04:00:00",
+            "clinicalObservationsCount": 0,
+            "status": "Alive",
+            "taskInstanceCount": 3,
+            "modifiedBy": "kjp",
+            "dateModified": "2022-05-26T17:53:30.743"
+        },
+        "line": {
+            "lineKey": 148,
+            "isActive": true,
+            "name": "C57BL/6NJ-Bicra<em1(IMPC)J>/Mmjax",
+            "shortName": "Bicra",
+            "stock": "035759",
+            "lineType": "Endonuclease mediated mutation (em)",
+            "lineStatus": "Embryo Lethal Complete",
+            "species": "Mouse",
+            "construct": null,
+            "genotypeAssaysCount": 2,
+            "genotypeAssays": [
+                "Bicra<em1(IMPC)J>",
+                "Smcx/Smcy-Sex Determination Assay"
+            ],
+            "technician": "ccm",
+            "parentLine": null,
+            "backgroundLine": "C57BL6/NJ",
+            "breedingStrategy": "Het X WT",
+            "development": null,
+            "externalLink": null,
+            "references": "MGI:2154263",
+            "comment": null,
+            "defaultLocation": "All GRS Locations",
+            "createdBy": "ccm",
+            "dateCreated": "2021-09-24T16:27:53.767",
+            "modifiedBy": "mike",
+            "dateModified": "2022-10-26T15:59:06.517"
+        },
+        "litter": {
+            "birthID": null,
+            "matingID": null,
+            "housingID": null,
+            "weanDate": null
+        },
+        "genotypes": [
+            {
+                "genotypeKey": 91535,
+                "date": "May 11 2022  4:00AM",
+                "assay": "Bicra<em1(IMPC)J>",
+                "genotype": "+/+",
+                "modifiedBy": "ccm",
+                "dateModified": "2022-05-11T17:34:06.25"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalId": 33083,
+            "materialKey": 33851,
+            "animalName": "A-1354",
+            "exitReason": null,
+            "physicalMarker": null,
+            "dateBorn": "2022-05-11T04:00:00",
+            "dateExit": null,
+            "externalIdentifier": null,
+            "comments": null,
+            "species": "Mouse",
+            "sex": "Female",
+            "generation": "E18.5",
+            "markerType": "Ear Notch",
+            "arrivalDate": "2022-05-11T04:00:00",
+            "clinicalObservationsCount": 0,
+            "status": "Alive",
+            "taskInstanceCount": 3,
+            "modifiedBy": "kjp",
+            "dateModified": "2022-05-26T17:53:30.743"
+        },
+        "line": {
+            "lineKey": 148,
+            "isActive": true,
+            "name": "C57BL/6NJ-Bicra<em1(IMPC)J>/Mmjax",
+            "shortName": "Bicra",
+            "stock": "035759",
+            "lineType": "Endonuclease mediated mutation (em)",
+            "lineStatus": "Embryo Lethal Complete",
+            "species": "Mouse",
+            "construct": null,
+            "genotypeAssaysCount": 2,
+            "genotypeAssays": [
+                "Bicra<em1(IMPC)J>",
+                "Smcx/Smcy-Sex Determination Assay"
+            ],
+            "technician": "ccm",
+            "parentLine": null,
+            "backgroundLine": "C57BL6/NJ",
+            "breedingStrategy": "Het X WT",
+            "development": null,
+            "externalLink": null,
+            "references": "MGI:2154263",
+            "comment": null,
+            "defaultLocation": "All GRS Locations",
+            "createdBy": "ccm",
+            "dateCreated": "2021-09-24T16:27:53.767",
+            "modifiedBy": "mike",
+            "dateModified": "2022-10-26T15:59:06.517"
+        },
+        "litter": {
+            "birthID": null,
+            "matingID": null,
+            "housingID": null,
+            "weanDate": null
+        },
+        "genotypes": [
+            {
+                "genotypeKey": 91536,
+                "date": "May 11 2022  4:00AM",
+                "assay": "Bicra<em1(IMPC)J>",
+                "genotype": "+/+",
+                "modifiedBy": "ccm",
+                "dateModified": "2022-05-11T17:34:06.25"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalId": 33084,
+            "materialKey": 33852,
+            "animalName": "A-1355",
+            "exitReason": null,
+            "physicalMarker": null,
+            "dateBorn": "2022-05-11T04:00:00",
+            "dateExit": null,
+            "externalIdentifier": null,
+            "comments": null,
+            "species": "Mouse",
+            "sex": "Female",
+            "generation": "E18.5",
+            "markerType": "Ear Notch",
+            "arrivalDate": "2022-05-11T04:00:00",
+            "clinicalObservationsCount": 0,
+            "status": "Alive",
+            "taskInstanceCount": 3,
+            "modifiedBy": "kjp",
+            "dateModified": "2022-05-26T17:53:30.743"
+        },
+        "line": {
+            "lineKey": 148,
+            "isActive": true,
+            "name": "C57BL/6NJ-Bicra<em1(IMPC)J>/Mmjax",
+            "shortName": "Bicra",
+            "stock": "035759",
+            "lineType": "Endonuclease mediated mutation (em)",
+            "lineStatus": "Embryo Lethal Complete",
+            "species": "Mouse",
+            "construct": null,
+            "genotypeAssaysCount": 2,
+            "genotypeAssays": [
+                "Bicra<em1(IMPC)J>",
+                "Smcx/Smcy-Sex Determination Assay"
+            ],
+            "technician": "ccm",
+            "parentLine": null,
+            "backgroundLine": "C57BL6/NJ",
+            "breedingStrategy": "Het X WT",
+            "development": null,
+            "externalLink": null,
+            "references": "MGI:2154263",
+            "comment": null,
+            "defaultLocation": "All GRS Locations",
+            "createdBy": "ccm",
+            "dateCreated": "2021-09-24T16:27:53.767",
+            "modifiedBy": "mike",
+            "dateModified": "2022-10-26T15:59:06.517"
+        },
+        "litter": {
+            "birthID": null,
+            "matingID": null,
+            "housingID": null,
+            "weanDate": null
+        },
+        "genotypes": [
+            {
+                "genotypeKey": 91538,
+                "date": "May 11 2022  4:00AM",
+                "assay": "Bicra<em1(IMPC)J>",
+                "genotype": "-/-",
+                "modifiedBy": "ccm",
+                "dateModified": "2022-05-11T17:34:40.68"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalId": 33085,
+            "materialKey": 33853,
+            "animalName": "A-1356",
+            "exitReason": null,
+            "physicalMarker": null,
+            "dateBorn": "2022-05-11T04:00:00",
+            "dateExit": null,
+            "externalIdentifier": null,
+            "comments": null,
+            "species": "Mouse",
+            "sex": "Female",
+            "generation": "E18.5",
+            "markerType": "Ear Notch",
+            "arrivalDate": "2022-05-11T04:00:00",
+            "clinicalObservationsCount": 0,
+            "status": "Alive",
+            "taskInstanceCount": 3,
+            "modifiedBy": "kjp",
+            "dateModified": "2022-05-26T17:53:30.743"
+        },
+        "line": {
+            "lineKey": 148,
+            "isActive": true,
+            "name": "C57BL/6NJ-Bicra<em1(IMPC)J>/Mmjax",
+            "shortName": "Bicra",
+            "stock": "035759",
+            "lineType": "Endonuclease mediated mutation (em)",
+            "lineStatus": "Embryo Lethal Complete",
+            "species": "Mouse",
+            "construct": null,
+            "genotypeAssaysCount": 2,
+            "genotypeAssays": [
+                "Bicra<em1(IMPC)J>",
+                "Smcx/Smcy-Sex Determination Assay"
+            ],
+            "technician": "ccm",
+            "parentLine": null,
+            "backgroundLine": "C57BL6/NJ",
+            "breedingStrategy": "Het X WT",
+            "development": null,
+            "externalLink": null,
+            "references": "MGI:2154263",
+            "comment": null,
+            "defaultLocation": "All GRS Locations",
+            "createdBy": "ccm",
+            "dateCreated": "2021-09-24T16:27:53.767",
+            "modifiedBy": "mike",
+            "dateModified": "2022-10-26T15:59:06.517"
+        },
+        "litter": {
+            "birthID": null,
+            "matingID": null,
+            "housingID": null,
+            "weanDate": null
+        },
+        "genotypes": [
+            {
+                "genotypeKey": 91539,
+                "date": "May 11 2022  4:00AM",
+                "assay": "Bicra<em1(IMPC)J>",
+                "genotype": "-/-",
+                "modifiedBy": "ccm",
+                "dateModified": "2022-05-11T17:34:40.68"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalId": 33271,
+            "materialKey": 34070,
+            "animalName": "A-1533",
+            "exitReason": null,
+            "physicalMarker": null,
+            "dateBorn": "2022-05-24T04:00:00",
+            "dateExit": null,
+            "externalIdentifier": null,
+            "comments": null,
+            "species": "Mouse",
+            "sex": "Female",
+            "generation": "E18.5",
+            "markerType": "Ear Notch",
+            "arrivalDate": "2022-05-24T04:00:00",
+            "clinicalObservationsCount": 0,
+            "status": "Alive",
+            "taskInstanceCount": 3,
+            "modifiedBy": "kjp",
+            "dateModified": "2022-07-19T16:17:48.03"
+        },
+        "line": {
+            "lineKey": 184,
+            "isActive": true,
+            "name": "C57BL/6NJ-Zfp750<em1(IMPC)J>/Mmjax",
+            "shortName": "Zfp750",
+            "stock": "036489",
+            "lineType": "Endonuclease mediated mutation (em)",
+            "lineStatus": "Embryo Lethal Complete",
+            "species": "Mouse",
+            "construct": null,
+            "genotypeAssaysCount": 2,
+            "genotypeAssays": [
+                "Zfp750<em1(IMPC)J>",
+                "Smcx/Smcy-Sex Determination Assay"
+            ],
+            "technician": "ccm",
+            "parentLine": null,
+            "backgroundLine": "C57BL/6NJ",
+            "breedingStrategy": "Het X Wt",
+            "development": null,
+            "externalLink": null,
+            "references": "MGI:2442210",
+            "comment": null,
+            "defaultLocation": "All GRS Locations",
+            "createdBy": "ccm",
+            "dateCreated": "2022-02-24T20:11:17.007",
+            "modifiedBy": "kjp",
+            "dateModified": "2022-12-28T17:37:54.783"
+        },
+        "litter": {
+            "birthID": null,
+            "matingID": null,
+            "housingID": null,
+            "weanDate": null
+        },
+        "genotypes": [
+            {
+                "genotypeKey": 92478,
+                "date": "Jul  7 2022  4:00AM",
+                "assay": "Zfp750<em1(IMPC)J>",
+                "genotype": "-/-",
+                "modifiedBy": "ccm",
+                "dateModified": "2022-07-07T15:30:25.967"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalId": 33275,
+            "materialKey": 34074,
+            "animalName": "A-1537",
+            "exitReason": null,
+            "physicalMarker": null,
+            "dateBorn": "2022-05-24T04:00:00",
+            "dateExit": null,
+            "externalIdentifier": null,
+            "comments": null,
+            "species": "Mouse",
+            "sex": "Male",
+            "generation": "E18.5",
+            "markerType": "Ear Notch",
+            "arrivalDate": "2022-05-24T04:00:00",
+            "clinicalObservationsCount": 0,
+            "status": "Alive",
+            "taskInstanceCount": 3,
+            "modifiedBy": "kjp",
+            "dateModified": "2022-07-19T16:17:48.03"
+        },
+        "line": {
+            "lineKey": 184,
+            "isActive": true,
+            "name": "C57BL/6NJ-Zfp750<em1(IMPC)J>/Mmjax",
+            "shortName": "Zfp750",
+            "stock": "036489",
+            "lineType": "Endonuclease mediated mutation (em)",
+            "lineStatus": "Embryo Lethal Complete",
+            "species": "Mouse",
+            "construct": null,
+            "genotypeAssaysCount": 2,
+            "genotypeAssays": [
+                "Zfp750<em1(IMPC)J>",
+                "Smcx/Smcy-Sex Determination Assay"
+            ],
+            "technician": "ccm",
+            "parentLine": null,
+            "backgroundLine": "C57BL/6NJ",
+            "breedingStrategy": "Het X Wt",
+            "development": null,
+            "externalLink": null,
+            "references": "MGI:2442210",
+            "comment": null,
+            "defaultLocation": "All GRS Locations",
+            "createdBy": "ccm",
+            "dateCreated": "2022-02-24T20:11:17.007",
+            "modifiedBy": "kjp",
+            "dateModified": "2022-12-28T17:37:54.783"
+        },
+        "litter": {
+            "birthID": null,
+            "matingID": null,
+            "housingID": null,
+            "weanDate": null
+        },
+        "genotypes": [
+            {
+                "genotypeKey": 92479,
+                "date": "Jul  7 2022  4:00AM",
+                "assay": "Zfp750<em1(IMPC)J>",
+                "genotype": "-/-",
+                "modifiedBy": "ccm",
+                "dateModified": "2022-07-07T15:30:25.967"
+            }
+        ]
+    }
+]

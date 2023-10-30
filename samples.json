@@ -1,0 +1,6139 @@
+[
+    {
+        "animal": {
+            "animalName": "MN1",
+            "dateBorn": "2023-05-06",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "000646"
+        },
+        "litter": {
+            "birthID": "1"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "MN1",
+            "dateBorn": "2023-05-06",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "000646"
+        },
+        "litter": {
+            "birthID": "1"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "MN1",
+            "dateBorn": "2023-05-06",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "000646"
+        },
+        "litter": {
+            "birthID": "1"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "MN1",
+            "dateBorn": "2023-05-06",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "000646"
+        },
+        "litter": {
+            "birthID": "1"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "MN1",
+            "dateBorn": "2023-05-06",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "000646"
+        },
+        "litter": {
+            "birthID": "1"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "MN1",
+            "dateBorn": "2023-05-06",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "000646"
+        },
+        "litter": {
+            "birthID": "1"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "MN1",
+            "dateBorn": "2023-05-06",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "000646"
+        },
+        "litter": {
+            "birthID": "1"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "1",
+            "dateBorn": "2023-06-25",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "000001"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "+/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "2",
+            "dateBorn": "2023-06-26",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "000001"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "+/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "3",
+            "dateBorn": "2023-06-27",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "000001"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "+/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "4",
+            "dateBorn": "2023-06-28",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "000001"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "+/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-33829",
+            "dateBorn": "2023-09-29",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": "B-4343"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-33830",
+            "dateBorn": "2023-09-29",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": "B-4343"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-32483",
+            "dateBorn": "2023-09-26",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": "B-4159"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-32484",
+            "dateBorn": "2023-09-26",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": "B-4159"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25387",
+            "dateBorn": "2023-07-23",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25405",
+            "dateBorn": "2023-07-26",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25506",
+            "dateBorn": "2023-07-26",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034296"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25255",
+            "dateBorn": "2023-07-25",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25407",
+            "dateBorn": "2023-07-24",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25507",
+            "dateBorn": "2023-07-24",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034296"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25508",
+            "dateBorn": "2023-07-25",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034296"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25387",
+            "dateBorn": "2023-07-23",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25405",
+            "dateBorn": "2023-07-26",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25506",
+            "dateBorn": "2023-07-26",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034296"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25255",
+            "dateBorn": "2023-07-25",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25407",
+            "dateBorn": "2023-07-24",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25507",
+            "dateBorn": "2023-07-24",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034296"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25508",
+            "dateBorn": "2023-07-25",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034296"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25256",
+            "dateBorn": "2023-07-26",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25387",
+            "dateBorn": "2023-07-23",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25405",
+            "dateBorn": "2023-07-26",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25506",
+            "dateBorn": "2023-07-26",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034296"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25255",
+            "dateBorn": "2023-07-25",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25407",
+            "dateBorn": "2023-07-24",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25507",
+            "dateBorn": "2023-07-24",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034296"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25508",
+            "dateBorn": "2023-07-25",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034296"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25256",
+            "dateBorn": "2023-07-26",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24440",
+            "dateBorn": "2023-07-10",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037926"
+        },
+        "litter": {
+            "birthID": "1061"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24193",
+            "dateBorn": "2023-07-14",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037980"
+        },
+        "litter": {
+            "birthID": "1062"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24184",
+            "dateBorn": "2023-07-13",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037980"
+        },
+        "litter": {
+            "birthID": "1063"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24173",
+            "dateBorn": "2023-07-13",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037980"
+        },
+        "litter": {
+            "birthID": "1064"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24178",
+            "dateBorn": "2023-07-13",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037980"
+        },
+        "litter": {
+            "birthID": "1065"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24119",
+            "dateBorn": "2023-07-08",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038086"
+        },
+        "litter": {
+            "birthID": "1066"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24122",
+            "dateBorn": "2023-07-08",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038086"
+        },
+        "litter": {
+            "birthID": "1067"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24043",
+            "dateBorn": "2023-07-08",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037817"
+        },
+        "litter": {
+            "birthID": "1068"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24045",
+            "dateBorn": "2023-07-08",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037817"
+        },
+        "litter": {
+            "birthID": "1069"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24030",
+            "dateBorn": "2023-07-14",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038090"
+        },
+        "litter": {
+            "birthID": "1070"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24025",
+            "dateBorn": "2023-07-14",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038090"
+        },
+        "litter": {
+            "birthID": "1071"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24026",
+            "dateBorn": "2023-07-14",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038090"
+        },
+        "litter": {
+            "birthID": "1072"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24027",
+            "dateBorn": "2023-07-14",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038090"
+        },
+        "litter": {
+            "birthID": "1073"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24028",
+            "dateBorn": "2023-07-14",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038090"
+        },
+        "litter": {
+            "birthID": "1074"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24015",
+            "dateBorn": "2023-07-08",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038090"
+        },
+        "litter": {
+            "birthID": "1075"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24017",
+            "dateBorn": "2023-07-08",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038090"
+        },
+        "litter": {
+            "birthID": "1076"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24019",
+            "dateBorn": "2023-07-08",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038090"
+        },
+        "litter": {
+            "birthID": "1077"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24004",
+            "dateBorn": "2023-07-13",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037933"
+        },
+        "litter": {
+            "birthID": "1078"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24006",
+            "dateBorn": "2023-07-13",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037933"
+        },
+        "litter": {
+            "birthID": "1079"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23994",
+            "dateBorn": "2023-07-14",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037933"
+        },
+        "litter": {
+            "birthID": "1080"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24000",
+            "dateBorn": "2023-07-14",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037933"
+        },
+        "litter": {
+            "birthID": "1081"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23971",
+            "dateBorn": "2023-07-14",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037880"
+        },
+        "litter": {
+            "birthID": "1082"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23973",
+            "dateBorn": "2023-07-14",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037880"
+        },
+        "litter": {
+            "birthID": "1083"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23977",
+            "dateBorn": "2023-07-14",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037880"
+        },
+        "litter": {
+            "birthID": "1084"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23981",
+            "dateBorn": "2023-07-14",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037880"
+        },
+        "litter": {
+            "birthID": "1085"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23953",
+            "dateBorn": "2023-07-11",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037948"
+        },
+        "litter": {
+            "birthID": "1086"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23954",
+            "dateBorn": "2023-07-11",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037948"
+        },
+        "litter": {
+            "birthID": "1087"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23958",
+            "dateBorn": "2023-07-11",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037948"
+        },
+        "litter": {
+            "birthID": "1088"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23962",
+            "dateBorn": "2023-07-11",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037948"
+        },
+        "litter": {
+            "birthID": "1089"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25875",
+            "dateBorn": "2023-07-21",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037876"
+        },
+        "litter": {
+            "birthID": "1090"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25876",
+            "dateBorn": "2023-07-21",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037876"
+        },
+        "litter": {
+            "birthID": "1091"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25877",
+            "dateBorn": "2023-07-21",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037876"
+        },
+        "litter": {
+            "birthID": "1092"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25878",
+            "dateBorn": "2023-07-21",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037876"
+        },
+        "litter": {
+            "birthID": "1093"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25879",
+            "dateBorn": "2023-07-21",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037876"
+        },
+        "litter": {
+            "birthID": "1094"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25880",
+            "dateBorn": "2023-07-21",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037876"
+        },
+        "litter": {
+            "birthID": "1095"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25881",
+            "dateBorn": "2023-07-21",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037876"
+        },
+        "litter": {
+            "birthID": "1096"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25858",
+            "dateBorn": "2023-07-18",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037768"
+        },
+        "litter": {
+            "birthID": "1097"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25859",
+            "dateBorn": "2023-07-18",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037768"
+        },
+        "litter": {
+            "birthID": "1098"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25860",
+            "dateBorn": "2023-07-18",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037768"
+        },
+        "litter": {
+            "birthID": "1099"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25861",
+            "dateBorn": "2023-07-18",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037768"
+        },
+        "litter": {
+            "birthID": "1100"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25680",
+            "dateBorn": "2023-07-18",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": "1101"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25681",
+            "dateBorn": "2023-07-18",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": "1102"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25682",
+            "dateBorn": "2023-07-18",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": "1103"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25677",
+            "dateBorn": "2023-07-18",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": "1104"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25678",
+            "dateBorn": "2023-07-18",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": "1105"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25679",
+            "dateBorn": "2023-07-18",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": "1106"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25080",
+            "dateBorn": "2023-07-15",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037612"
+        },
+        "litter": {
+            "birthID": "1107"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25075",
+            "dateBorn": "2023-07-19",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037612"
+        },
+        "litter": {
+            "birthID": "1108"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25076",
+            "dateBorn": "2023-07-19",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037612"
+        },
+        "litter": {
+            "birthID": "1109"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25065",
+            "dateBorn": "2023-07-16",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037817"
+        },
+        "litter": {
+            "birthID": "1110"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25060",
+            "dateBorn": "2023-07-18",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037817"
+        },
+        "litter": {
+            "birthID": "1111"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25032",
+            "dateBorn": "2023-07-16",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037877"
+        },
+        "litter": {
+            "birthID": "1112"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25009",
+            "dateBorn": "2023-07-21",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037877"
+        },
+        "litter": {
+            "birthID": "1113"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25011",
+            "dateBorn": "2023-07-21",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037877"
+        },
+        "litter": {
+            "birthID": "1114"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25003",
+            "dateBorn": "2023-07-20",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038143"
+        },
+        "litter": {
+            "birthID": "1115"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24972",
+            "dateBorn": "2023-07-20",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038143"
+        },
+        "litter": {
+            "birthID": "1116"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24973",
+            "dateBorn": "2023-07-20",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038143"
+        },
+        "litter": {
+            "birthID": "1117"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24975",
+            "dateBorn": "2023-07-20",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038143"
+        },
+        "litter": {
+            "birthID": "1118"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24962",
+            "dateBorn": "2023-07-18",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038143"
+        },
+        "litter": {
+            "birthID": "1119"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24964",
+            "dateBorn": "2023-07-18",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038143"
+        },
+        "litter": {
+            "birthID": "1120"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24968",
+            "dateBorn": "2023-07-18",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038143"
+        },
+        "litter": {
+            "birthID": "1121"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24861",
+            "dateBorn": "2023-07-21",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038007"
+        },
+        "litter": {
+            "birthID": "1122"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25387",
+            "dateBorn": "2023-07-23",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25405",
+            "dateBorn": "2023-07-26",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25506",
+            "dateBorn": "2023-07-26",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034296"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25255",
+            "dateBorn": "2023-07-25",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25407",
+            "dateBorn": "2023-07-24",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25507",
+            "dateBorn": "2023-07-24",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034296"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25508",
+            "dateBorn": "2023-07-25",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034296"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25256",
+            "dateBorn": "2023-07-26",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24863",
+            "dateBorn": "2023-07-21",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038007"
+        },
+        "litter": {
+            "birthID": "1123"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24864",
+            "dateBorn": "2023-07-21",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038007"
+        },
+        "litter": {
+            "birthID": "1124"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24821",
+            "dateBorn": "2023-07-18",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038068"
+        },
+        "litter": {
+            "birthID": "1125"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24822",
+            "dateBorn": "2023-07-18",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038068"
+        },
+        "litter": {
+            "birthID": "1126"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24823",
+            "dateBorn": "2023-07-18",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038068"
+        },
+        "litter": {
+            "birthID": "1127"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24827",
+            "dateBorn": "2023-07-18",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038068"
+        },
+        "litter": {
+            "birthID": "1128"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24808",
+            "dateBorn": "2023-07-21",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038068"
+        },
+        "litter": {
+            "birthID": "1129"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24812",
+            "dateBorn": "2023-07-21",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038068"
+        },
+        "litter": {
+            "birthID": "1130"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24815",
+            "dateBorn": "2023-07-21",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038068"
+        },
+        "litter": {
+            "birthID": "1131"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24816",
+            "dateBorn": "2023-07-21",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038068"
+        },
+        "litter": {
+            "birthID": "1132"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24800",
+            "dateBorn": "2023-07-15",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037767"
+        },
+        "litter": {
+            "birthID": "1133"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24801",
+            "dateBorn": "2023-07-15",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037767"
+        },
+        "litter": {
+            "birthID": "1134"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24804",
+            "dateBorn": "2023-07-15",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037767"
+        },
+        "litter": {
+            "birthID": "1135"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24805",
+            "dateBorn": "2023-07-15",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037767"
+        },
+        "litter": {
+            "birthID": "1136"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24806",
+            "dateBorn": "2023-07-15",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037767"
+        },
+        "litter": {
+            "birthID": "1137"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26605",
+            "dateBorn": "2023-07-28",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037880"
+        },
+        "litter": {
+            "birthID": "1138"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26606",
+            "dateBorn": "2023-07-28",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037880"
+        },
+        "litter": {
+            "birthID": "1139"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26607",
+            "dateBorn": "2023-07-28",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037880"
+        },
+        "litter": {
+            "birthID": "1140"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26600",
+            "dateBorn": "2023-07-23",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038005"
+        },
+        "litter": {
+            "birthID": "1141"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26601",
+            "dateBorn": "2023-07-23",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038005"
+        },
+        "litter": {
+            "birthID": "1142"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26599",
+            "dateBorn": "2023-07-23",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038005"
+        },
+        "litter": {
+            "birthID": "1143"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26110",
+            "dateBorn": "2023-07-25",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": "1144"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26111",
+            "dateBorn": "2023-07-25",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": "1145"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26112",
+            "dateBorn": "2023-07-25",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": "1146"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26107",
+            "dateBorn": "2023-07-25",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": "1147"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26108",
+            "dateBorn": "2023-07-25",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": "1148"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26109",
+            "dateBorn": "2023-07-25",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": "1149"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25657",
+            "dateBorn": "2023-07-22",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038134"
+        },
+        "litter": {
+            "birthID": "1150"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25663",
+            "dateBorn": "2023-07-22",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038134"
+        },
+        "litter": {
+            "birthID": "1151"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25618",
+            "dateBorn": "2023-07-26",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038071"
+        },
+        "litter": {
+            "birthID": "1152"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25619",
+            "dateBorn": "2023-07-26",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038071"
+        },
+        "litter": {
+            "birthID": "1153"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25621",
+            "dateBorn": "2023-07-26",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038071"
+        },
+        "litter": {
+            "birthID": "1154"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25622",
+            "dateBorn": "2023-07-26",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038071"
+        },
+        "litter": {
+            "birthID": "1155"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25611",
+            "dateBorn": "2023-07-22",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038071"
+        },
+        "litter": {
+            "birthID": "1156"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25614",
+            "dateBorn": "2023-07-22",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038071"
+        },
+        "litter": {
+            "birthID": "1157"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25593",
+            "dateBorn": "2023-07-28",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038087"
+        },
+        "litter": {
+            "birthID": "1158"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25594",
+            "dateBorn": "2023-07-28",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038087"
+        },
+        "litter": {
+            "birthID": "1159"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25597",
+            "dateBorn": "2023-07-28",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038087"
+        },
+        "litter": {
+            "birthID": "1160"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25598",
+            "dateBorn": "2023-07-28",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038087"
+        },
+        "litter": {
+            "birthID": "1161"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25590",
+            "dateBorn": "2023-07-24",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038087"
+        },
+        "litter": {
+            "birthID": "1162"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25592",
+            "dateBorn": "2023-07-24",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038087"
+        },
+        "litter": {
+            "birthID": "1163"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25461",
+            "dateBorn": "2023-07-24",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038099"
+        },
+        "litter": {
+            "birthID": "1164"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25462",
+            "dateBorn": "2023-07-24",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038099"
+        },
+        "litter": {
+            "birthID": "1165"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25437",
+            "dateBorn": "2023-07-27",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038102"
+        },
+        "litter": {
+            "birthID": "1166"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25440",
+            "dateBorn": "2023-07-27",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038102"
+        },
+        "litter": {
+            "birthID": "1167"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25425",
+            "dateBorn": "2023-07-24",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037934"
+        },
+        "litter": {
+            "birthID": "1168"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25428",
+            "dateBorn": "2023-07-24",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037934"
+        },
+        "litter": {
+            "birthID": "1169"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25429",
+            "dateBorn": "2023-07-24",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037934"
+        },
+        "litter": {
+            "birthID": "1170"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25424",
+            "dateBorn": "2023-07-24",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037934"
+        },
+        "litter": {
+            "birthID": "1171"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25417",
+            "dateBorn": "2023-07-22",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038068"
+        },
+        "litter": {
+            "birthID": "1172"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25418",
+            "dateBorn": "2023-07-22",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038068"
+        },
+        "litter": {
+            "birthID": "1173"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25414",
+            "dateBorn": "2023-07-23",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037767"
+        },
+        "litter": {
+            "birthID": "1174"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25398",
+            "dateBorn": "2023-07-26",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037767"
+        },
+        "litter": {
+            "birthID": "1175"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25401",
+            "dateBorn": "2023-07-26",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037767"
+        },
+        "litter": {
+            "birthID": "1176"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25404",
+            "dateBorn": "2023-07-26",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037767"
+        },
+        "litter": {
+            "birthID": "1177"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25405",
+            "dateBorn": "2023-07-26",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037767"
+        },
+        "litter": {
+            "birthID": "1178"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25406",
+            "dateBorn": "2023-07-26",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037767"
+        },
+        "litter": {
+            "birthID": "1179"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25387",
+            "dateBorn": "2023-07-23",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037948"
+        },
+        "litter": {
+            "birthID": "1180"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-27729",
+            "dateBorn": "2023-08-03",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038056"
+        },
+        "litter": {
+            "birthID": "1181"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-27730",
+            "dateBorn": "2023-08-03",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038056"
+        },
+        "litter": {
+            "birthID": "1182"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-27731",
+            "dateBorn": "2023-08-03",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038056"
+        },
+        "litter": {
+            "birthID": "1183"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-27698",
+            "dateBorn": "2023-08-03",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038088"
+        },
+        "litter": {
+            "birthID": "1184"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-27699",
+            "dateBorn": "2023-08-03",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038088"
+        },
+        "litter": {
+            "birthID": "1185"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-27700",
+            "dateBorn": "2023-08-03",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038088"
+        },
+        "litter": {
+            "birthID": "1186"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-27701",
+            "dateBorn": "2023-08-03",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038088"
+        },
+        "litter": {
+            "birthID": "1187"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-27702",
+            "dateBorn": "2023-08-03",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038088"
+        },
+        "litter": {
+            "birthID": "1188"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-27703",
+            "dateBorn": "2023-08-03",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038088"
+        },
+        "litter": {
+            "birthID": "1189"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-27704",
+            "dateBorn": "2023-08-03",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038088"
+        },
+        "litter": {
+            "birthID": "1190"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26858",
+            "dateBorn": "2023-08-01",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": "1191"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26859",
+            "dateBorn": "2023-08-01",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": "1192"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26860",
+            "dateBorn": "2023-08-01",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": "1193"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26855",
+            "dateBorn": "2023-08-01",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": "1194"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26856",
+            "dateBorn": "2023-08-01",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": "1195"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26857",
+            "dateBorn": "2023-08-01",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": "1196"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26357",
+            "dateBorn": "2023-07-30",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037926"
+        },
+        "litter": {
+            "birthID": "1197"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26359",
+            "dateBorn": "2023-07-30",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037926"
+        },
+        "litter": {
+            "birthID": "1198"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26360",
+            "dateBorn": "2023-07-30",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037926"
+        },
+        "litter": {
+            "birthID": "1199"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26342",
+            "dateBorn": "2023-08-01",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038086"
+        },
+        "litter": {
+            "birthID": "1200"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26345",
+            "dateBorn": "2023-08-01",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038086"
+        },
+        "litter": {
+            "birthID": "1201"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26346",
+            "dateBorn": "2023-08-01",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038086"
+        },
+        "litter": {
+            "birthID": "1202"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26325",
+            "dateBorn": "2023-07-31",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038086"
+        },
+        "litter": {
+            "birthID": "1203"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26319",
+            "dateBorn": "2023-08-01",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038086"
+        },
+        "litter": {
+            "birthID": "1204"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26307",
+            "dateBorn": "2023-08-04",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038090"
+        },
+        "litter": {
+            "birthID": "1205"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26308",
+            "dateBorn": "2023-08-04",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038090"
+        },
+        "litter": {
+            "birthID": "1206"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26310",
+            "dateBorn": "2023-08-04",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038090"
+        },
+        "litter": {
+            "birthID": "1207"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26303",
+            "dateBorn": "2023-08-04",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038090"
+        },
+        "litter": {
+            "birthID": "1208"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26296",
+            "dateBorn": "2023-08-03",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037631"
+        },
+        "litter": {
+            "birthID": "1209"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26299",
+            "dateBorn": "2023-08-03",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037631"
+        },
+        "litter": {
+            "birthID": "1210"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26276",
+            "dateBorn": "2023-08-04",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037631"
+        },
+        "litter": {
+            "birthID": "1211"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26277",
+            "dateBorn": "2023-08-04",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037631"
+        },
+        "litter": {
+            "birthID": "1212"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26282",
+            "dateBorn": "2023-08-04",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037631"
+        },
+        "litter": {
+            "birthID": "1213"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26285",
+            "dateBorn": "2023-08-04",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037631"
+        },
+        "litter": {
+            "birthID": "1214"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26143",
+            "dateBorn": "2023-08-03",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038144"
+        },
+        "litter": {
+            "birthID": "1215"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26144",
+            "dateBorn": "2023-08-03",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038144"
+        },
+        "litter": {
+            "birthID": "1216"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26147",
+            "dateBorn": "2023-08-03",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038144"
+        },
+        "litter": {
+            "birthID": "1217"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26113",
+            "dateBorn": "2023-08-03",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038144"
+        },
+        "litter": {
+            "birthID": "1218"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26101",
+            "dateBorn": "2023-08-03",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037869"
+        },
+        "litter": {
+            "birthID": "1219"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26105",
+            "dateBorn": "2023-08-03",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037869"
+        },
+        "litter": {
+            "birthID": "1220"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26088",
+            "dateBorn": "2023-08-01",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037869"
+        },
+        "litter": {
+            "birthID": "1221"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26071",
+            "dateBorn": "2023-08-03",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038069"
+        },
+        "litter": {
+            "birthID": "1222"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26061",
+            "dateBorn": "2023-08-03",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038069"
+        },
+        "litter": {
+            "birthID": "1223"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-26067",
+            "dateBorn": "2023-08-03",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038069"
+        },
+        "litter": {
+            "birthID": "1224"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25988",
+            "dateBorn": "2023-08-03",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037866"
+        },
+        "litter": {
+            "birthID": "1225"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25989",
+            "dateBorn": "2023-08-03",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037866"
+        },
+        "litter": {
+            "birthID": "1226"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25981",
+            "dateBorn": "2023-08-04",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037866"
+        },
+        "litter": {
+            "birthID": "1227"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25967",
+            "dateBorn": "2023-08-04",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037866"
+        },
+        "litter": {
+            "birthID": "1228"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24778",
+            "dateBorn": "2023-07-04",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": "1000"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24779",
+            "dateBorn": "2023-07-04",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": "1001"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24780",
+            "dateBorn": "2023-07-04",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": "1002"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24775",
+            "dateBorn": "2023-07-04",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": "1003"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24776",
+            "dateBorn": "2023-07-04",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": "1004"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24777",
+            "dateBorn": "2023-07-04",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": "1005"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24771",
+            "dateBorn": "2023-07-05",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037810"
+        },
+        "litter": {
+            "birthID": "1006"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24772",
+            "dateBorn": "2023-07-05",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037810"
+        },
+        "litter": {
+            "birthID": "1007"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24773",
+            "dateBorn": "2023-07-05",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037810"
+        },
+        "litter": {
+            "birthID": "1008"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24754",
+            "dateBorn": "2023-07-06",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037934"
+        },
+        "litter": {
+            "birthID": "1009"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24747",
+            "dateBorn": "2023-07-07",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037934"
+        },
+        "litter": {
+            "birthID": "1010"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24748",
+            "dateBorn": "2023-07-07",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037934"
+        },
+        "litter": {
+            "birthID": "1011"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24749",
+            "dateBorn": "2023-07-07",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037934"
+        },
+        "litter": {
+            "birthID": "1012"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23878",
+            "dateBorn": "2023-07-04",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037813"
+        },
+        "litter": {
+            "birthID": "1013"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23617",
+            "dateBorn": "2023-07-06",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038086"
+        },
+        "litter": {
+            "birthID": "1014"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23618",
+            "dateBorn": "2023-07-06",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038086"
+        },
+        "litter": {
+            "birthID": "1015"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23621",
+            "dateBorn": "2023-07-06",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038086"
+        },
+        "litter": {
+            "birthID": "1016"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23622",
+            "dateBorn": "2023-07-06",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038086"
+        },
+        "litter": {
+            "birthID": "1017"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23614",
+            "dateBorn": "2023-07-07",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038086"
+        },
+        "litter": {
+            "birthID": "1018"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23599",
+            "dateBorn": "2023-07-06",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038086"
+        },
+        "litter": {
+            "birthID": "1019"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23601",
+            "dateBorn": "2023-07-06",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038086"
+        },
+        "litter": {
+            "birthID": "1020"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23603",
+            "dateBorn": "2023-07-06",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038086"
+        },
+        "litter": {
+            "birthID": "1021"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23596",
+            "dateBorn": "2023-07-07",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038086"
+        },
+        "litter": {
+            "birthID": "1022"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23578",
+            "dateBorn": "2023-07-07",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038101"
+        },
+        "litter": {
+            "birthID": "1023"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23579",
+            "dateBorn": "2023-07-07",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038101"
+        },
+        "litter": {
+            "birthID": "1024"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23582",
+            "dateBorn": "2023-07-07",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038101"
+        },
+        "litter": {
+            "birthID": "1025"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23576",
+            "dateBorn": "2023-07-07",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038101"
+        },
+        "litter": {
+            "birthID": "1026"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23577",
+            "dateBorn": "2023-07-07",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038101"
+        },
+        "litter": {
+            "birthID": "1027"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23568",
+            "dateBorn": "2023-07-07",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038101"
+        },
+        "litter": {
+            "birthID": "1028"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23569",
+            "dateBorn": "2023-07-07",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038101"
+        },
+        "litter": {
+            "birthID": "1029"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23512",
+            "dateBorn": "2023-07-02",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038087"
+        },
+        "litter": {
+            "birthID": "1030"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23519",
+            "dateBorn": "2023-07-02",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038087"
+        },
+        "litter": {
+            "birthID": "1031"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23521",
+            "dateBorn": "2023-07-02",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038087"
+        },
+        "litter": {
+            "birthID": "1032"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23505",
+            "dateBorn": "2023-07-05",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038087"
+        },
+        "litter": {
+            "birthID": "1033"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23506",
+            "dateBorn": "2023-07-05",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038087"
+        },
+        "litter": {
+            "birthID": "1034"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23510",
+            "dateBorn": "2023-07-05",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038087"
+        },
+        "litter": {
+            "birthID": "1035"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23491",
+            "dateBorn": "2023-07-05",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038087"
+        },
+        "litter": {
+            "birthID": "1036"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23495",
+            "dateBorn": "2023-07-05",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038087"
+        },
+        "litter": {
+            "birthID": "1037"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23496",
+            "dateBorn": "2023-07-05",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038087"
+        },
+        "litter": {
+            "birthID": "1038"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23471",
+            "dateBorn": "2023-07-01",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038102"
+        },
+        "litter": {
+            "birthID": "1039"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23472",
+            "dateBorn": "2023-07-01",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038102"
+        },
+        "litter": {
+            "birthID": "1040"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23475",
+            "dateBorn": "2023-07-01",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038102"
+        },
+        "litter": {
+            "birthID": "1041"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23432",
+            "dateBorn": "2023-07-03",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037638"
+        },
+        "litter": {
+            "birthID": "1042"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23435",
+            "dateBorn": "2023-07-03",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037638"
+        },
+        "litter": {
+            "birthID": "1043"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23417",
+            "dateBorn": "2023-07-07",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038056"
+        },
+        "litter": {
+            "birthID": "1044"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23423",
+            "dateBorn": "2023-07-07",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "038056"
+        },
+        "litter": {
+            "birthID": "1045"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23321",
+            "dateBorn": "2023-07-02",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037767"
+        },
+        "litter": {
+            "birthID": "1046"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-23322",
+            "dateBorn": "2023-07-02",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037767"
+        },
+        "litter": {
+            "birthID": "1047"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25373",
+            "dateBorn": "2023-07-11",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": "1048"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25374",
+            "dateBorn": "2023-07-11",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": "1049"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25375",
+            "dateBorn": "2023-07-11",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": "1050"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25358",
+            "dateBorn": "2023-07-11",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": "1051"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25359",
+            "dateBorn": "2023-07-11",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": "1052"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25360",
+            "dateBorn": "2023-07-11",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": "1053"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25344",
+            "dateBorn": "2023-07-14",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037829"
+        },
+        "litter": {
+            "birthID": "1054"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25345",
+            "dateBorn": "2023-07-14",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037829"
+        },
+        "litter": {
+            "birthID": "1055"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25346",
+            "dateBorn": "2023-07-14",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037829"
+        },
+        "litter": {
+            "birthID": "1056"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25338",
+            "dateBorn": "2023-07-09",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037768"
+        },
+        "litter": {
+            "birthID": "1057"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25339",
+            "dateBorn": "2023-07-09",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037768"
+        },
+        "litter": {
+            "birthID": "1058"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25340",
+            "dateBorn": "2023-07-09",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037768"
+        },
+        "litter": {
+            "birthID": "1059"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-24451",
+            "dateBorn": "2023-07-09",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "037646"
+        },
+        "litter": {
+            "birthID": "1060"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25387",
+            "dateBorn": "2023-07-23",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25405",
+            "dateBorn": "2023-07-26",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25387",
+            "dateBorn": "2023-07-23",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25405",
+            "dateBorn": "2023-07-26",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25506",
+            "dateBorn": "2023-07-26",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034296"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25255",
+            "dateBorn": "2023-07-25",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25407",
+            "dateBorn": "2023-07-24",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25507",
+            "dateBorn": "2023-07-24",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034296"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25508",
+            "dateBorn": "2023-07-25",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034296"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25256",
+            "dateBorn": "2023-07-26",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25506",
+            "dateBorn": "2023-07-26",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034296"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25255",
+            "dateBorn": "2023-07-25",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25407",
+            "dateBorn": "2023-07-24",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25507",
+            "dateBorn": "2023-07-24",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034296"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25508",
+            "dateBorn": "2023-07-25",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034296"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25256",
+            "dateBorn": "2023-07-26",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25387",
+            "dateBorn": "2023-07-23",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25405",
+            "dateBorn": "2023-07-26",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25506",
+            "dateBorn": "2023-07-26",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034296"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25255",
+            "dateBorn": "2023-07-25",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25407",
+            "dateBorn": "2023-07-24",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25507",
+            "dateBorn": "2023-07-24",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034296"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25508",
+            "dateBorn": "2023-07-25",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034296"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25256",
+            "dateBorn": "2023-07-26",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25405",
+            "dateBorn": "2023-07-26",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25387",
+            "dateBorn": "2023-07-23",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25506",
+            "dateBorn": "2023-07-26",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034296"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25255",
+            "dateBorn": "2023-07-25",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25407",
+            "dateBorn": "2023-07-24",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25507",
+            "dateBorn": "2023-07-24",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034296"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25508",
+            "dateBorn": "2023-07-25",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034296"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "-/Y"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25256",
+            "dateBorn": "2023-07-26",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-25256",
+            "dateBorn": "2023-07-26",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "005304"
+        },
+        "litter": {
+            "birthID": null
+        },
+        "genotypes": [
+            {
+                "genotype": "+/+"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-33829",
+            "dateBorn": "2023-09-29",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": "B-4343"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-33830",
+            "dateBorn": "2023-09-29",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": "B-4343"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-33145",
+            "dateBorn": "2023-09-27",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": "B-4252"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-32489",
+            "dateBorn": "2023-09-26",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": "B-4160"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-32483",
+            "dateBorn": "2023-09-26",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": "B-4159"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-32484",
+            "dateBorn": "2023-09-26",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": "B-4159"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-33829",
+            "dateBorn": "2023-09-29",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": "B-4343"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-33830",
+            "dateBorn": "2023-09-29",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": "B-4343"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-33145",
+            "dateBorn": "2023-09-27",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": "B-4252"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-32489",
+            "dateBorn": "2023-09-26",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": "B-4160"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-32483",
+            "dateBorn": "2023-09-26",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": "B-4159"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-32484",
+            "dateBorn": "2023-09-26",
+            "sex": "Male",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": "B-4159"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-32489",
+            "dateBorn": "2023-09-26",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": "B-4160"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "A-33145",
+            "dateBorn": "2023-09-27",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "034213"
+        },
+        "litter": {
+            "birthID": "B-4252"
+        },
+        "genotypes": [
+            {
+                "genotype": "-/-"
+            }
+        ]
+    },
+    {
+        "animal": {
+            "animalName": "MN1",
+            "dateBorn": "2023-05-07",
+            "sex": "Female",
+            "generation": "F1"
+        },
+        "line": {
+            "stock": "000646"
+        },
+        "litter": {
+            "birthID": "1"
+        },
+        "genotypes": [
+            {
+                "genotype": "+/Y"
+            }
+        ]
+    }
+]

@@ -152,6 +152,21 @@ def recordSubmissionAttempt(fileName, animalName, procedure, impcCode, reviewDat
         print('INSERT FAILED FOR: ' + insertStmt)        
     return
 
+def recordMediaSubmission(srcFilename, destFilename, taskKey, impcCode):  
+    # Escape the backslashes, Must be a better way...
+    srcFilenameRaw = fr"{srcFilename}".replace('\\', '\\\\')
+    #srcFilenameRaw =srcFilenameRaw.replace('\\', '\\\\')
+    insertStmt = "INSERT INTO komp.imagefileuploadstatus (SourceFileName, DestinationFileName, TaskKey, ImpcCode) VALUES ( '{0}','{1}',{2},'{3}')".\
+        format(srcFilenameRaw, destFilename, taskKey, impcCode)
+
+    try:    
+        g_MysqlCursor.execute(insertStmt)
+        g_mysqldb.commit()
+       
+    except Exception as e:
+        print('INSERT FAILED FOR: ' + insertStmt)        
+    return
+
 def setupDatabaseConnection():
     
     try:

@@ -140,10 +140,10 @@ def validateMouseFields(specimenRecord):
       msgDict = { "AnimalName":"", "TaskName":"", "TaskInstanceKey":0, "ImpcCode":"", "StockNumber":"", "DateDue":"", "Issue":"" }
       
       # Make sure all the mandatory fields are present
-      if checkForValue(specimenRecord["colonyId"]) == False:
-            msg = " Colony ID missing" + str(specimenRecord)
-      if checkForValue(specimenRecord["strainID"]) == False:
-            msg = msg + " strain ID missing" + str(specimenRecord)
+      # May be empty if checkForValue(specimenRecord["colonyId"]) == False:
+      #      msg = " Colony ID missing" + str(specimenRecord)
+      #if checkForValue(specimenRecord["strainID"]) == False:
+      #      msg = msg + " strain ID missing" + str(specimenRecord)
       if checkForValue(specimenRecord["specimenID"]) == False:
             msg = " specimen ID missing" + str(specimenRecord)
       if checkForValue(specimenRecord["gender"]) == False:
@@ -163,7 +163,7 @@ def validateMouseFields(specimenRecord):
         return True
       else:
         msgDict["AnimalName"] = specimenRecord["specimenID"]
-        msgDict["StockNumber"] = specimenRecord["strainID"]
+        #msgDict["StockNumber"] = specimenRecord["strainID"]
         msgDict["Issue"] = msg
         db.databaseInsertQualityErrorMessage(msgDict)
         return False
@@ -227,7 +227,7 @@ def testGenotypeInfo(genotypes):
             if "Generic" not in genotype["assay"] and "Sex Determination Assay" not in genotype["assay"]:
                 zygosity = genotype["genotype"]
                 assayName = genotype["assay"]
-                if zygosity not in ['-/-','-/+','+/-','-/Y','+/+']:
+                if zygosity not in ['-/-','-/+','+/-','-/Y','+/+','+/Y']:
                     success = False
                     msg = 'Zygostiy {zygosity} is invalid.'.format(zygosity=zygosity)
                 else:
@@ -252,9 +252,9 @@ def testLineInfo(line):
 #        msg = msg + str(line["name"]) + ' status is not in supported list of ' + str(legalLineStatus) + ';'
 #        success = False   
         
-    if line["references"] == None or len(line["references"]) == 0:
-        msg = msg + 'The References field is not set. It should containg the MGI reference for KOMP lines.' + ';'
-        success = False    
+#    if line["references"] == None or len(line["references"]) == 0:
+#        msg = msg + 'The References field is not set. It should containg the MGI reference for KOMP lines.' + ';'
+#        success = False    
 
           
     return success, msg
@@ -296,7 +296,6 @@ def validateAnimal(specimen):
     successMouse = True
     successStockNumber = True
     # For writing to the database
-    msgDict = {"AnimalName":"", "TaskName":"", "TaskInstanceKey":0, "ImpcCode": "", "StockNumber":"", "DateDue":"", "Issue":"" }
     msg = ""
     
     successMouse, msg = testMouseInfo(specimen)

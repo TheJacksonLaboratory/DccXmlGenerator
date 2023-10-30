@@ -26,19 +26,22 @@ import sys
 import shutil
 import itertools
 import json
-import query_database as db
 
 from datetime import datetime
-from zipfile import ZipFile
 
 from os import listdir
 import glob
 from os.path import isfile, join, basename
 import time
 
+from zipfile import ZipFile
 import xml.etree.ElementTree as ET
+
+# Our code
+import query_database as db
 import Climb as c
 import validate_procedure as v
+import corepfs as pfs
 
 g_ImpcCode = ''
 g_ColonyId =''
@@ -152,7 +155,7 @@ def createMetadata(procedureNode,impcCode, strVal):
 #    <value incrementValue="1" URI="ftp://images/image1.jpg" fileType="img/jpg">
 #</seriesMediaParameter>
 # Must be included just before the metadata!!!
-def createSeriesMediaParameter(procedureNode,impcCode, strVal,statusCode, directoryName):
+def createSeriesMediaParameter(procedureNode,impcCode, strVal,statusCode, directoryName,taskKey):
       
     if len(strVal) == 0:
           return procedureNode # bail
@@ -165,13 +168,16 @@ def createSeriesMediaParameter(procedureNode,impcCode, strVal,statusCode, direct
         
     paramNode = ET.SubElement(procedureNode, 'seriesMediaParameter', { 'parameterID': '{code}'.format(code=impcCode)})
     
-    incrementValue = 1  # We only support startig from 1 for now. May need to get smarter.
+    incrementValue = 1  # We only support starting from 1 for now. May need to get smarter.
                         # The values are stored in KOMP.DccParameterDetails.
     for image in imageLs:
       filenameSplit = image.split('\\')
       filenameOnly = filenameSplit[len(filenameSplit)-1]
       valueNode = ET.SubElement(paramNode, 'value', {'incrementValue': str(incrementValue), 'URI': getFtpServer() + directoryName + "/" + filenameOnly})
       incrementValue += 1
+       
+      db.recordMediaSubmission(image, (getFtpServer() + directoryName + "/" + filenameOnly), taskKey, impcCode)
+     
     
     if len(statusCode) > 0:
         statusNode = ET.SubElement(paramNode,'statusCode')
@@ -233,7 +239,7 @@ def createSpecimenRecord(specimenRecord,specimenSetNode,statusCode):
                               'DOB': '{dob}'.format(dob=specimenRecord["dob"]),
                               'colonyID': '{colonyID}'.format(colonyID=specimenRecord["colonyId"]),
                               'isBaseline': '{isBaseline}'.format(isBaseline=str(specimenRecord["isBaseline"]).lower()),
-                              'strainID': '{strainID}'.format(strainID=specimenRecord["strainID"]),
+                              'strainID': '{strainID}'.format(strainID=getBackgroundStrainId()), 
                               'specimenID': '{specimenID}'.format(specimenID=specimenRecord["specimenID"]),
                               'gender': '{gender}'.format(gender=specimenRecord["gender"].lower()),
                               'zygosity': '{zygosity}'.format(zygosity=specimenRecord["zygosity"]),
@@ -506,7 +512,8 @@ def buildParameters(procedureNode,proc):
           elif dccType == 4: # Series TBD 
               procedureNode = createSeriesParameter(procedureNode, impcCode, outputVal,"")
           elif dccType == 5: # SeriesMedia  TBD
-              procedureNode = createSeriesMediaParameter(procedureNode, impcCode, outputVal,"",procedureImpcCode)
+              taskKey = int(proc["taskInstanceKey"])
+              procedureNode = createSeriesMediaParameter(procedureNode, impcCode, outputVal,"",procedureImpcCode,taskKey)
           elif dccType == 8:  # colony ids are stored as ouputs for line calls
                 setColonyId(outputVal)
           elif dccType == 6: # MediaSample - unsupported
@@ -526,7 +533,6 @@ def generateSpecimenXML(animalInfoLs, centerNode):  # List of dictionaries
           return
     
     # Otherwise we have some data
-    #animalInfoGroup = animalInfoLs["animalInfo"]
    
     specimenRecord = {}
     # Hardcoded / constants
@@ -550,7 +556,7 @@ def generateSpecimenXML(animalInfoLs, centerNode):  # List of dictionaries
         specimenRecord["colonyId"]  = "JR" + line["stock"][1:6]
       else:
         specimenRecord["colonyId"]  = ""
-      specimenRecord["strainID"] = line["references"]
+      #specimenRecord["strainID"] = line["references"]
       specimenRecord["zygosity"] = extractGenotype(genotypes)   # must be present
       specimenRecord["litterId"] = litter['birthID']
       specimenRecord["generation"] = animal['generation']
@@ -615,12 +621,14 @@ def extractGenotype(genotypes):
   for genotype in genotypes:
     if genotype["genotype"] == '+/+':
         zygosity = 'wild type'
-    elif  genotype["genotype"] == '-/+' or zygosity == '+/-' :
+    elif  genotype["genotype"] == '-/+' or genotype["genotype"] == '+/-' :
         zygosity  = 'heterozygous'
     elif genotype["genotype"] == '-/-':
         zygosity = 'homozygous'
     elif genotype["genotype"] == '-/Y':
         zygosity = 'hemizygous'
+    elif genotype["genotype"] == '+/Y':
+        zygosity = 'anzygous'
         
     return zygosity
 
@@ -661,9 +669,11 @@ def indent(elem, level=0):
 if __name__ == '__main__':
     ### Get task info based on the given filter
     # Get filter from file - temporary
-    #with open("filters-with-mice.json") as f:
-    with open("filters.json") as f:
+    with open("filters-with-mice.json") as f:
+    #with open("filters.json") as f:
       filterLines = f.read().splitlines()
+      
+    c.setWorkgroup()  # Inits CLIMB
     
     db.init()  # Create a db connection for IMPC codes and logging
     
@@ -672,8 +682,14 @@ if __name__ == '__main__':
     for climbFilter in filterLines:
       # Get the animals and validate
       results = c.getAnimalInfoFromFilter(json.loads(climbFilter))
-      
       animalLs = results["animalInfo"]
+      
+      # For CORE PFS komp mice
+      # animalLs = pfs.getPfsAnimalInfo()
+      
+      with open("animalLs.json","w") as outfile:
+        outfile.write(json.dumps(animalLs,indent=4))
+      
       for animal in reversed(animalLs):  # Remove those animals that failed
         isValid = v.validateAnimal(animal)
         if isValid == False:
@@ -708,11 +724,13 @@ if __name__ == '__main__':
       expFileName = getNextExperimentFilename(getDatadir())
       
       taskLs = results["taskInfo"]  # A list of dictionaries
-      for task in taskLs:  # task should be a dictionary { "animal" : [], "taskInstance": []}
+      for task in reversed(taskLs):  # task should be a dictionary { "animal" : [], "taskInstance": []}
         animalName = ''  # Not all tasks have animals
         success, message = v.validateProcedure(task)  # Sets the task status to 'Failed QC' if it fails.
         if success == False:
             print("Rejected task: " + message)
+            taskLs.remove(task)  # Do not record it 
+            continue
         else:
             if "animal" in task:
                 animalName = task["animal"][0]["animalName"]
