@@ -6,13 +6,43 @@ import sys
 import json
 from datetime import datetime
 import csv
+import query_database as db
 
+#?$filter= JAX_EXPERIMENT_STATUS eq 'Review Completed'&
 baseURL = 'https://jacksonlabstest.platformforscience.com/DEV_KOMP/odata/'
 endpoint = 'KOMP_REQUEST?$expand=REV_MOUSESAMPLELOT_KOMPREQUEST($expand=SAMPLE/pfs.MOUSE_SAMPLE)&$count=true'
+#experimentEndpoint = 'KOMP_OPEN_FIELD_EXPERIMENT?$expand=EXPERIMENT_SAMPLES($expand=ASSAY_DATA/pfs.KOMP_OPEN_FIELD_ASSAY_DATA,ENTITY/pfs.MOUSE_SAMPLE_LOT($expand=SAMPLE/pfs.MOUSE_SAMPLE))'
+experimentEndpointTemplate = "KOMP_{exp}_EXPERIMENT?$filter= JAX_EXPERIMENT_STATUS eq 'Review Completed'&$expand=EXPERIMENT_SAMPLES($expand=ASSAY_DATA/pfs.KOMP_{exp}_ASSAY_DATA,ENTITY/pfs.MOUSE_SAMPLE_LOT($expand=SAMPLE/pfs.MOUSE_SAMPLE))"
 
-username = 'michael.mcfarland@jax.org'
-password = ''
 
+username = 'svc-corePFS@jax.org'
+password = 'hRbP&6K&(Qvw'
+
+"""
+kompExperimentNames = [
+"AUDITORY_BRAINSTEM_RESPONSE",
+"BODY_COMPOSITION",
+"BODY_WEIGHT",
+"CLINICAL_BLOOD_CHEMISTRY",
+"ELECTROCARDIOGRAM",
+"ELECTRORETINOGRAPHY",
+"EYE_MORPHOLOGY_SLIT_LAMP",
+"FUNDUS_IMAGING",
+"GLUCOSE_TOLERANCE_TEST",
+"GRIP_STRENGTH",
+"HEART_WEIGHT",
+"HEMATOLOGY",
+"HOLEBOARD",
+"LIGHT_DARK_BOX",
+"OPEN_FIELD",
+"PEN_CARD_CREATION",
+"SHIRPA_DYSMORPHOLOGY",
+"STARTLE_PPI"
+]
+"""
+kompExperimentNames = ["BODY_WEIGHT"]
+
+############################# MICE/SAMPLES #################
 def getKompMice():
     
     try:
@@ -75,7 +105,7 @@ def getSampleList(kompRequestlist):
             # TEMP - filter out garbage from test env
             if sampleDict["JAX_MOUSESAMPLE_ALLELE"] == None or "(JR0" not in sampleDict["JAX_MOUSESAMPLE_ALLELE"]:
                 continue
-            #
+            # End of TEMP
             tmpDict = {}
             animalDict = {}
             lineDict = {} 
@@ -134,13 +164,145 @@ def getPfsAnimalInfo():
     # Return a list of animal info
     numberOfKompRequest, valuelist = getKompMice()
     return getSampleList(valuelist)
-    
+
+
+#######################  EXPERIMENTS ######################
+# TODO - Add filter for KOMP_OPEN_FIELD_EXPERIMENT.JAX_EXPERIMENT_STATUS = Ready for Data Review
 #######################################################
 
+def getExperimentData(experimentEndpoint):
+        
+    try:
+        my_auth = HTTPBasicAuth(username, password)
+        query = baseURL + experimentEndpoint
+
+        result = requests.get(query, auth=my_auth,headers = {"Prefer": "odata.maxpagesize=5000"})    
+        wgJson = result.json()
+        
+        #Get list of values
+        valueLs = wgJson.get('value')
+        totalCount = wgJson.get('@odata.count')
+
+        return len(valueLs),valueLs
+    except requests.exceptions.Timeout as e: 
+        #print(e.message())
+        raise 
+    except requests.exceptions.InvalidHeader as e:  
+        #print(e.message())
+        raise 
+    except requests.exceptions.InvalidURL as e:  
+        #print(e.message())
+        raise 
+    except requests.exceptions.RequestException as e:  # All others
+        #print(e.message())
+        raise 
+    
+    return 0,None
+    
+# The results will be taskInfo [ animal [], taskInstance [ inputs [] , outputs [] ] ]
+def buildTaskInfoList(expDataLs):
+    # Return a list of dictionaries where each element is a list of dictionaries.
+    taskInfoLs = []
+    for procedure in expDataLs:
+        animal = []
+        animalInfo = {}
+        inputs = getInputs(procedure) # We get the inputs from the procedure
+        
+        
+        for expSample in procedure['EXPERIMENT_SAMPLES']:
+            taskInfo = {}
+            animal = []
+            sampleEntity = expSample['ENTITY']
+            animalInfo["animalName"] = sampleEntity['SAMPLE']['JAX_SAMPLE_EXTERNALID']
+            animal.append(animalInfo)
+            taskInfo['animal'] = animal
+            
+            taskInfo['taskInstance'] = getTaskInfo(procedure)
+            taskInfo['taskInstance'][0]['inputs'] = inputs;
+            taskInfo['taskInstance'][0]['outputs'] = getOutputs(expSample['ASSAY_DATA']);
+            #print(taskInfo)
+            #print()
+            #print()
+            taskInfoLs.append(taskInfo)
+    
+    #with open("taskInfoList.json","w") as outfile:
+    #    outfile.write(json.dumps(taskInfoLs,indent=4))
+        
+    return taskInfoLs
+
+def getTaskInfo(procedure):
+    # Extract experiment data into inputs and assay data into outputs
+    taskInstanceLs = [] # List of one dict the dict is some procedure data followed by a list of inputs followed by a list of outputs
+    taskInstanceInfo = {}
+    taskInstanceInfo['taskInstanceKey'] = procedure['Id']
+    taskInstanceInfo['workflowTaskName'] =  procedure['EntityTypeName']
+    taskInstanceInfo['dateComplete'] = procedure['JAX_EXPERIMENT_STARTDATE']
+    taskInstanceInfo['reviewedBy'] = 'Ame Willett'
+    taskInstanceInfo['dateReviewed'] = procedure['JAX_EXPERIMENT_STARTDATE']
+    
+    taskInstanceLs.append(taskInstanceInfo)
+    return taskInstanceLs
+
+def getInputs(procedure):
+    inputLs = []
+    # If the name of the input can be found in KOMP.DCCPARAMETERDETAILS then include it.
+    keyList = list(procedure.keys())
+    for keystr in keyList:
+        inputDict = {}
+        inputKey = db.verifyImpcCode(keystr)
+        if inputKey > 0:
+            inputDict['name']= keystr
+            inputDict['inputValue'] = procedure[keystr]
+            inputDict['inputKey'] = inputKey
+            inputLs.append(inputDict)
+            
+    return inputLs
+
+def getOutputs(expSample):
+    outputLs = []
+    keyList = list(expSample.keys())
+    for keystr in keyList:
+        outputDict = {}
+        outputKey = db.verifyImpcCode(keystr)
+        if  outputKey > 0:
+            outputDict['name']= keystr
+            outputDict['outputValue'] = expSample[keystr]
+            outputDict['outputKey'] = outputKey
+            outputLs.append(outputDict)
+            
+    return outputLs
+
+    
+
+def getPfsTaskInfo():
+    
+    taskInfoList= {}
+    
+    for expName in kompExperimentNames:
+        expEndpoint = experimentEndpointTemplate.format(exp=expName)
+        
+        numberOfKompRequest, valuelist = getExperimentData(expEndpoint)
+          
+        #with open("experiments.json","w") as outfile:
+        #    outfile.write(json.dumps(valuelist,indent=4))
+        db.setupDatabaseConnection()
+        taskInfoList["taskInfo"] = buildTaskInfoList(valuelist)     
+
+    return taskInfoList
+    
 if __name__ == '__main__':
+    
+    
+    """
+    Get all KOMP Mice
     numberOfKompRequest, valuelist = getKompMice()
     animalInfo = getSampleList(valuelist)
     
     with open("samples.json","w") as outfile:
         outfile.write(json.dumps(animalInfo,indent=4))
+    """
+    
+    with open("taskInfoList.json","w") as outfile:
+        outfile.write(json.dumps(getPfsTaskInfo(),indent=4))
+         
     print("SUCCESS")

@@ -167,6 +167,22 @@ def recordMediaSubmission(srcFilename, destFilename, taskKey, impcCode):
         print('INSERT FAILED FOR: ' + insertStmt)        
     return
 
+def verifyImpcCode(impccode):   
+    selectStmt = "SELECT _ClimbType_key FROM komp.dccparameterdetails WHERE ImpcCode = '{0}'".format(impccode)
+    typeKey = 0
+    try:
+        g_MysqlCursor.execute(selectStmt)
+        
+        for _ClimbType_key in g_MysqlCursor:
+            typeKey = _ClimbType_key[0]
+    except Exception as e:
+        print('SELECT FAILED FOR: ' + selectStmt)
+    
+    if typeKey == None:
+        typeKey = 0
+        
+    return typeKey
+
 def setupDatabaseConnection():
     
     try:
