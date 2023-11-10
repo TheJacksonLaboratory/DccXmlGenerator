@@ -16,7 +16,7 @@ experimentEndpointTemplate = "KOMP_{exp}_EXPERIMENT?$filter= JAX_EXPERIMENT_STAT
 
 
 username = 'svc-corePFS@jax.org'
-password = 'hRbP&6K&(Qvw'
+password = ''
 
 """
 kompExperimentNames = [
