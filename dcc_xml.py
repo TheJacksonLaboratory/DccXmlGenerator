@@ -92,6 +92,43 @@ def getFtpServer():
       return 'sftp://bhjlk02lp.jax.org/'
     
 # XML XML XML
+def createSpecimenXML(animalLs):
+    root = createSpecimenRoot()
+    centerNode = createSpecimenCentre(root)
+    generateSpecimenXML(animalLs, centerNode)
+      
+    # Write it out
+    tree = ET.ElementTree(indent(root))
+    specimenFileName = getNextSpecimenFilename(getDatadir())
+    tree.write(specimenFileName, xml_declaration=True, encoding='utf-8')
+      
+    # Now zip it up.
+    zipfilename = specimenFileName.replace('specimen.','').replace('xml','zip')
+    with ZipFile(zipfilename,'w') as zipper:
+      zipper.write(specimenFileName,basename(specimenFileName))
+      zipper.close()
+      
+      
+def createExperimentXML(experimentLs, procedureHasAnimals):
+    root = createProcedureRoot()
+    centerNode = createCentre(root)
+    
+    if procedureHasAnimals:
+          numberOfProcs = generateExperimentXML(experimentLs, centerNode) 
+    else:
+          numberOfProcs = generateLineCallExperimentXML(experimentLs, centerNode)
+    
+    expFileName = getNextExperimentFilename(getDatadir())
+    if(numberOfProcs > 0):      # write the new XML file
+      tree = ET.ElementTree(indent(root))
+      tree.write(expFileName, xml_declaration=True, encoding='utf-8')
+      
+      # Now zip it up.
+      zipfilename = expFileName.replace('experiment.','').replace('xml','zip')
+      with ZipFile(zipfilename,'w') as zipper:
+        zipper.write(expFileName,basename(expFileName))
+        zipper.close()  
+       
 def createProcedureRoot():
     root = ET.Element('centreProcedureSet', {'xmlns':'http://www.mousephenotype.org/dcc/exportlibrary/datastructure/core/procedure'})
     return root
@@ -501,8 +538,10 @@ def buildParameters(procedureNode,proc):
           
         if outputVal is None:
               continue
-              
-        if len(outputVal.strip()) > 0:
+        if type(outputVal) != type(""): # TODO - Handle floats an ints
+          outputVal = str(outputVal)    
+          
+        if len(outputVal) > 0:
           if dccType == 1:
               procedureNode = createSimpleParameter(procedureNode, impcCode, outputVal,"")
           elif dccType == 2: #  Ontology TBD
@@ -665,17 +704,12 @@ def indent(elem, level=0):
             elem.tail = j
     return elem
 
-
-if __name__ == '__main__':
-    ### Get task info based on the given filter
+def handleClimbData(filterFileName):
     # Get filter from file - temporary
-    with open("filters-with-mice.json") as f:
-    #with open("filters.json") as f:
+    with open(filterFileName) as f:
       filterLines = f.read().splitlines()
       
     c.setWorkgroup()  # Inits CLIMB
-    
-    db.init()  # Create a db connection for IMPC codes and logging
     
     # Each line in the input file can be a filter and 
     #   can generate a specimen and experiment XML
@@ -684,48 +718,22 @@ if __name__ == '__main__':
       results = c.getAnimalInfoFromFilter(json.loads(climbFilter))
       animalLs = results["animalInfo"]
       
-      # For CORE PFS komp mice
-      # animalLs = pfs.getPfsAnimalInfo()
-      
-      with open("animalLs.json","w") as outfile:
-        outfile.write(json.dumps(animalLs,indent=4))
-      
       for animal in reversed(animalLs):  # Remove those animals that failed
         isValid = v.validateAnimal(animal)
         if isValid == False:
               animalLs.remove(animal)
-            
-      # Generate the specimen portion of the XML  
-      root = createSpecimenRoot()
-      centerNode = createSpecimenCentre(root)
-      generateSpecimenXML(animalLs, centerNode)
       
-      # Write it out
-      tree = ET.ElementTree(indent(root))
-      specimenFileName = getNextSpecimenFilename(getDatadir())
-      tree.write(specimenFileName, xml_declaration=True, encoding='utf-8')
-      
-      # Now zip it up.
-      zipfilename = specimenFileName.replace('specimen.','').replace('xml','zip')
-      with ZipFile(zipfilename,'w') as zipper:
-        zipper.write(specimenFileName,basename(specimenFileName))
-        zipper.close()
-        
+      createSpecimenXML(animalLs) # With the remaining embryos that have passed
+          
       # Using the same filter get the task data
-      if procedureHasAnimals(json.loads(climbFilter)): 
+      if procedureHasAnimals(json.loads(climbFilter)):  # i.e. not a line call like fertility
         results = c.getTaskInfoFromFilter(json.loads(climbFilter))    # For procs with animals
       else:
         results = c.getProceduresGivenFilter(json.loads(climbFilter))  # For line calls
       
-      with open("results.json","w") as outfile:
-        outfile.write(json.dumps(results,indent=4))
-        
-      # We get the exp filename now so we can log it.
-      expFileName = getNextExperimentFilename(getDatadir())
-      
       taskLs = results["taskInfo"]  # A list of dictionaries
       for task in reversed(taskLs):  # task should be a dictionary { "animal" : [], "taskInstance": []}
-        animalName = ''  # Not all tasks have animals
+        animalName = ''  # But not all tasks have animals
         success, message = v.validateProcedure(task)  # Sets the task status to 'Failed QC' if it fails.
         if success == False:
             print("Rejected task: " + message)
@@ -736,34 +744,66 @@ if __name__ == '__main__':
                 animalName = task["animal"][0]["animalName"]
             else:
                 animalName = findColonyId(task["taskInstance"][0])  # It' too bad but the colony id is stored at 
-                                                                    #   the output level rather than the task level.          
-        if animalName == '' or animalName is None: # Need a JR or animal name
+                                                                    #   the output level rather than the task level. Thanks CLIMB!          
+        if animalName == '' or animalName is None: # Need a JR or animal name. Skip it
           continue  # No more processing
                    
+        # We get the exp filename now so we can log it.
+        expFileName = getNextExperimentFilename(getDatadir())
         if len(task["taskInstance"]) > 0:
           db.recordSubmissionAttempt(expFileName.split('\\')[-1],animalName, task["taskInstance"][0], 
                                         getProcedureImpcCode(), v.getReviewedDate())
       
-      root = createProcedureRoot()
-      centerNode = createCentre(root)
+      #End of loop
+      createExperimentXML(taskLs,procedureHasAnimals(json.loads(climbFilter)))
       
-      if procedureHasAnimals(json.loads(climbFilter)):
-            numberOfProcs = generateExperimentXML(taskLs, centerNode) 
-      else:
-            numberOfProcs = generateLineCallExperimentXML(taskLs, centerNode)
-      
-      
-      if(numberOfProcs > 0):      # write the new XML file
-        tree = ET.ElementTree(indent(root))
-        tree.write(expFileName, xml_declaration=True, encoding='utf-8')
-        
-        # Now zip it up.
-        zipfilename = expFileName.replace('experiment.','').replace('xml','zip')
-        with ZipFile(zipfilename,'w') as zipper:
-          zipper.write(expFileName,basename(expFileName))
-          zipper.close()
-    # End of filter loop
+
+def handlePfsData():
+    # For CORE PFS komp mice
+    """
+    animalLs = pfs.getPfsAnimalInfo()
     
+    for animal in reversed(animalLs):  # Remove those animals that failed
+        if v.validateAnimal(animal) == False:
+              animalLs.remove(animal)
+    
+    createSpecimenXML(animalLs)
+    """
+    # Now the procedures
+    resultsLs = pfs.getPfsTaskInfo()  # This should return a list of lists where each element corresponds to an experiment type
+    
+    # We get the exp filename now so we can log it.
+    expFileName = getNextExperimentFilename(getDatadir())
+                
+    for results in resultsLs:
+      taskLs = results["taskInfo"]  # A list of dictionaries
+      for task in reversed(taskLs):  # task should be a dictionary { "animal" : [], "taskInstance": []}
+        animalName = ''  # Not all tasks have animals
+        success, message = v.validateProcedure(task)  # Sets the task status to 'Failed QC' if it fails.
+        if success == False:
+            print("Rejected task: " + message)
+            taskLs.remove(task)  # Do not record it 
+            continue
+              
+        animalName = task["animal"][0]["animalName"]
+        
+        if len(task["taskInstance"]) > 0:
+          db.recordSubmissionAttempt(expFileName.split('\\')[-1],animalName, task["taskInstance"][0], 
+                                        getProcedureImpcCode(), v.getReviewedDate())
+          
+      createExperimentXML(taskLs, True)
+    
+
+if __name__ == '__main__':
+  
+    useClimbData = False  # Get from commandline
+    filterFileName = 'filters-with-mice.json'  # TODO - pass it in
+    
+    db.init()  # Create a db connection for IMPC codes and logging
+    if useClimbData == True:
+      handleClimbData(filterFileName)
+    else:
+      handlePfsData()
     # All done
     db.close()      
     

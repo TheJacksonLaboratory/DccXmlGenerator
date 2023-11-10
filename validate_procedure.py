@@ -24,7 +24,7 @@ def testTaskStatus(proc):
     msg = "Task not set to Complete or Cancelled"
     success = False
     
-    if proc["taskStatus"] == 'Complete' or proc["taskStatus"] == 'Cancelled':
+    if proc["taskStatus"] == 'Complete' or proc["taskStatus"] == 'Cancelled' or proc["taskStatus"] == 'Review Completed':
         success = True
         msg = ''
         

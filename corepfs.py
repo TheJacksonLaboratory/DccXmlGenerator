@@ -166,9 +166,6 @@ def getPfsAnimalInfo():
     return getSampleList(valuelist)
 
 
-#######################  EXPERIMENTS ######################
-# TODO - Add filter for KOMP_OPEN_FIELD_EXPERIMENT.JAX_EXPERIMENT_STATUS = Ready for Data Review
-#######################################################
 
 def getExperimentData(experimentEndpoint):
         
@@ -209,17 +206,19 @@ def buildTaskInfoList(expDataLs):
         inputs = getInputs(procedure) # We get the inputs from the procedure
         
         
+        dateStr = procedure['JAX_EXPERIMENT_STARTDATE']
         for expSample in procedure['EXPERIMENT_SAMPLES']:
             taskInfo = {}
             animal = []
             sampleEntity = expSample['ENTITY']
             animalInfo["animalName"] = sampleEntity['SAMPLE']['JAX_SAMPLE_EXTERNALID']
+            animalInfo['stock'] = expSample['ASSAY_DATA']['JAX_ASSAY_STRAINNAME']
             animal.append(animalInfo)
             taskInfo['animal'] = animal
             
             taskInfo['taskInstance'] = getTaskInfo(procedure)
             taskInfo['taskInstance'][0]['inputs'] = inputs;
-            taskInfo['taskInstance'][0]['outputs'] = getOutputs(expSample['ASSAY_DATA']);
+            taskInfo['taskInstance'][0]['outputs'] = getOutputs(expSample['ASSAY_DATA'],dateStr);
             #print(taskInfo)
             #print()
             #print()
@@ -239,6 +238,7 @@ def getTaskInfo(procedure):
     taskInstanceInfo['dateComplete'] = procedure['JAX_EXPERIMENT_STARTDATE']
     taskInstanceInfo['reviewedBy'] = 'Ame Willett'
     taskInstanceInfo['dateReviewed'] = procedure['JAX_EXPERIMENT_STARTDATE']
+    taskInstanceInfo['taskStatus'] = procedure['JAX_EXPERIMENT_STATUS']
     
     taskInstanceLs.append(taskInstanceInfo)
     return taskInstanceLs
@@ -258,7 +258,7 @@ def getInputs(procedure):
             
     return inputLs
 
-def getOutputs(expSample):
+def getOutputs(expSample,dateStr):
     outputLs = []
     keyList = list(expSample.keys())
     for keystr in keyList:
@@ -268,6 +268,8 @@ def getOutputs(expSample):
             outputDict['name']= keystr
             outputDict['outputValue'] = expSample[keystr]
             outputDict['outputKey'] = outputKey
+            outputDict['collectedBy'] = "Amelia Willett"
+            outputDict['collectedDate'] = dateStr
             outputLs.append(outputDict)
             
     return outputLs
@@ -276,19 +278,22 @@ def getOutputs(expSample):
 
 def getPfsTaskInfo():
     
-    taskInfoList= {}
+    taskInfoList= {} # For each experiment type
+    taskInfoListList= [] #
     
     for expName in kompExperimentNames:
         expEndpoint = experimentEndpointTemplate.format(exp=expName)
-        
+        taskInfoList={}
         numberOfKompRequest, valuelist = getExperimentData(expEndpoint)
+        print(numberOfKompRequest)
           
-        #with open("experiments.json","w") as outfile:
-        #    outfile.write(json.dumps(valuelist,indent=4))
-        db.setupDatabaseConnection()
         taskInfoList["taskInfo"] = buildTaskInfoList(valuelist)     
+        taskInfoListList.append(taskInfoList)
 
-    return taskInfoList
+    with open("taskInfoLsLs.json","w") as outfile:
+        outfile.write(json.dumps(taskInfoListList,indent=4))
+        
+    return taskInfoListList
     
 if __name__ == '__main__':
     
