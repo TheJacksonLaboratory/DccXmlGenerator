@@ -243,7 +243,7 @@ def getTaskInfoFromFilter(taskInfoFiler):
     taskInfoLs = []
     call_header = {'Authorization' : 'Bearer ' + token()}
     try:
-        print(">"+json.dumps(taskInfoFiler)+"<")
+        #print(">"+json.dumps(taskInfoFiler)+"<")
         wgResponse = requests.post(endpoint()+'/taskAnimalInfo', data=json.dumps(taskInfoFiler), headers=call_header, timeout=60)
         taskInfoLs = wgResponse.json()
     except requests.exceptions.Timeout as e: 
@@ -262,7 +262,7 @@ def getTaskInfoFromFilter(taskInfoFiler):
     return taskInfoLs
 
 def getAnimalInfoFromFilter(animalInfoFilter):
-    print(json.dumps(animalInfoFilter))
+    #print(json.dumps(animalInfoFilter))
     animalInfoLs = []
     call_header = {'Authorization' : 'Bearer ' + token()}
     try:

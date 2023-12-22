@@ -324,8 +324,6 @@ def validateProcedure(proc):
     overallMsg = ""
     overallSuccess = True
     
-    # Check to see if this procedure has been submitted previously
-    
 #    We don't need to do validateAnimal(). Each animal is evaluated separately    
 #    success, msg = validateAnimal(specimen)
 #    overallSuccess = overallSuccess and success
@@ -363,6 +361,7 @@ def validateProcedure(proc):
     if lastReviewedDate is not None and currentReviewedDate is not None:
         if lastReviewedDate >= currentReviewedDate:  # Is the SME resubmitting this procedure?
             task["taskStatus"]  = 'Already submitted'  # else remove the Complete or Cancelled status to avoid unnecessary resubmission
+            createLogEntry(specimen, task, lineInfo, None, overallMsg + ' *Already submitted')
         
     if overallSuccess == False:
         createLogEntry(specimen, task, lineInfo, None, overallMsg)

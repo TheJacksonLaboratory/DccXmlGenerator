@@ -22,15 +22,12 @@ It determines the XML file name and writes it out to the working directory.
 """
 
 import pandas as pd
-import sys
-import shutil
-import itertools
 import json
-
-from datetime import datetime
-
-from os import listdir
 import glob
+
+import argparse
+from datetime import datetime
+from os import listdir
 from os.path import isfile, join, basename
 import time
 
@@ -43,10 +40,17 @@ import Climb as c
 import validate_procedure as v
 import corepfs as pfs
 
+# Globals
 g_ImpcCode = ''
 g_ColonyId =''
+g_useClimbData = True
+g_dataDir = "C:\\Users\\michaelm\\Source\\Workspaes\\Teams\\Lab Informatics\\JAXLIMS\\Main\\DccReporter\\data\\"
+g_filterFileName = 'line-filters.json'
+#g_filterFileName = 'embryo-samples.json'
+#g_filterFileName = 'filters-with-mice.json'
+g_image_dir = '.'
+g_log_dir = '.'
 
-# Globals
 def setProcedureImpcCode(code):
   global g_ImpcCode
   g_ImpcCode=code
@@ -72,9 +76,15 @@ def findColonyId(proc):
       return ""
   
   for output in outputLs:
-      # For line calls we need the JR# - or StockNumber - so lets store it for later -- just one more kluge
+      # For line calls we need the JR# - or Stock Number - so lets store it for later -- just one more kluge
       if output["outputName"] == "JR":
           setColonyId('JR' + output["outputValue"])
+      elif output["outputName"] == "Stock Number":
+          # Grrrrr... friggin different formats of JRs and Stock Numbers!!
+          sn = output["outputValue"]
+          if sn[0] == '0':
+            sn = sn[1:]
+          setColonyId('JR' + sn)
         
   return getColonyId()
   
@@ -86,7 +96,8 @@ def getBackgroundStrainId():
 
 # TODO - get from YAML file            
 def getDatadir():
-      return "C:\\Users\\michaelm\\Source\\Workspaes\\Teams\\Lab Informatics\\JAXLIMS\\Main\\DccReporter\\data\\"
+      global g_dataDir
+      return g_dataDir
 
 def getFtpServer():
       return 'sftp://bhjlk02lp.jax.org/'
@@ -221,7 +232,16 @@ def createSeriesMediaParameter(procedureNode,impcCode, strVal,statusCode, direct
         statusNode.text = statusCode
         
     return procedureNode # procedureNode
+
+def validateSeriesParameter(seriesValue):
+  # series parameters must be in dict format. If not make it so.
+  paramDict = {}
+  if "{" in seriesValue and "}" in seriesValue:  # Weak check but for now it works
+    paramDict = json.loads(seriesValue)
+  else:
+    paramDict["noLitter"] = seriesValue  # VIA only for now
   
+  return paramDict  
 # e.g. for Primary Viability
 """
   <seriesParameter parameterID="IMPC_VIA_037_001">
@@ -231,14 +251,16 @@ def createSeriesMediaParameter(procedureNode,impcCode, strVal,statusCode, direct
                 </seriesParameter>
 """
 def createSeriesParameter(procedureNode,impcCode, strVal,statusCode):    
-    if len(strVal) == 0:
+    if strVal == None or len(strVal) == 0:
           return procedureNode # bail
-  
+    # The value is a dictionary with the key as the increment and the value as the value
     paramNode = ET.SubElement(procedureNode, 'seriesParameter', { 'parameterID': '{code}'.format(code=impcCode)})
     
-    incrementValue = 'noLitter'   # TODO - make smarter 
-    valueNode = ET.SubElement(paramNode, 'value', {'incrementValue': incrementValue})
-    valueNode.text = strVal
+    # strVal must be a dictionary with the increment as the key and the output value as the value
+    dictVal = validateSeriesParameter(strVal)
+    for key in dictVal:
+      valueNode = ET.SubElement(paramNode, 'value', {'incrementValue': key})
+      valueNode.text = dictVal[key]
     
     if len(statusCode) > 0:
         statusNode = ET.SubElement(paramNode,'statusCode')
@@ -548,9 +570,9 @@ def buildParameters(procedureNode,proc):
               procedureNode = createSimpleParameter(procedureNode, impcCode, outputVal,"")
           elif dccType == 3: # Media - ABR (014) and ERG (047)
               procedureNode = createSimpleParameter(procedureNode, impcCode, outputVal,"")
-          elif dccType == 4: # Series TBD 
+          elif dccType == 4: # Series 
               procedureNode = createSeriesParameter(procedureNode, impcCode, outputVal,"")
-          elif dccType == 5: # SeriesMedia  TBD
+          elif dccType == 5: # SeriesMedia 
               taskKey = int(proc["taskInstanceKey"])
               procedureNode = createSeriesMediaParameter(procedureNode, impcCode, outputVal,"",procedureImpcCode,taskKey)
           elif dccType == 8:  # colony ids are stored as ouputs for line calls
@@ -685,7 +707,14 @@ def   procedureHasAnimals(climbFilter):
           
     return hasAnimals
   
-  
+def getAnimalNameFromTaskInfo(task):
+  animalName = ''  # Not all tasks have animals
+  if "animal" in task:
+    animalName = task["animal"][0]["animalName"]  # This one does
+  else:  # line based procedure. No animal - need JR number / colony ID
+    animalName = findColonyId(task["taskInstance"][0])  # It' too bad but the colony id is stored at the output level rather than the task level. Thanks CLIMB!          
+  return animalName
+
 #pretty print method
 def indent(elem, level=0):
     i = "\n" + level*"  "
@@ -733,28 +762,20 @@ def handleClimbData(filterFileName):
       
       taskLs = results["taskInfo"]  # A list of dictionaries
       for task in reversed(taskLs):  # task should be a dictionary { "animal" : [], "taskInstance": []}
-        animalName = ''  # But not all tasks have animals
         success, message = v.validateProcedure(task)  # Sets the task status to 'Failed QC' if it fails.
         if success == False:
-            print("Rejected task: " + message)
-            taskLs.remove(task)  # Do not record it 
-            continue
-        else:
-            if "animal" in task:
-                animalName = task["animal"][0]["animalName"]
-            else:
-                animalName = findColonyId(task["taskInstance"][0])  # It' too bad but the colony id is stored at 
-                                                                    #   the output level rather than the task level. Thanks CLIMB!          
-        if animalName == '' or animalName is None: # Need a JR or animal name. Skip it
-          continue  # No more processing
-                   
-        # We get the exp filename now so we can log it.
-        expFileName = getNextExperimentFilename(getDatadir())
-        if len(task["taskInstance"]) > 0:
-          db.recordSubmissionAttempt(expFileName.split('\\')[-1],animalName, task["taskInstance"][0], 
+          taskLs.remove(task)  # Do not record it 
+        elif success == True and task["taskInstance"][0]['taskStatus'] == 'Already submitted':
+          taskLs.remove(task)  # Do not record it 
+        else: # Record it as submitted
+          animalName = getAnimalNameFromTaskInfo(task)
+          if len(animalName) > 0: # Need a JR or animal name. 
+            expFileName = getNextExperimentFilename(getDatadir()) # We get the exp filename now so we can log it as submitted.
+            if len(task["taskInstance"]) > 0:
+              db.recordSubmissionAttempt(expFileName.split('\\')[-1],animalName, task["taskInstance"][0], 
                                         getProcedureImpcCode(), v.getReviewedDate())
       
-      #End of loop
+      #End of loop 
       createExperimentXML(taskLs,procedureHasAnimals(json.loads(climbFilter)))
       
 
@@ -792,16 +813,54 @@ def handlePfsData():
                                         getProcedureImpcCode(), v.getReviewedDate())
           
       createExperimentXML(taskLs, True)
+      return
     
+    
+def add_arguments(argparser):
+    argparser.add_argument(
+            '-f', '--filter_file', type=str, help='File that contains the filter for specimen and experiments', required=True
+        )
+    argparser.add_argument(
+            '-s', '--source', type=str, help='Source for data, i.e. CLIMB or PFS', required=True
+        )
+    argparser.add_argument(
+            '-d', '--datadir', type=str, help='Destination directory XML files', required=True
+        )
+    argparser.add_argument(
+            '-l', '--log', type=str, help='Destination directory for error log', required=False  # TODO
+        )
+    argparser.add_argument(
+            '-i', '--images', type=str, help='Images folder', required=False  #TODO
+        )
+        
+    args = argparser.parse_args()
+    
+    g_useClimbData = args.source == 'CLIMB'
+    g_dataDir = args.datadir
+    g_filterFileName = args.filter_file
+    g_image_dir = args.images
+    g_log_dir = args.log
+    
+    """ print(g_useClimbData)
+    print(g_dataDir)
+    print(g_filterFileName)
+    print(g_image_dir)
+    print(g_log_dir) """
+    
+    return
+
+
+
 
 if __name__ == '__main__':
   
-    useClimbData = False  # Get from commandline
-    filterFileName = 'filters-with-mice.json'  # TODO - pass it in
+    
+    args = argparse.ArgumentParser()
+    #add_arguments(args)
     
     db.init()  # Create a db connection for IMPC codes and logging
-    if useClimbData == True:
-      handleClimbData(filterFileName)
+    if g_useClimbData == True:
+      handleClimbData(g_filterFileName)
     else:
       handlePfsData()
     # All done

@@ -16,7 +16,7 @@ experimentEndpointTemplate = "KOMP_{exp}_EXPERIMENT?$filter= JAX_EXPERIMENT_STAT
 
 
 username = 'svc-corePFS@jax.org'
-password = ''
+password = 'hRbP&6K&(Qvw'
 
 """
 kompExperimentNames = [
@@ -26,7 +26,7 @@ kompExperimentNames = [
 "CLINICAL_BLOOD_CHEMISTRY",
 "ELECTROCARDIOGRAM",
 "ELECTRORETINOGRAPHY",
-"EYE_MORPHOLOGY_SLIT_LAMP",
+"EYE_MORPHOLOGY_SLIT_LAMP",  # CHANGE ONCE WE ARE IN PRODUCTION
 "FUNDUS_IMAGING",
 "GLUCOSE_TOLERANCE_TEST",
 "GRIP_STRENGTH",
@@ -35,12 +35,33 @@ kompExperimentNames = [
 "HOLEBOARD",
 "LIGHT_DARK_BOX",
 "OPEN_FIELD",
-"PEN_CARD_CREATION",
 "SHIRPA_DYSMORPHOLOGY",
 "STARTLE_PPI"
 ]
 """
-kompExperimentNames = ["BODY_WEIGHT"]
+kompExperimentNames = ["OPEN_FIELD"]
+
+# Constants
+DCC_SIMPLE_TYPE = 1
+DCC_MEDIA_TYPE = 3
+DCC_SERIES_TYPE = 4
+DCC_SERIES_MEDIA_TYPE = 5
+DCC_METADATA_TYPE = 7
+
+FIRST_GTT_SERIES =                      'IMPC_IPG_002_001_T0' # t0, t15, t30, t60, t120
+FIRST_OFD_DISTANCE_TRAVELLED_SERIES =   'JAX_OFD_005_001_1ST5' # 1st5, 2nd5, 3rd5, 4th5
+FIRST_GRS_FORELIMB_SERIES =             'IMPC_GRS_001_001_T1' #t1, t2, t3
+FIRST_GRS_FOREHINDLIMB_SERIES =         'IMPC_GRS_002_001_T1' #t1, t2, t3
+FIRST_HBD_HOLEPOKE_SEQUENCE_SERIES =    'JAX_HBD_002_001'  # Comes in as a single string. Needs to be converted into a series.
+
+
+seriesImpcCodes = [
+    FIRST_GTT_SERIES, 
+    FIRST_OFD_DISTANCE_TRAVELLED_SERIES,
+    FIRST_GRS_FORELIMB_SERIES,
+    FIRST_GRS_FOREHINDLIMB_SERIES,
+    FIRST_HBD_HOLEPOKE_SEQUENCE_SERIES
+]
 
 ############################# MICE/SAMPLES #################
 def getKompMice():
@@ -205,7 +226,6 @@ def buildTaskInfoList(expDataLs):
         animalInfo = {}
         inputs = getInputs(procedure) # We get the inputs from the procedure
         
-        
         dateStr = procedure['JAX_EXPERIMENT_STARTDATE']
         for expSample in procedure['EXPERIMENT_SAMPLES']:
             taskInfo = {}
@@ -216,24 +236,19 @@ def buildTaskInfoList(expDataLs):
             animal.append(animalInfo)
             taskInfo['animal'] = animal
             
-            taskInfo['taskInstance'] = getTaskInfo(procedure)
-            taskInfo['taskInstance'][0]['inputs'] = inputs;
-            taskInfo['taskInstance'][0]['outputs'] = getOutputs(expSample['ASSAY_DATA'],dateStr);
-            #print(taskInfo)
-            #print()
-            #print()
+            taskInfo['taskInstance'] = getTaskInfo(procedure,expSample['Id'])
+            taskInfo['taskInstance'][0]['inputs'] = inputs
+            taskInfo['taskInstance'][0]['outputs'] = getOutputs(expSample['ASSAY_DATA'],dateStr)
+            
             taskInfoLs.append(taskInfo)
-    
-    #with open("taskInfoList.json","w") as outfile:
-    #    outfile.write(json.dumps(taskInfoLs,indent=4))
-        
+            
     return taskInfoLs
 
-def getTaskInfo(procedure):
+def getTaskInfo(procedure,taskInstanceKey):
     # Extract experiment data into inputs and assay data into outputs
     taskInstanceLs = [] # List of one dict the dict is some procedure data followed by a list of inputs followed by a list of outputs
     taskInstanceInfo = {}
-    taskInstanceInfo['taskInstanceKey'] = procedure['Id']
+    taskInstanceInfo['taskInstanceKey'] =   taskInstanceKey
     taskInstanceInfo['workflowTaskName'] =  procedure['EntityTypeName']
     taskInstanceInfo['dateComplete'] = procedure['JAX_EXPERIMENT_STARTDATE']
     taskInstanceInfo['reviewedBy'] = 'Ame Willett'
@@ -262,22 +277,70 @@ def getOutputs(expSample,dateStr):
     outputLs = []
     keyList = list(expSample.keys())
     for keystr in keyList:
-        outputDict = {}
-        outputKey = db.verifyImpcCode(keystr)
-        if  outputKey > 0:
-            outputDict['name']= keystr
-            outputDict['outputValue'] = expSample[keystr]
-            outputDict['outputKey'] = outputKey
-            outputDict['collectedBy'] = "Amelia Willett"
-            outputDict['collectedDate'] = dateStr
-            outputLs.append(outputDict)
+        if isSeries(keystr): # We must construct it
+            outputDict = getSeriesOutput(expSample,keystr,dateStr)
+            if outputDict != None:
+                outputLs.append(outputDict)
+        else:  # Simple type or ignore
+            outputDict = {}
+            outputKey = db.verifyImpcCode(keystr)
+            if  outputKey > 0:
+                outputDict['name']= keystr
+                outputDict['outputValue'] = expSample[keystr]
+                outputDict['outputKey'] = outputKey
+                outputDict['collectedBy'] = "Amelia Willett"
+                outputDict['collectedDate'] = dateStr
+                outputLs.append(outputDict)
             
     return outputLs
 
+
+def getSeriesOutput(expSample,keystr,dateStr):
+    outputDictValue = {}
+    outputDict = {}
+    idx=15 # For "JAX_"
+    # Build up the series. A dictionary. Key is increment value is value
+    if keystr == FIRST_GTT_SERIES: # t0, t15, t30, t60, t120
+        outputDictValue["0"] = expSample[keystr]
+        outputDictValue["15"] = expSample[keystr.replace('T0','15')]
+        outputDictValue["30"] = expSample[keystr.replace('T0','30')]
+        outputDictValue["60"] = expSample[keystr.replace('T0','60')]
+        outputDictValue["120"] = expSample[keystr.replace('T0','120')]
+        idx = 16 # i.e. IMPC_
+    elif  keystr == FIRST_OFD_DISTANCE_TRAVELLED_SERIES: # 1st5, 2nd5, 3rd5, 4th5
+        outputDictValue["1"] = expSample[keystr]
+        outputDictValue["2"] = expSample[keystr.replace('1ST5','2ND5')]
+        outputDictValue["3"] = expSample[keystr.replace('1ST5','3RD5')]
+        outputDictValue["4"] = expSample[keystr.replace('1ST5','4TH5')]
+    elif keystr == FIRST_GRS_FORELIMB_SERIES or keystr == FIRST_GRS_FOREHINDLIMB_SERIES:  #t1, t2, t3
+        outputDictValue["1"] = expSample[keystr]
+        outputDictValue["2"] = expSample[keystr.replace('T1','T2')]
+        outputDictValue["3"] = expSample[keystr.replace('T1','T3')]
+        idx = 16 # i.e. IMPC_
+    elif keystr == FIRST_HBD_HOLEPOKE_SEQUENCE_SERIES:  # Comes in as a single string. Needs to be converted
+        pokes = expSample[keystr].split('-')
+        for i in range(len(pokes)):
+            outputDictValue[str(i)] = str(pokes[i])
+    else:
+        # Error
+        return None
     
+    outputDict['name'] = keystr[0:idx]
+    outputDict['outputValue'] = outputDictValue
+    outputDict['outputKey'] = db.verifyImpcCode(keystr[0:idx])  # Must exist
+    outputDict['collectedBy'] = "Amelia Willett"
+    outputDict['collectedDate'] = dateStr
+    
+    return outputDict 
+
+def isSeries(impcCode):
+    # If this is the IMPC code for a series and if it is the first one in the series, return True, else False
+    if impcCode.upper() in seriesImpcCodes:
+        return True
+    
+    return False
 
 def getPfsTaskInfo():
-    
     taskInfoList= {} # For each experiment type
     taskInfoListList= [] #
     
@@ -294,7 +357,7 @@ def getPfsTaskInfo():
         outfile.write(json.dumps(taskInfoListList,indent=4))
         
     return taskInfoListList
-    
+
 if __name__ == '__main__':
     
     
@@ -306,8 +369,8 @@ if __name__ == '__main__':
     with open("samples.json","w") as outfile:
         outfile.write(json.dumps(animalInfo,indent=4))
     """
-    
+    db.init()
     with open("taskInfoList.json","w") as outfile:
         outfile.write(json.dumps(getPfsTaskInfo(),indent=4))
-         
+    db.close()
     print("SUCCESS")
