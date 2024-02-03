@@ -122,6 +122,7 @@ def getLastReviewedDate(animal,procedure):
 def getLastReviewedDate(taskInstanceKey):
     
     lastReviewDate = None
+
     selectStmt = "SELECT MAX(DateReviewed) FROM komp.submittedProcedures WHERE TaskInstanceId = '{0}'".format(taskInstanceKey)
     
     try:
@@ -135,7 +136,6 @@ def getLastReviewedDate(taskInstanceKey):
     return lastReviewDate
 
 def recordSubmissionAttempt(fileName, animalName, procedure, impcCode, reviewDate):  
-    
     procedureName = procedure["workflowTaskName"]
     taskInstanceId = int(procedure["taskInstanceKey"])
     
@@ -186,7 +186,7 @@ def verifyImpcCode(impccode):
 def setupDatabaseConnection():
     
     try:
-        
+        # TODO Get from config file
         mySqlHost = getDbServer()
         mySqlUser = getDbUsername()
         mySqlPassword = getDbPassword()

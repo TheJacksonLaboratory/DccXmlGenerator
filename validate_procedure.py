@@ -127,11 +127,14 @@ def testOutputs(proc):
         success = False
         return success, msg
     
-    for output in outputLs:
-        if testCollectedBy(output) == True:
-            setCollectedBy(output)
-        if testCollectedDate(output) == True:
-            setDateCollected(output)
+    for output in outputLs:  # TODO - testCollectedXXX returns a tuple, not a boolean. If success setCollectedXXX will be called
+        ok, err = testCollectedBy(output) 
+        success = (ok and success)
+        msg = msg + err
+        
+        ok, err = testCollectedDate(output)
+        success = (ok and success)
+        msg = msg + err
        
     return success, msg
     
@@ -274,7 +277,7 @@ def createLogEntry(animalInfo, procedureInfo, lineInfo, genotypeInfo, issueStr):
         msgDict["TaskInstanceKey"] = procedureInfo["taskInstanceKey"]
         #msgDict["ImpcCode"] = procedureInfo["impcCode"]
         msgDict["ImpcCode"] = 'TBD'
-        msgDict["DateDue"] = procedureInfo["dateDue"]
+        # msgDict["DateDue"] = procedureInfo["dateDue"]  # TODO Not in dict
     else:
         msgDict["TaskName"] = "N/A"
         msgDict["TaskInstanceKey"] = 0
@@ -340,7 +343,7 @@ def validateProcedure(proc):
     if len(msg) > 0:
         overallMsg = overallMsg + "; " + msg
         
-    success, msg = testPreviouslySubmitted(task)
+    success, msg = testPreviouslySubmitted(task) # TODO This is a no-op
     overallSuccess = overallSuccess and success
     if len(msg) > 0:
         overallMsg = overallMsg + "; " + msg
@@ -358,6 +361,7 @@ def validateProcedure(proc):
     reviewedDateStr = getReviewedDate()
     currentReviewedDate = datetime.strptime(reviewedDateStr, "%Y-%m-%d")
     
+    # I want to resubmit everthing to find out why these ae not at the DCC although the log says we uploaded them
     if lastReviewedDate is not None and currentReviewedDate is not None:
         if lastReviewedDate >= currentReviewedDate:  # Is the SME resubmitting this procedure?
             task["taskStatus"]  = 'Already submitted'  # else remove the Complete or Cancelled status to avoid unnecessary resubmission

@@ -34,6 +34,10 @@ import time
 from zipfile import ZipFile
 import xml.etree.ElementTree as ET
 
+import logging
+from logging.handlers import TimedRotatingFileHandler
+import re
+
 # Our code
 import query_database as db
 import Climb as c
@@ -45,11 +49,26 @@ g_ImpcCode = ''
 g_ColonyId =''
 g_useClimbData = True
 g_dataDir = "C:\\Users\\michaelm\\Source\\Workspaes\\Teams\\Lab Informatics\\JAXLIMS\\Main\\DccReporter\\data\\"
-g_filterFileName = 'line-filters.json'
+#g_filterFileName = 'line-filters.json'
 #g_filterFileName = 'embryo-samples.json'
 #g_filterFileName = 'filters-with-mice.json'
+g_filterFileName = 'filters.json'
 g_image_dir = '.'
 g_log_dir = '.'
+g_logger = None
+
+def createLogHandler(log_file):
+        logger = logging.getLogger(__name__)
+        date = datetime.now().strftime("%B-%d-%Y")
+        FORMAT = "[%(asctime)s->%(filename)s->%(funcName)s():%(lineno)s]%(levelname)s: %(message)s"
+        logging.basicConfig(format=FORMAT, filemode="w", level=logging.DEBUG, force=True)
+        handler =TimedRotatingFileHandler(f"{log_file}_{date}.log" , when="midnight", backupCount=10)
+        handler.setFormatter(logging.Formatter(FORMAT))
+        handler.suffix = "%Y%m%d"
+        handler.extMatch = re.compile(r"^\d{8}$")
+        logger.addHandler(handler)
+        return logger
+
 
 def setProcedureImpcCode(code):
   global g_ImpcCode
@@ -101,7 +120,16 @@ def getDatadir():
 
 def getFtpServer():
       return 'sftp://bhjlk02lp.jax.org/'
-    
+
+def checkAnimalKeys(mouseInfo):
+  # If the animal object does not have the keys required to help build an experiment, return false
+  # Should  never happen in the real world
+  is_ok = False
+  if "animalName" in mouseInfo:
+    if mouseInfo["animalName"] != None:
+      is_ok = True
+  return is_ok
+
 # XML XML XML
 def createSpecimenXML(animalLs):
     root = createSpecimenRoot()
@@ -233,14 +261,23 @@ def createSeriesMediaParameter(procedureNode,impcCode, strVal,statusCode, direct
         
     return procedureNode # procedureNode
 
-def validateSeriesParameter(seriesValue):
+def validateSeriesParameter(seriesValue: str): # Comes in a str, returns a dict
   # series parameters must be in dict format. If not make it so.
+  # Both key and value need to be strings!!!
   paramDict = {}
-  if "{" in seriesValue and "}" in seriesValue:  # Weak check but for now it works
-    paramDict = json.loads(seriesValue)
-  else:
-    paramDict["noLitter"] = seriesValue  # VIA only for now
-  
+  try:
+    seriesValue = seriesValue.replace("\'","\"")  # Single quote check
+    seriesValue = seriesValue.replace("None","-1")  # Can't handle Nones. Should never see.
+    paramDict = json.loads(seriesValue) # Turn to dict
+    # Values need to be str's!
+    for k,v in paramDict.items():
+      paramDict[k] = str(v)
+    
+    # TODO : Handle viability -> paramDict["noLitter"] = seriesValue  # VIA only for now
+  except Exception as e:
+    print(seriesValue)
+    print(repr(e))
+    
   return paramDict  
 # e.g. for Primary Viability
 """
@@ -250,13 +287,14 @@ def validateSeriesParameter(seriesValue):
                     <value incrementValue="litterID3">RIKEN-Rln1-AB5_03</value>
                 </seriesParameter>
 """
-def createSeriesParameter(procedureNode,impcCode, strVal,statusCode):    
-    if strVal == None or len(strVal) == 0:
+def createSeriesParameter(procedureNode,impcCode, strVal,statusCode):
+    if strVal == None:
           return procedureNode # bail
+        
     # The value is a dictionary with the key as the increment and the value as the value
     paramNode = ET.SubElement(procedureNode, 'seriesParameter', { 'parameterID': '{code}'.format(code=impcCode)})
     
-    # strVal must be a dictionary with the increment as the key and the output value as the value
+    # strVal is a string but must be a dict with the increment as the key and the output value as the value
     dictVal = validateSeriesParameter(strVal)
     for key in dictVal:
       valueNode = ET.SubElement(paramNode, 'value', {'incrementValue': key})
@@ -264,7 +302,7 @@ def createSeriesParameter(procedureNode,impcCode, strVal,statusCode):
     
     if len(statusCode) > 0:
         statusNode = ET.SubElement(paramNode,'statusCode')
-        statusNode.text = statusCode
+        statusNode.text = statusCode 
         
     return procedureNode # procedureNode
 
@@ -424,6 +462,9 @@ def generateExperimentXML(taskInfoLs, centerNode):
         # For each animal thee are one or more tasks 
         mouseInfoLs = exps["animal"]
         for mouseInfo in mouseInfoLs:
+          if checkAnimalKeys(mouseInfo) == False: # Should never happen in real world
+            continue
+          
           procLs = exps["taskInstance"]
           for proc in procLs:
             if proc["taskStatus"]  == "Failed QC" or proc["taskStatus"]  == "Already submitted":
@@ -431,7 +472,6 @@ def generateExperimentXML(taskInfoLs, centerNode):
             
             # for each procedure in the list build up the XML
             numberOfProcs += 1
-            
             experimentNode = createExperiment(centerNode,(proc['workflowTaskName'] + ' - ' +  mouseInfo['animalName'] + ' - ' + str(proc["taskInstanceKey"])), proc['dateComplete'])
             experimentNode = createSpecimen(experimentNode,mouseInfo['animalName'])
             procedureNode = createProcedure(experimentNode,db.databaseSelectProcedureCode(proc['workflowTaskName']))
@@ -571,7 +611,8 @@ def buildParameters(procedureNode,proc):
           elif dccType == 3: # Media - ABR (014) and ERG (047)
               procedureNode = createSimpleParameter(procedureNode, impcCode, outputVal,"")
           elif dccType == 4: # Series 
-              procedureNode = createSeriesParameter(procedureNode, impcCode, outputVal,"")
+              outputVal = outputVal.replace("\'","\"")  # TODO - will this handle VIABILITY?
+              procedureNode = createSeriesParameter(procedureNode, impcCode, json.loads(json.dumps(outputVal)),"")
           elif dccType == 5: # SeriesMedia 
               taskKey = int(proc["taskInstanceKey"])
               procedureNode = createSeriesMediaParameter(procedureNode, impcCode, outputVal,"",procedureImpcCode,taskKey)
@@ -781,7 +822,7 @@ def handleClimbData(filterFileName):
 
 def handlePfsData():
     # For CORE PFS komp mice
-    """
+    
     animalLs = pfs.getPfsAnimalInfo()
     
     for animal in reversed(animalLs):  # Remove those animals that failed
@@ -789,7 +830,7 @@ def handlePfsData():
               animalLs.remove(animal)
     
     createSpecimenXML(animalLs)
-    """
+    
     # Now the procedures
     resultsLs = pfs.getPfsTaskInfo()  # This should return a list of lists where each element corresponds to an experiment type
     
@@ -811,6 +852,7 @@ def handlePfsData():
         if len(task["taskInstance"]) > 0:
           db.recordSubmissionAttempt(expFileName.split('\\')[-1],animalName, task["taskInstance"][0], 
                                         getProcedureImpcCode(), v.getReviewedDate())
+          # TODO - Update the EXPERIMENT status to "Data Sent to DCC"
           
       createExperimentXML(taskLs, True)
       return
@@ -841,12 +883,6 @@ def add_arguments(argparser):
     g_image_dir = args.images
     g_log_dir = args.log
     
-    """ print(g_useClimbData)
-    print(g_dataDir)
-    print(g_filterFileName)
-    print(g_image_dir)
-    print(g_log_dir) """
-    
     return
 
 
@@ -854,9 +890,13 @@ def add_arguments(argparser):
 
 if __name__ == '__main__':
   
-    
-    args = argparse.ArgumentParser()
+    # Uncomment out when running from the commandline
+    #args = argparse.ArgumentParser()
     #add_arguments(args)
+    
+    g_logger = createLogHandler(g_log_dir+'/xml-generator')  
+    g_logger.info('Logger has been created')
+	
     
     db.init()  # Create a db connection for IMPC codes and logging
     if g_useClimbData == True:

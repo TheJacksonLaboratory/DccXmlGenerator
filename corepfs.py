@@ -10,7 +10,7 @@ import query_database as db
 
 #?$filter= JAX_EXPERIMENT_STATUS eq 'Review Completed'&
 baseURL = 'https://jacksonlabstest.platformforscience.com/DEV_KOMP/odata/'
-endpoint = 'KOMP_REQUEST?$expand=REV_MOUSESAMPLELOT_KOMPREQUEST($expand=SAMPLE/pfs.MOUSE_SAMPLE)&$count=true'
+mouseEndpoint = 'KOMP_REQUEST?$expand=REV_MOUSESAMPLELOT_KOMPREQUEST($expand=SAMPLE/pfs.MOUSE_SAMPLE)&$count=true'
 #experimentEndpoint = 'KOMP_OPEN_FIELD_EXPERIMENT?$expand=EXPERIMENT_SAMPLES($expand=ASSAY_DATA/pfs.KOMP_OPEN_FIELD_ASSAY_DATA,ENTITY/pfs.MOUSE_SAMPLE_LOT($expand=SAMPLE/pfs.MOUSE_SAMPLE))'
 experimentEndpointTemplate = "KOMP_{exp}_EXPERIMENT?$filter= JAX_EXPERIMENT_STATUS eq 'Review Completed'&$expand=EXPERIMENT_SAMPLES($expand=ASSAY_DATA/pfs.KOMP_{exp}_ASSAY_DATA,ENTITY/pfs.MOUSE_SAMPLE_LOT($expand=SAMPLE/pfs.MOUSE_SAMPLE))"
 
@@ -39,7 +39,7 @@ kompExperimentNames = [
 "STARTLE_PPI"
 ]
 """
-kompExperimentNames = ["OPEN_FIELD"]
+kompExperimentNames = ["HOLEBOARD"]
 
 # Constants
 DCC_SIMPLE_TYPE = 1
@@ -68,7 +68,7 @@ def getKompMice():
     
     try:
         my_auth = HTTPBasicAuth(username, password)
-        query = baseURL + endpoint
+        query = baseURL + mouseEndpoint
 
         result = requests.get(query, auth=my_auth,headers = {"Prefer": "odata.maxpagesize=5000"})    
         wgJson = result.json()
@@ -118,6 +118,7 @@ def getKompMice():
 
 def getSampleList(kompRequestlist):
     # Give "value": [ <blah>, REV_MOUSESAMPLELOT_KOMPREQUEST [ { "EntityTypeName": "MOUSE_SAMPLE_LOT", ... "SAMPLE": { <the good stuff> }]
+    # TODO Can I filter out previously uploaded mice?
     sampleDictls = []
     for kompRequest in kompRequestlist:
         mouseSampleLotList = kompRequest["REV_MOUSESAMPLELOT_KOMPREQUEST"]
@@ -328,7 +329,7 @@ def getSeriesOutput(expSample,keystr,dateStr):
     outputDict['name'] = keystr[0:idx]
     outputDict['outputValue'] = outputDictValue
     outputDict['outputKey'] = db.verifyImpcCode(keystr[0:idx])  # Must exist
-    outputDict['collectedBy'] = "Amelia Willett"
+    outputDict['collectedBy'] = "Amelia Willett"  # TODO Get from config file?
     outputDict['collectedDate'] = dateStr
     
     return outputDict 
