@@ -1,23 +1,82 @@
 #
 import mysql.connector
 from mysql.connector import errorcode
+import read_config as cfg
+import logging
+from datetime import datetime
+from logging.handlers import TimedRotatingFileHandler
+import re
 
+import json
+
+# GLOBALS for this module
 g_mysqldb = None
 g_MysqlCursor=None
 
-def getDbServer():
-    return 'rslims.jax.org'
+#ImpcCode,IncrementStartValue,IncrementValue)
+series_info = {
+'IMPC_ALZ_075_001':  (1,1),
+'IMPC_ALZ_076_001':  (1,1),
+'IMPC_CSD_085_001':  (1,1),
+'IMPC_ECG_025_001':  (1,1),
+'IMPC_ELZ_064_001':  (1,1),
+'IMPC_EMA_001_001':  (0,1),
+'IMPC_EMA_017_001':  (1,1),
+'IMPC_EMO_001_001':  (0,1),
+'IMPC_EMO_017_001':  (1,1),
+'IMPC_EOL_001_001':  (0,1),
+'IMPC_EOL_012_001':  (0,1),
+'IMPC_EYE_050_001':  (1,1),
+'IMPC_EYE_051_001':  (1,1),
+'IMPC_GEL_044_001':  (1,1),
+'IMPC_GEL_044_001':  (0,1),
+'IMPC_GEM_049_001':  (1,1),
+'IMPC_GEM_049_001':  (0,1),
+'IMPC_GEO_050_001':  (1,1),
+'IMPC_GEO_050_001':  (0,1),
+'IMPC_GEP_064_001':  (1,1),
+'IMPC_GEP_064_001':  (0,1),
+'IMPC_GPL_007_001':  (1,1),
+'IMPC_GPL_007_001':  (0,1),
+'IMPC_GPM_007_001':  (1,1),
+'IMPC_GPM_007_001':  (0,1),
+'IMPC_GPO_007_001':  (1,1),
+'IMPC_GPO_007_001':  (0,1),
+'IMPC_GPP_007_001':  (1,1),
+'IMPC_GPP_007_001':  (0,1),
+'IMPC_GRS_001_001':  (1,1),
+'IMPC_GRS_002_001':  (1,1),
+'IMPC_HIS_177_001':  (0,1),
+'IMPC_IPG_002_001':  (0,15),
+'IMPC_VIA_037_001':  (1,1),
+'IMPC_VIA_038_001':  (1,1),
+'IMPC_VIA_039_001':  (1,1),
+'IMPC_VIA_040_001':  (1,1),
+'IMPC_VIA_041_001':  (1,1),
+'IMPC_VIA_042_001':  (1,1),
+'IMPC_VIA_043_001':  (1,1),
+'IMPC_VIA_044_001':  (1,1),
+'IMPC_VIA_045_001':  (1,1),
+'IMPC_VIA_046_001':  (1,1),
+'IMPC_VIA_047_001':  (1,1),
+'IMPC_VIA_048_001':  (1,1),
+'IMPC_WEL_003_001':  (1,1),
+'IMPC_XRY_034_001':  (1,1),
+'IMPC_XRY_048_001':  (1,1),
+'IMPC_XRY_049_001':  (1,1),
+'IMPC_XRY_050_001':  (1,1),
+'IMPC_XRY_051_001':  (1,1),
+'JAX_ERG_028_001':  (1,1),
+'JAX_HBD_002_001':  (1,1),
+'JAX_OFD_005_001':  (5,5),
+'JAX_OFD_006_001':  (5,5),
+'JAX_ROT_001_001':  (1,1),
+'JAXIP_WEL_003_001':  (1,1)
+}
 
-def getDbUsername():
-    return 'dba'
-
-def getDbPassword():
-    return 'rsdba'
-
-def getDbSchema():
-    return 'komp'
 
 def isExperimenterID(impcCode):
+    # Returns true if IMPC code is for an experimenter ID
     return impcCode in ["IMPC_GEL_045_001","IMPC_GPL_008_001", 
                     "IMPC_GEM_050_001","IMPC_GPM_008_001", 
                     "IMPC_GPO_009_001", "IMPC_GEO_051_001", 
@@ -26,7 +85,7 @@ def isExperimenterID(impcCode):
 
 
 def databaseGetExperimenterIdCode(expName):
-    
+    # Given a first and last name return the PK from te lookup table
     tupleName = tuple(map(str,expName.split(' ')))
     
     queryStatement = ""
@@ -155,7 +214,6 @@ def recordSubmissionAttempt(fileName, animalName, procedure, impcCode, reviewDat
 def recordMediaSubmission(srcFilename, destFilename, taskKey, impcCode):  
     # Escape the backslashes, Must be a better way...
     srcFilenameRaw = fr"{srcFilename}".replace('\\', '\\\\')
-    #srcFilenameRaw =srcFilenameRaw.replace('\\', '\\\\')
     insertStmt = "INSERT INTO komp.imagefileuploadstatus (SourceFileName, DestinationFileName, TaskKey, ImpcCode) VALUES ( '{0}','{1}',{2},'{3}')".\
         format(srcFilenameRaw, destFilename, taskKey, impcCode)
 
@@ -183,15 +241,358 @@ def verifyImpcCode(impccode):
         
     return typeKey
 
+def isSeries(output:dict):
+    if 'Series' in output["dccTypeKey"]:
+        return True
+    return False
+
+"""
+Get the mice the procedures we are trying to upload.
+"""
+def getMice(procedure_instance_key_ls:list):
+    # Make the passed in list part of the WHERE clause
+    query_stmt = """
+    SELECT DISTINCT
+        OrganismID AS animalName, 
+        DateBirth AS dateBorn,
+        Sex as sex,
+        generation,
+        StockNumber AS stock,
+        '' AS birthID,
+        GenotypeSymbol AS genotype,
+        MarkerSymbol AS assay
+    FROM
+        Organism 
+        INNER JOIN ProcedureInstanceOrganism USING (_Organism_key)
+        INNER JOIN ProcedureInstance USING (_ProcedureInstance_key)
+        INNER JOIN cv_sex USING (_Sex_key)
+        INNER JOIN Line USING (_Line_key)
+        INNER JOIN LineMarker USING (_Line_key)
+        INNER JOIN Marker USING (_Marker_key)
+        INNER JOIN Genotype USING (_Organism_key)
+        INNER JOIN cv_GenotypeSymbol USING (_GenotypeSymbol_key)
+        INNER JOIN cv_Generation USING (_Generation_key)
+    WHERE _ProcedureInstance_key IN ({0});
+    """
+    pi_key_str = ''
+    for pikey in procedure_instance_key_ls:
+        pi_key_str = pi_key_str + str(pikey) + ','
+    pi_key_str = pi_key_str + '0'  # sentinel
+    
+    query_stmt = query_stmt.format(pi_key_str)
+    
+    genotypesLs = []
+    animalDictLs = []
+    animalInfoDict = {}
+    
+    try:    
+        g_MysqlCursor.execute(query_stmt)
+        for  animalName,dateBorn,sex,generation, stock, birthID, genotype,assay in g_MysqlCursor:
+            animalDict = {}
+            lineDict = {}
+            litterDict = {}
+            genotypeDict = {}
+            genotypesLs = []
+            animalInfoDict = {}
+            
+            animalDict['animalName'] = animalName
+            animalDict['dateBorn'] = str(dateBorn)
+            animalDict['sex'] = sex
+            animalDict['generation'] = generation
+            
+            lineDict['stock'] = stock
+            litterDict['birthID'] = birthID
+            genotypeDict['genotype'] = genotype
+            genotypeDict['assay'] = assay
+            
+            animalInfoDict['animal'] = animalDict
+            animalInfoDict['line'] = lineDict
+            animalInfoDict['litter'] = litterDict
+            genotypesLs.append(genotypeDict)
+            animalInfoDict['genotypes'] = genotypesLs
+            
+            animalDictLs.append(animalInfoDict)
+    except Exception as e:
+        print('SELECT FAILED FOR: ' + query_stmt) 
+        
+    return animalDictLs
+
+
+    """
+    Return a list of the specimen and experiment data
+    """
+def getCombinedProcedureSpecimenData(impc_code:str,pipeline:str):
+    taskInfoDictLs = [] # List taskInfo dicts
+    taskInfoDict = {}   # Dict where each dict has 'animal' list and a 'taskInstance'list.
+    pi_keys = []
+    animalDictLs, taskInstanceDictLs = getProcedureData(impc_code,pipeline) # one to one
+    # Get the inputs and outputs for each task instance
+    for taskInstanceDict,animalDict in zip(taskInstanceDictLs,animalDictLs):
+        taskInfoDict = {}
+        localTaskDictLs=[]
+        localAnimalDictLs=[]
+        taskInfoDict = {}
+        
+        pi_keys.append(int(taskInstanceDict['taskInstanceKey']))
+        
+        inputDictLs = getInputData(int(taskInstanceDict['taskInstanceKey']))
+        outputDictLs = getOutputData(int(taskInstanceDict['taskInstanceKey']))
+        taskInstanceDict['outputs'] = outputDictLs
+        taskInstanceDict['inputs'] = inputDictLs
+        
+        localAnimalDictLs.append(animalDict)
+        localTaskDictLs.append(taskInstanceDict)
+        
+        taskInfoDict['animal'] = localAnimalDictLs
+        taskInfoDict['taskInstance'] = localTaskDictLs
+        
+        taskInfoDictLs.append(taskInfoDict)
+        
+    return pi_keys, taskInfoDictLs
+     
+"""
+    Get the procedure data for the given IMPC code. Return the data in JSON
+    List of dicts 
+        Each dict has a list called 'taskInfo' which contains a list called 'animal' and a list called 'taskInstance'.
+"""
+def getProcedureData(impc_code:str,pipeline:str):
+    # Return the animal dict list and the taskinstance dict list
+    proc_query = """ 
+    SELECT 
+        _ProcedureInstance_key AS taskInstanceKey, 
+        ProcedureAlias AS workflowTaskName, 
+        DateCompleteMap.DateComplete AS dateComplete,
+        'JaxLIMS User' AS reviewedBy,
+        ProcedureInstance.DateModified AS dateReviewed,
+        ProcedureStatus AS taskStatus,
+        OrganismID AS animalName,
+        CONCAT('JR',RIGHT(StockNumber,5)) AS stock
+    FROM
+        ProcedureInstance 
+        INNER JOIN rslims.ProcedureInstanceOrganism USING (_ProcedureInstance_key)
+        INNER JOIN rslims.Organism USING (_Organism_key)
+        INNER JOIN rslims.Line USING (_Line_key)
+        INNER JOIN rslims.DateCompleteMap USING  (_ProcedureInstance_key)
+        INNER JOIN rslims.cv_ProcedureStatus USING (_ProcedureStatus_key)
+        INNER JOIN rslims.ProcedureDefinitionVersion USING (_ProcedureDefinitionVersion_key)
+        INNER JOIN rslims.ProcedureDefinition USING (_ProcedureDefinition_key)
+        INNER JOIN rslims.OrganismStudy USING (_Organism_key)
+        INNER JOIN rslims.Study USING (_Study_key)
+    WHERE 
+        ProcedureDefinition.ExternalID = '{0}'
+        AND _LevelTwoReviewAction_key = 13
+        AND Study.StudyName = '{1}'
+        AND DateCompleteMap.DateComplete IS NOT NULL
+        AND _ProcedureStatus_key NOT IN (1,27,37,28) 
+    """
+    proc_query = proc_query.format(impc_code,pipeline)
+    taskInstanceDict = {}
+    animalDict = {}
+    animalDictLs = []
+    taskInstanceDictLs = []
+    
+    try:    
+        g_MysqlCursor.execute(proc_query)
+        for  taskInstanceKey,workflowTaskName,dateComplete,reviewedBy,dateReviewed,taskStatus,animalName,stock in g_MysqlCursor:
+            taskInstanceDict = {}
+            animalDict = {}
+            taskInstanceDict['taskInstanceKey'] = taskInstanceKey
+            taskInstanceDict['workflowTaskName'] = workflowTaskName
+            taskInstanceDict['dateComplete'] = dateComplete
+            taskInstanceDict['reviewedBy'] = reviewedBy
+            taskInstanceDict['dateReviewed'] = str(dateReviewed)
+            taskInstanceDict['taskStatus'] = taskStatus
+            animalDict['animalName'] = animalName
+            animalDict['stock'] = stock
+            taskInstanceDictLs.append(taskInstanceDict)
+            animalDictLs.append(animalDict)
+    except Exception as e:
+        print('SELECT FAILED FOR: ' + proc_query)     
+        
+    return animalDictLs,taskInstanceDictLs
+
+def getInputData(procedure_instance_key:int):
+    # Given a procedure instance PK return the inputs and value for those with IMPC codes
+    # _Input_key AS outputKey => _Climb_key, rslim.dccparameterdetails => komp.dccparameterdetails
+    input_query = """
+    SELECT Input.ExternalID as name, InputValue as inputValue, _ClimbType_key AS inputKey
+    FROM  
+        InputInstance 
+        INNER JOIN Input USING (_Input_key) 
+        INNER JOIN komp.dccparameterdetails ON (Input.ExternalID = komp.dccparameterdetails.ImpcCode)
+    WHERE
+        InputInstance._ProcedureInstance_key = {0}
+    """
+    input_query = input_query.format(procedure_instance_key)
+    inputInstanceDict = {}
+    inputInstanceDictLs = []
+    
+    try:    
+        g_MysqlCursor.execute(input_query)
+        for  name,inputvalue,inputKey in g_MysqlCursor:
+            inputInstanceDict = {}
+            inputInstanceDict['name'] = name
+            inputInstanceDict['inputValue'] = inputvalue
+            inputInstanceDict['inputKey'] = inputKey
+            inputInstanceDictLs.append(inputInstanceDict)
+    except Exception as e:
+        print('SELECT FAILED FOR: ' + input_query)     
+        
+    return inputInstanceDictLs
+
+
+def getOutputData(procedure_instance_key:int):
+    # Given a procedure instance PK return the outputs and value for those with IMPC codes
+    # _Output_key AS outputKey => _ClimbType_key, rslim.dccparameterdetails => komp.dccparameterdetails
+    output_query = """
+    SELECT Output.ExternalID as name, 
+        _OutputInstance_key AS sequenceId,
+        OutputValue as outputValue, 
+        _ClimbType_key AS outputKey, 
+        'TBD' AS collectedBy, 
+        DateCompleteMap.DateComplete AS collectedDate,
+        OutputStatus AS statusCode,
+        TypeName AS dccType,
+        komp.dccparameterdetails.IsRequired AS required,
+        _DccType_key
+    FROM  
+        rslims.OutputInstanceSet 
+        INNER JOIN rslims.OutputInstance USING (_OutputInstanceSet_key)
+        INNER JOIN rslims.Output USING (_Output_key)
+        INNER JOIN rslims.DateCompleteMap USING (_ProcedureInstance_key)
+        INNER JOIN komp.dccparameterdetails ON (Output.ExternalID = komp.dccparameterdetails.ImpcCode)
+        INNER JOIN rslims.cv_dccType USING (_DccType_key)
+        LEFT OUTER JOIN rslims.cv_OutputStatus USING (_OutputStatus_key)
+    WHERE
+        OutputInstanceSet._ProcedureInstance_key = {0}
+        ORDER BY _DccType_key,name
+    """
+    output_query = output_query.format(procedure_instance_key)
+    outputInstanceDict = {}
+    outputInstanceDictLs = []
+    
+    try:    
+        g_MysqlCursor.execute(output_query)
+        for  name,sequenceId,outputValue,outputKey, collectedBy,collectedDate, statusCode, dccType,_DccType_key,required  in g_MysqlCursor:
+            outputInstanceDict = {}
+            outputInstanceDict['name'] = name
+            outputInstanceDict['outputValue'] = outputValue
+            outputInstanceDict['outputKey'] = outputKey
+            outputInstanceDict['collectedBy'] = collectedBy
+            outputInstanceDict['collectedDate'] = collectedDate
+            outputInstanceDict['statusCode'] = statusCode
+            outputInstanceDict['dccType'] = dccType
+            outputInstanceDict['sequenceId'] = sequenceId
+            outputInstanceDict['required'] = required
+            outputInstanceDictLs.append(outputInstanceDict)
+    except Exception as e:
+        print('SELECT FAILED FOR: ' + output_query)     
+    
+    # If there is a series or media series, let's take care of it now.
+    i = 0
+    for outputInstanceDict in  outputInstanceDictLs:
+        if 'mediaseries' in outputInstanceDict['dccType'].lower():
+            outputInstanceDictLs = resolveMediaSeries(outputInstanceDictLs,i)
+        elif 'series' in outputInstanceDict['dccType'].lower():
+            outputInstanceDictLs = resolveSeries(outputInstanceDictLs,i)
+        
+        i = i + 1
+    
+    # If there is a missing required parameter, let's take care of it now.
+    for outputInstanceDict in  outputInstanceDictLs:
+        if outputInstanceDict['statusCode'] == None or len(outputInstanceDict['statusCode']) == 0: # If set skip this code
+            # Else check for missing status code of bad data item
+            if outputInstanceDict['required'] == 1 and \
+                (outputInstanceDict['outputValue'] is None or len(outputInstanceDict['outputValue']) == 0):
+                        outputInstanceDict['statusCode'] = 'Parameter not measured - Equipment Failed'
+            
+    return outputInstanceDictLs
+
+def getNextIncrement(impc_code:str, previous_increment:int):
+    # Unfortunately, IPG (aka GTT) is a special case
+    increment_start_val, increment_step = series_info[impc_code]
+    
+    if previous_increment is None:    # First time. Return the start value
+        return increment_start_val
+    elif impc_code == 'IMPC_IPG_002_001':  # Arg! Special case
+        if previous_increment == 0:
+            return 15
+        elif previous_increment == 15:
+            return 30
+        elif previous_increment == 30:
+            return 60
+        elif previous_increment == 60:
+            return 120
+    else:
+        return previous_increment + increment_step
+        
+        
+def resolveSeries(outputInstanceDictLs:list, first_index:int):
+    # The i-th element is the start of the series
+    seriesVal = {}
+    i = first_index
+    
+    output_key = outputInstanceDictLs[i]['outputKey']
+    impc_code = outputInstanceDictLs[i]['name']
+    
+    increment_val = None
+    while outputInstanceDictLs[i]['outputKey'] == output_key:
+        increment_val=getNextIncrement(impc_code,increment_val)
+        seriesVal[str(increment_val)]  = outputInstanceDictLs[i]['outputValue']
+        
+        i = i + 1
+        if i >= len(outputInstanceDictLs):
+            break
+        
+    # Set the first output to be the new list (series)
+    outputInstanceDictLs[first_index]['outputValue'] = seriesVal
+    
+    # Remove the old outputs that were turned into a series
+    i = i - 1
+    while i > first_index: 
+        outputInstanceDictLs.pop(i)
+        i = i - 1
+        
+    return outputInstanceDictLs
+                      
+def resolveMediaSeries(outputInstanceDictLs:list, first_index:int):
+    # The i-th element is the start of the series
+    seriesVal = {}
+    i = first_index
+    
+    output_key = outputInstanceDictLs[i]['outputKey']
+    impc_code = outputInstanceDictLs[i]['name']
+    
+    increment_val = None
+    while outputInstanceDictLs[i]['outputKey'] == output_key:
+        increment_val=getNextIncrement(impc_code,increment_val)
+        # TODO : Turn the value of the image to the version on the sftp server.
+        seriesVal[str(increment_val)]  = outputInstanceDictLs[i]['outputValue']
+        i = i + 1
+        if i >= len(outputInstanceDictLs):
+            break
+        
+    # Set the first output to be the new list (series)
+    outputInstanceDictLs[first_index]['outputValue'] = seriesVal
+    
+    # Remove the old outputs that were turned into a series
+    i = i - 1
+    while i > first_index: 
+        outputInstanceDictLs.pop(i)
+        i = i - 1
+        
+    return outputInstanceDictLs
+              
 def setupDatabaseConnection():
     
     try:
-        # TODO Get from config file
-        mySqlHost = getDbServer()
-        mySqlUser = getDbUsername()
-        mySqlPassword = getDbPassword()
-        mySqlSchema = getDbSchema()
-
+        mycfg = cfg.parse_config(path="config.yml")
+        # Setup credentials for database
+        mySqlHost = mycfg['jaxlims_database']['host']
+        mySqlUser = mycfg['jaxlims_database']['user']
+        mySqlPassword = mycfg['jaxlims_database']['password']
+        mySqlSchema = mycfg['jaxlims_database']['name']
+        
         global g_mysqldb
         g_mysqldb = mysql.connector.connect(host=mySqlHost, user=mySqlUser, password=mySqlPassword, database=mySqlSchema)
         
@@ -218,6 +619,51 @@ def close():
 
 if __name__ == '__main__':
     init()
+    
+    taskInfoDictLs = [] # List taskInfo dicts
+    taskInfoDict = {}   # Dict where each dict has 'animal' list and a 'taskInstance'list.
+    
+    animalDictLs, taskInstanceDictLs = getProcedureData('IMPC_IPG_001','KOMP Phenotype') # one to one
+    # Get the inputs and outputs for each task instance
+    for taskInstanceDict,animalDict in zip(taskInstanceDictLs,animalDictLs):
+        taskInfoDict = {}
+        localTaskDictLs=[]
+        localAnimalDictLs=[]
+        taskInfoDict = {}
+        
+        inputDictLs = getInputData(int(taskInstanceDict['taskInstanceKey']))
+        outputDictLs = getOutputData(int(taskInstanceDict['taskInstanceKey']))
+        taskInstanceDict['outputs'] = outputDictLs
+        taskInstanceDict['inputs'] = inputDictLs
+        
+        localAnimalDictLs.append(animalDict)
+        localTaskDictLs.append(taskInstanceDict)
+        
+        taskInfoDict['animal'] = localAnimalDictLs
+        taskInfoDict['taskInstance'] = localTaskDictLs
+        
+        taskInfoDictLs.append(taskInfoDict)
+    
+    
+    pi_key_ls = [21953,21954,21955,21956,21957,21958,136207,3703872,3704055]
+    animalInfoDict = getMice(pi_key_ls)
+    
+    f = open("rslims-exps.json","w")
+    s = str(taskInfoDictLs).replace('\'','"')
+    s = str(s).replace('None','""')
+    print(json.dumps(json.loads(s),indent=4))
+    
+    f.write("\nExperiments {0}:".format(len(taskInfoDictLs)))
+    
+    f.write(json.dumps(json.loads(s),indent=4))
+    
+    f.write("\n\nAnimals ({0}):".format(len(animalInfoDict)))
+    s = str(animalInfoDict).replace('\'','"').replace('None','""')
+    
+    print(json.dumps(json.loads(s),indent=4))
+    f.write(json.dumps(json.loads(s),indent=4))
+    f.close()
+    
     #id = databaseGetExperimenterIdCode("Kristina Palmer")
     #print(getLastReviewedDate(0))
     #print(id)

@@ -34,28 +34,98 @@ import time
 from zipfile import ZipFile
 import xml.etree.ElementTree as ET
 
+import read_config as cfg
 import logging
 from logging.handlers import TimedRotatingFileHandler
 import re
 
 # Our code
-import query_database as db
-import Climb as c
+import jaxlims_api as db
+import climb_api as c
 import validate_procedure as v
-import corepfs as pfs
+import core_api as pfs
 
-# Globals
+# Globals - set either from the command line or config file
 g_ImpcCode = ''
 g_ColonyId =''
-g_useClimbData = True
-g_dataDir = "C:\\Users\\michaelm\\Source\\Workspaes\\Teams\\Lab Informatics\\JAXLIMS\\Main\\DccReporter\\data\\"
-#g_filterFileName = 'line-filters.json'
-#g_filterFileName = 'embryo-samples.json'
-#g_filterFileName = 'filters-with-mice.json'
-g_filterFileName = 'filters.json'
+g_DataSrc = ''   # CLIMB, PFS, or JAXLIMS
+g_dataDir = ''
+g_filterFileName = 'filters-with-mice.json'
 g_image_dir = '.'
-g_log_dir = '.'
 g_logger = None
+# "environment variables"
+
+# From YAML file            
+def getDatadir():
+  global g_dataDir
+  return g_dataDir
+
+def setClimbFilterFile(filename:str):
+  global g_filterFileName
+  g_filterFileName = filename
+
+def getClimbFilterFile():
+  global g_filterFileName
+  return g_filterFileName
+
+def setDataDir(datadir:str):
+  global g_dataDir
+  g_dataDir = datadir
+
+def getDataSrc():
+      global g_DataSrc
+      return g_DataSrc
+
+def setDataSrc(sourceName:str): 
+  # sourceName: JAXLIMS, PFS, or CLIMB
+  global g_DataSrc
+  g_DataSrc = sourceName
+  
+def getFtpServer():
+      return 'sftp://bhjlk02lp.jax.org/'
+
+# Global map: Look up a proc status string and return the IMPC code
+procedure_status_message_map = {
+'Incomplete' : 'IMPC_PSC_015',
+'Removed' : 'IMPC_PSC_001',
+'Cancelled' : 'IMPC_PSC_006',
+'Incomplete' : 'IMPC_PSC_015',
+'Cancelled - Pipeline stopped - scheduling' : 'IMPC_PSC_006',
+'Cancelled - Pipeline stopped - welfare' : 'IMPC_PSC_005',
+'Cancelled - Single procedure not performed - welfare' : 'IMPC_PSC_003',
+'Incomplete - Procedure Failed - Equipment Failed' : 'IMPC_PSC_007',
+'Incomplete - Single procedure not performed - schedule' : ' IMPC_PSC_004',
+'Procedure Failed - Insufficient Sample' : 'IMPC_PSC_009',
+'Procedure Failed - Process Failed' : 'IMPC_PSC_010',
+'Procedure Failed - Sample Lost' : 'IMPC_PSC_008',
+'Procedure QC Failed' : 'IMPC_PSC_011',
+'Removed - Mouse culled' : 'IMPC_PSC_002',
+'Removed - Mouse died' : 'IMPC_PSC_001',
+'LIMS not ready' : 'IMPC_PSC_012',
+'Software failure' : 'IMPC_PSC_013',
+'Uncooperative mouse' : 'IMPC_PSC_014',
+'Incomplete - see comments' : 'IMPC_PSC_015:Wrong_pipeline',
+'Withdrawn' : 'IMPC_PSC_015:Withdrawn'
+}
+
+# Global map: Look up a output status string and return the IMPC code
+output_status_message_map = {
+'Parameter not measured - Equipment Failed' : 'IMPC_PARAMSC_001',
+'Parameter not measured - Sample Lost' : 'IMPC_PARAMSC_002',
+'Parameter not measured - Insufficient sample' : 'IMPC_PARAMSC_003',
+'Parameter not recorded - welfare issue' : 'IMPC_PARAMSC_004',
+'Parameter not recorded - Welfare issue' : 'IMPC_PARAMSC_004',
+'Free Text of Issues' : 'IMPC_PARAMSC_005',
+'Extra Information' : 'IMPC_PARAMSC_006',
+'Parameter not measured - not in SOP' : 'IMPC_PARAMSC_007',
+'Parameter not measured - Not in SOP' : 'IMPC_PARAMSC_007',
+'Above upper limit of quantitation' : 'IMPC_PARAMSC_008',
+'Below lower limit of quantitation' : 'IMPC_PARAMSC_009',
+'Parameter QC Failed' : 'IMPC_PARAMSC_010',
+'LIMS not ready yet' : 'IMPC_PARAMSC_011',
+'Software failure' : 'IMPC_PARAMSC_012',
+'Uncooperative mouse' : 'IMPC_PARAMSC_013'
+}
 
 def createLogHandler(log_file):
         logger = logging.getLogger(__name__)
@@ -86,7 +156,6 @@ def setColonyId(colonyId):
   global g_ColonyId
   g_ColonyId = colonyId
 
-
 # By convention if a task with no mice needs to record the line
 #   then she stores it in an output named "JR". But she only stores the five digit code
 def findColonyId(proc):
@@ -99,7 +168,7 @@ def findColonyId(proc):
       if output["outputName"] == "JR":
           setColonyId('JR' + output["outputValue"])
       elif output["outputName"] == "Stock Number":
-          # Grrrrr... friggin different formats of JRs and Stock Numbers!!
+          # Different formats of JRs and Stock Numbers!!
           sn = output["outputValue"]
           if sn[0] == '0':
             sn = sn[1:]
@@ -107,19 +176,9 @@ def findColonyId(proc):
         
   return getColonyId()
   
-
 def getBackgroundStrainId():
+  # C57BL/6NJ
   return 'MGI:3056279'
-
-
-
-# TODO - get from YAML file            
-def getDatadir():
-      global g_dataDir
-      return g_dataDir
-
-def getFtpServer():
-      return 'sftp://bhjlk02lp.jax.org/'
 
 def checkAnimalKeys(mouseInfo):
   # If the animal object does not have the keys required to help build an experiment, return false
@@ -195,6 +254,7 @@ def createExperiment(centerNode, expName, expDate):
     experimentDict["experimentID"] = expName
     experimentDict["dateOfExperiment"] = expDate
     experimentNode = ET.SubElement(centerNode, 'experiment', experimentDict)
+    
     return experimentNode
 		
 def createSpecimen(experimentNode,animalName):
@@ -210,15 +270,6 @@ def createProcedure(experimentNode, procId):
     procedureNode = ET.SubElement(experimentNode, 'procedure', {'procedureID': '{proc}'.format(proc=procId) })
     return procedureNode # procedureNode
 
-def createSimpleParameter(procedureNode,impcCode, strVal,statusCode):
-    paramNode = ET.SubElement(procedureNode, 'simpleParameter', { 'parameterID': '{code}'.format(code=impcCode)})
-    valueNode = ET.SubElement(paramNode, 'value')
-    valueNode.text = strVal
-    if len(statusCode) > 0:
-        statusNode = ET.SubElement(paramNode,'statusCode')
-        statusNode.text = statusCode
-        
-    return procedureNode
 
 def createMetadata(procedureNode,impcCode, strVal):
     paramNode = ET.SubElement(procedureNode, 'procedureMetadata', { 'parameterID': '{code}'.format(code=impcCode)})
@@ -226,40 +277,42 @@ def createMetadata(procedureNode,impcCode, strVal):
     valueNode.text = strVal
     return procedureNode
 
+def createSimpleParameter(procedureNode,impcCode, strVal,statusCode):
+    paramNode = ET.SubElement(procedureNode, 'simpleParameter', { 'parameterID': '{code}'.format(code=impcCode)})
+    if len(statusCode) > 0:
+        statusNode = ET.SubElement(paramNode,'statusCode')
+        statusNode.text = statusCode   
+    else:
+      valueNode = ET.SubElement(paramNode, 'value')
+      valueNode.text = strVal
+    
+    return procedureNode
+
 # <seriesMediaParameter parameterID="IMPC_XRY_048_001">
 #    <value incrementValue="1" URI="ftp://images/image1.jpg" fileType="img/jpg">
 #    <value incrementValue="1" URI="ftp://images/image1.jpg" fileType="img/jpg">
 #</seriesMediaParameter>
 # Must be included just before the metadata!!!
-def createSeriesMediaParameter(procedureNode,impcCode, strVal,statusCode, directoryName,taskKey):
-      
-    if len(strVal) == 0:
-          return procedureNode # bail
-        
-    imageLs = strVal.split()
+def createSeriesMediaParameter(procedureNode,impc_code, strVal,procedureImpcCode,taskKey):
     
-    # Temporary kluge - she is putting "no" as the value of images when not present
-    if len(imageLs) > 0 and (imageLs[0] == "no" or imageLs[0] == "yes"):
-          return procedureNode # bail
+  if strVal == None:
+    return procedureNode # bail
         
-    paramNode = ET.SubElement(procedureNode, 'seriesMediaParameter', { 'parameterID': '{code}'.format(code=impcCode)})
+    # The value is a dictionary with the key as the increment and the value as the value
+  paramNode = ET.SubElement(procedureNode, 'seriesMediaParameter', { 'parameterID': '{code}'.format(code=impc_code)})
     
-    incrementValue = 1  # We only support starting from 1 for now. May need to get smarter.
-                        # The values are stored in KOMP.DccParameterDetails.
-    for image in imageLs:
-      filenameSplit = image.split('\\')
-      filenameOnly = filenameSplit[len(filenameSplit)-1]
-      valueNode = ET.SubElement(paramNode, 'value', {'incrementValue': str(incrementValue), 'URI': getFtpServer() + directoryName + "/" + filenameOnly})
-      incrementValue += 1
-       
-      db.recordMediaSubmission(image, (getFtpServer() + directoryName + "/" + filenameOnly), taskKey, impcCode)
-     
-    
-    if len(statusCode) > 0:
-        statusNode = ET.SubElement(paramNode,'statusCode')
-        statusNode.text = statusCode
-        
-    return procedureNode # procedureNode
+    # strVal is a string but must be a dict with the increment as the key and the output value as the value
+  dictVal = validateSeriesParameter(strVal)
+  for key in dictVal:
+    image = dictVal[key]  # Looks like \\jax\jax\phenotype\EKG\KOMP\images\blah.jpg
+    filenameSplit = image.split('\\')
+    filenameOnly = filenameSplit[len(filenameSplit)-1]
+    filenameOnly = filenameOnly.replace(' ','_',)
+    valueNode = ET.SubElement(paramNode, 'value', {'incrementValue': str(key), 'URI': getFtpServer() + procedureImpcCode + "/" + filenameOnly})
+    #valueNode.text = ???
+    db.recordMediaSubmission(image, (getFtpServer() + procedureImpcCode + "/" + filenameOnly) ,taskKey,impc_code)
+
+  return procedureNode
 
 def validateSeriesParameter(seriesValue: str): # Comes in a str, returns a dict
   # series parameters must be in dict format. If not make it so.
@@ -287,7 +340,7 @@ def validateSeriesParameter(seriesValue: str): # Comes in a str, returns a dict
                     <value incrementValue="litterID3">RIKEN-Rln1-AB5_03</value>
                 </seriesParameter>
 """
-def createSeriesParameter(procedureNode,impcCode, strVal,statusCode):
+def createSeriesParameter(procedureNode, impcCode, strVal):
     if strVal == None:
           return procedureNode # bail
         
@@ -299,12 +352,8 @@ def createSeriesParameter(procedureNode,impcCode, strVal,statusCode):
     for key in dictVal:
       valueNode = ET.SubElement(paramNode, 'value', {'incrementValue': key})
       valueNode.text = dictVal[key]
-    
-    if len(statusCode) > 0:
-        statusNode = ET.SubElement(paramNode,'statusCode')
-        statusNode.text = statusCode 
-        
-    return procedureNode # procedureNode
+      
+    return procedureNode
 
 def createStatusCode(procedureNode, statusCode):
     statusNode = ET.SubElement(procedureNode, 'statusCode')
@@ -322,7 +371,7 @@ def createSpecimenRecord(specimenRecord,specimenSetNode,statusCode):
                               'stage': '{stage}'.format(stage=specimenRecord["generation"][1:]),
                               'stageUnit': 'DPC',
                               'isBaseline': '{isBaseline}'.format(isBaseline=str(specimenRecord["isBaseline"]).lower()),
-                              'strainID': '{strainID}'.format(strainID=getBackgroundStrainId()),
+                              'colonyID': '{colonyID}'.format(colonyID=specimenRecord["colonyId"]),'strainID': '{strainID}'.format(strainID=getBackgroundStrainId()),
                               'specimenID': '{specimenID}'.format(specimenID=specimenRecord["specimenID"]),
                               'gender': '{gender}'.format(gender=specimenRecord["gender"].lower()),
                               'zygosity': '{zygosity}'.format(zygosity=specimenRecord["zygosity"]),
@@ -470,6 +519,7 @@ def generateExperimentXML(taskInfoLs, centerNode):
             if proc["taskStatus"]  == "Failed QC" or proc["taskStatus"]  == "Already submitted":
                   continue # We failed it or we've already submitted it.
             
+            
             # for each procedure in the list build up the XML
             numberOfProcs += 1
             experimentNode = createExperiment(centerNode,(proc['workflowTaskName'] + ' - ' +  mouseInfo['animalName'] + ' - ' + str(proc["taskInstanceKey"])), proc['dateComplete'])
@@ -479,6 +529,8 @@ def generateExperimentXML(taskInfoLs, centerNode):
             # Now create the metadata from the inputs and outputs
             procedureNode = buildParameters(procedureNode,proc)
             procedureNode = buildMetadata(procedureNode,proc)
+            
+            experimentNode = buildExperimentStatusCode(experimentNode,getProcedureStatusCode(proc))
     
     return numberOfProcs
 
@@ -503,14 +555,16 @@ def generateLineCallExperimentXML(taskInfoLs, centerNode):
           
           # for each procedure in the list build up the XML
           numberOfProcs += 1
-          
+            
           lineNode = createColonyId(centerNode,getColonyId())
-          procedureNode = createProcedure(lineNode,db.databaseSelectProcedureCode(proc['workflowTaskName']))
+          procedureNode = createProcedure(lineNode,db.databaseSelectProcedureCode(proc['workflowTaskName']))  # TODO Add status code is present
           
           # Now create the metadata from the inputs and outputs
           procedureNode = buildParameters(procedureNode,proc)
           
           procedureNode = buildMetadata(procedureNode,proc)
+          
+          lineNode = buildExperimentStatusCode(lineNode,getProcedureStatusCode(proc))  # ??????
           # Clear the colony Id
           #setColonyId('')
           
@@ -561,12 +615,37 @@ def buildMetadata(procedureNode,proc):
             if not impcCode == None:
               if output['outputValue'] is not None:
                 # Get the IMPC code from metadataDefLs and the value from input
-                outputVal = output['outputValue'].strip()
+                outputVal = str(output['outputValue']).strip()
                 if len(outputVal) > 0: # only if there is a value there.
                   procedureNode = createMetadata(procedureNode, impcCode, outputVal)
               
       return procedureNode
     
+def getProcedureStatusCode(proc:dict): 
+  impc_status_code = ""
+  if 'taskStatus' in proc and proc['taskStatus'] is not None:
+    if proc['taskStatus'] in procedure_status_message_map:
+      impc_status_code = procedure_status_message_map[proc['taskStatus']]
+  
+  return impc_status_code
+
+# For adding to XML
+def buildExperimentStatusCode(experimentNode, status_code):
+  if status_code != '':
+      status_node = ET.SubElement(experimentNode,'statusCode')
+      status_node.text = status_code
+      
+  return experimentNode
+  
+def getOutputStatusCode(output:dict):
+  impc_status_code = ""
+  if 'statusCode' in output and \
+      output['statusCode'] is not None and \
+      output['statusCode'] in output_status_message_map:
+        impc_status_code = output_status_message_map[output['statusCode']]
+      
+  return impc_status_code
+
 def buildParameters(procedureNode,proc):
       # Get the data from the Outputs
       
@@ -580,6 +659,7 @@ def buildParameters(procedureNode,proc):
       # Now get the full code e.g. IMPC_BWT_001
       procedureImpcCode = db.databaseSelectProcedureCode(proc['workflowTaskName'])
       
+      output_status_code = ''
       # Go through the outputs and if there is a climb_key match add the value
       outputLs = proc['outputs']
       # TBD - Sort by _DccType_key because simples must precede and series?
@@ -587,6 +667,7 @@ def buildParameters(procedureNode,proc):
         impcCode = None
         dccType = None
         for output in outputLs:
+          
           outputKey = output['outputKey']
           if v[1] == outputKey:
                   impcCode = v[0]
@@ -597,25 +678,26 @@ def buildParameters(procedureNode,proc):
         if not impcCode == None and output['outputValue'] is not None:
           # Get the IMPC code from metadataDefLs and the value from output
           outputVal = output['outputValue']
+          output_status_code = getOutputStatusCode(output)
           
         if outputVal is None:
               continue
         if type(outputVal) != type(""): # TODO - Handle floats an ints
           outputVal = str(outputVal)    
-          
+        
         if len(outputVal) > 0:
           if dccType == 1:
-              procedureNode = createSimpleParameter(procedureNode, impcCode, outputVal,"")
+              procedureNode = createSimpleParameter(procedureNode, impcCode, outputVal,output_status_code)
           elif dccType == 2: #  Ontology TBD
-              procedureNode = createSimpleParameter(procedureNode, impcCode, outputVal,"")
+              procedureNode = createSimpleParameter(procedureNode, impcCode, outputVal,output_status_code)
           elif dccType == 3: # Media - ABR (014) and ERG (047)
-              procedureNode = createSimpleParameter(procedureNode, impcCode, outputVal,"")
+              procedureNode = createSimpleParameter(procedureNode, impcCode, outputVal,output_status_code)
           elif dccType == 4: # Series 
               outputVal = outputVal.replace("\'","\"")  # TODO - will this handle VIABILITY?
-              procedureNode = createSeriesParameter(procedureNode, impcCode, json.loads(json.dumps(outputVal)),"")
+              procedureNode = createSeriesParameter(procedureNode, impcCode, json.loads(json.dumps(outputVal)))
           elif dccType == 5: # SeriesMedia 
               taskKey = int(proc["taskInstanceKey"])
-              procedureNode = createSeriesMediaParameter(procedureNode, impcCode, outputVal,"",procedureImpcCode,taskKey)
+              procedureNode = createSeriesMediaParameter(procedureNode, impcCode, outputVal,procedureImpcCode,taskKey)
           elif dccType == 8:  # colony ids are stored as ouputs for line calls
                 setColonyId(outputVal)
           elif dccType == 6: # MediaSample - unsupported
@@ -651,7 +733,8 @@ def generateSpecimenXML(animalInfoLs, centerNode):  # List of dictionaries
       genotypes = animalInfo["genotypes"]   # List of dicts with keys genotypeKey, date, assay, genotype, modifiedBy, dateModified.
       
       specimenRecord["specimenID"] = animal["animalName"]
-      specimenRecord["dob"] = animal["dateBorn"][0:10]
+      if animal["dateBorn"] is not None:
+        specimenRecord["dob"] = animal["dateBorn"][0:10]
       specimenRecord["gender"] = animal["sex"]
       specimenRecord["isBaseline"] = line["stock"] == '005304'
       if specimenRecord["isBaseline"] == False:
@@ -712,6 +795,7 @@ def extractThreeLetterCode(s):
       try:
         return s[(s.index('_') + 1):(s.index('_') + 4)]
       except ValueError:
+        print("Could not resolve three letter code for" + s)
         return ""
 
 """ 
@@ -856,7 +940,35 @@ def handlePfsData():
           
       createExperimentXML(taskLs, True)
       return
-    
+
+def handleJaxLimsData():
+  try:
+      mycfg = cfg.parse_config(path="config.yml")
+      # Setup credentials for database
+      impc_pipeline = mycfg['impc_pipeline']['pipeline']
+      impc_proc_ls = mycfg['impc_proc_codes']['impc_code_list'].split(',')
+      jax_study = mycfg['jax_study']['study']
+      setDataDir(mycfg['directories']['dest'])
+      
+      all_mice = []
+      pi_key_ls = []
+      
+      # For each procedure code in the list, generate an experient XML file
+      for proc_code in impc_proc_ls:
+        pi_key_ls, taskInstanceDictLs = db.getCombinedProcedureSpecimenData(proc_code,jax_study)
+        createExperimentXML(taskInstanceDictLs,True)  # Second arg is 'experimentHasAnimals?'
+        all_mice.extend(pi_key_ls)
+
+      
+      animalLs = db.getMice(all_mice)
+      for animal in reversed(animalLs):  # Remove those animals that failed
+        if v.validateAnimal(animal) == False:
+              animalLs.remove(animal)
+      createSpecimenXML(animalLs)
+  except Exception as e:
+      print('handleJaxLimsData() failed')
+      print(str(e))
+  return    
     
 def add_arguments(argparser):
     argparser.add_argument(
@@ -865,23 +977,18 @@ def add_arguments(argparser):
     argparser.add_argument(
             '-s', '--source', type=str, help='Source for data, i.e. CLIMB or PFS', required=True
         )
-    argparser.add_argument(
-            '-d', '--datadir', type=str, help='Destination directory XML files', required=True
-        )
-    argparser.add_argument(
-            '-l', '--log', type=str, help='Destination directory for error log', required=False  # TODO
-        )
+    
     argparser.add_argument(
             '-i', '--images', type=str, help='Images folder', required=False  #TODO
         )
         
     args = argparser.parse_args()
     
-    g_useClimbData = args.source == 'CLIMB'
-    g_dataDir = args.datadir
+    setDataSrc(args.source)
+    setDataDir(args.datadir)
+    
     g_filterFileName = args.filter_file
     g_image_dir = args.images
-    g_log_dir = args.log
     
     return
 
@@ -890,19 +997,33 @@ def add_arguments(argparser):
 
 if __name__ == '__main__':
   
-    # Uncomment out when running from the commandline
+    # Uncomment out the next two lines when running from the commandline
     #args = argparse.ArgumentParser()
     #add_arguments(args)
+    # Otherwise, hard coded
+    setDataDir("C:\\Users\\michaelm\\Source\\Workspaes\\Teams\\Lab Informatics\\JAXLIMS\\Main\\DccReporter\\data\\")
+    setDataSrc('PFS')
     
-    g_logger = createLogHandler(g_log_dir+'/xml-generator')  
+    mycfg = cfg.parse_config(path="config.yml")
+    # Setup properties for any of the three sources
+    log_dir = mycfg['directories']['log_path']
+      
+    g_logger = createLogHandler(log_dir+'/xml-generator')  
     g_logger.info('Logger has been created')
 	
     
-    db.init()  # Create a db connection for IMPC codes and logging
-    if g_useClimbData == True:
-      handleClimbData(g_filterFileName)
-    else:
+    db.init()  # Create a db connection to JAXLIMS for IMPC codes and 
+               # logging no matter what data source we are using.
+    
+    if getDataSrc() == 'CLIMB':
+      handleClimbData()
+    elif getDataSrc() == 'JAXLIMS':
+      handleJaxLimsData()
+    elif getDataSrc() == 'PFS':
       handlePfsData()
+    else:
+      print("The data source {0} is invalid. Must be CLIMB, JAXLIMS, or PFS".format(getDataSrc()))
+      
     # All done
     db.close()      
     

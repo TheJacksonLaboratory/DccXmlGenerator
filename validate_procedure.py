@@ -1,4 +1,4 @@
-import query_database as db
+import jaxlims_api as db
 from datetime import datetime
 
 """
@@ -119,6 +119,7 @@ def testInputs(proc):
 
 # Are all outputs set? 
 def testOutputs(proc):
+    # This function assumes that the validity of individual outputs are already done
     msg = ""
     success = True
     outputLs = proc["outputs"]
@@ -195,6 +196,10 @@ def testMouseInfo(animal):
 
     if animalInfo["generation"] == None or len(animalInfo["generation"]) == 0:
         msg = " No mouse generation."
+        result = False         
+    
+    if animalInfo["dateBorn"] == None or len(animalInfo["dateBorn"]) == 0:
+        msg = " No birth date."
         result = False         
         
     if animalInfo["sex"] == None or len(animalInfo["sex"]) == 0:

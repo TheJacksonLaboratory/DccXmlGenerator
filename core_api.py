@@ -2,23 +2,14 @@
 from logging import NullHandler
 import requests
 from requests.auth import HTTPBasicAuth
-import sys
+import os
 import json
 from datetime import datetime
-import csv
-import query_database as db
+import jaxlims_api as db
 
-#?$filter= JAX_EXPERIMENT_STATUS eq 'Review Completed'&
-baseURL = 'https://jacksonlabstest.platformforscience.com/DEV_KOMP/odata/'
-mouseEndpoint = 'KOMP_REQUEST?$expand=REV_MOUSESAMPLELOT_KOMPREQUEST($expand=SAMPLE/pfs.MOUSE_SAMPLE)&$count=true'
-#experimentEndpoint = 'KOMP_OPEN_FIELD_EXPERIMENT?$expand=EXPERIMENT_SAMPLES($expand=ASSAY_DATA/pfs.KOMP_OPEN_FIELD_ASSAY_DATA,ENTITY/pfs.MOUSE_SAMPLE_LOT($expand=SAMPLE/pfs.MOUSE_SAMPLE))'
-experimentEndpointTemplate = "KOMP_{exp}_EXPERIMENT?$filter= JAX_EXPERIMENT_STATUS eq 'Review Completed'&$expand=EXPERIMENT_SAMPLES($expand=ASSAY_DATA/pfs.KOMP_{exp}_ASSAY_DATA,ENTITY/pfs.MOUSE_SAMPLE_LOT($expand=SAMPLE/pfs.MOUSE_SAMPLE))"
+import read_config as cfg
 
-
-username = 'svc-corePFS@jax.org'
-password = 'hRbP&6K&(Qvw'
-
-"""
+'''
 kompExperimentNames = [
 "AUDITORY_BRAINSTEM_RESPONSE",
 "BODY_COMPOSITION",
@@ -26,7 +17,7 @@ kompExperimentNames = [
 "CLINICAL_BLOOD_CHEMISTRY",
 "ELECTROCARDIOGRAM",
 "ELECTRORETINOGRAPHY",
-"EYE_MORPHOLOGY_SLIT_LAMP",  # CHANGE ONCE WE ARE IN PRODUCTION
+"EYE_MORPHOLOGY",  # CHANGE ONCE WE ARE IN PRODUCTION
 "FUNDUS_IMAGING",
 "GLUCOSE_TOLERANCE_TEST",
 "GRIP_STRENGTH",
@@ -38,8 +29,9 @@ kompExperimentNames = [
 "SHIRPA_DYSMORPHOLOGY",
 "STARTLE_PPI"
 ]
-"""
-kompExperimentNames = ["HOLEBOARD"]
+'''
+
+kompExperimentNames = ["BODY_WEIGHT"]
 
 # Constants
 DCC_SIMPLE_TYPE = 1
@@ -53,7 +45,18 @@ FIRST_OFD_DISTANCE_TRAVELLED_SERIES =   'JAX_OFD_005_001_1ST5' # 1st5, 2nd5, 3rd
 FIRST_GRS_FORELIMB_SERIES =             'IMPC_GRS_001_001_T1' #t1, t2, t3
 FIRST_GRS_FOREHINDLIMB_SERIES =         'IMPC_GRS_002_001_T1' #t1, t2, t3
 FIRST_HBD_HOLEPOKE_SEQUENCE_SERIES =    'JAX_HBD_002_001'  # Comes in as a single string. Needs to be converted into a series.
-
+FIRST_SHIRPA_DYS_IMAGE_SERIES =         'IMPC_CSD_051_001_1'
+FIRST_EYE_SLITLAMP_IMAGE_SERIES =       'IMPC_EYE_051_001_1'
+FIRST_EYE_FUNDUS_IMAGE_SERIES =         'IMPC_EYE_050_001_1'
+FIRST_ECG_IMAGE_SERIES =                'IMPC_ECG_025_001_f1'
+"""
+IMPC_GRS_001_001
+IMPC_GRS_002_001
+IMPC_IPG_002_001
+JAX_HBD_002_001
+JAX_OFD_005_001     Distance travelled
+JAX_OFD_006_001  ??? Number of rears - not colllected
+"""
 
 seriesImpcCodes = [
     FIRST_GTT_SERIES, 
@@ -63,9 +66,30 @@ seriesImpcCodes = [
     FIRST_HBD_HOLEPOKE_SEQUENCE_SERIES
 ]
 
+"""
+IMPC_CSD_085_001
+IMPC_ECG_025_001
+IMPC_EYE_050_001
+IMPC_EYE_051_001
+"""
+# TODO Get from PFS
+seriesMediaImpcCodes = [
+FIRST_SHIRPA_DYS_IMAGE_SERIES,
+FIRST_EYE_SLITLAMP_IMAGE_SERIES,
+FIRST_EYE_FUNDUS_IMAGE_SERIES,
+FIRST_ECG_IMAGE_SERIES
+]
+
 ############################# MICE/SAMPLES #################
 def getKompMice():
     
+    mycfg = cfg.parse_config(path="config.yml")
+      # Setup credentials for database
+    baseURL = mycfg['corepfs_database']['baseURL']
+    mouseEndpoint = mycfg['corepfs_database']['mouseEndpoint']
+    username = mycfg['corepfs_database']['username']
+    password = mycfg['corepfs_database']['password']
+      
     try:
         my_auth = HTTPBasicAuth(username, password)
         query = baseURL + mouseEndpoint
@@ -164,6 +188,9 @@ def getSampleList(kompRequestlist):
 
     return sampleDictls
 
+def getStatusCode(output):
+    return ''
+
 def jaxstrainToStocknumber(jaxstrain):
     # Find last occurance of "JR"
     # Copy the next 6 characters
@@ -189,9 +216,17 @@ def getPfsAnimalInfo():
 
 
 
-def getExperimentData(experimentEndpoint):
+def getExperimentData(experimentname):
         
     try:
+        mycfg = cfg.parse_config(path="config.yml")
+        baseURL = mycfg['corepfs_database']['baseURL']
+        username = mycfg['corepfs_database']['username']
+        password = mycfg['corepfs_database']['password']
+        experimentEndpointTemplate = mycfg['corepfs_database']['experimentEndpointTemplate']
+        
+        experimentEndpoint = experimentEndpointTemplate.format(exp=experimentname)
+        
         my_auth = HTTPBasicAuth(username, password)
         query = baseURL + experimentEndpoint
 
@@ -240,7 +275,6 @@ def buildTaskInfoList(expDataLs):
             taskInfo['taskInstance'] = getTaskInfo(procedure,expSample['Id'])
             taskInfo['taskInstance'][0]['inputs'] = inputs
             taskInfo['taskInstance'][0]['outputs'] = getOutputs(expSample['ASSAY_DATA'],dateStr)
-            
             taskInfoLs.append(taskInfo)
             
     return taskInfoLs
@@ -278,20 +312,34 @@ def getOutputs(expSample,dateStr):
     outputLs = []
     keyList = list(expSample.keys())
     for keystr in keyList:
+        outputDict = {}
+        # Check for failed output
+        if (keystr+'_QC') in expSample:
+            outputDict['statusCode'] = expSample[(keystr+'_QC')]  
+            if outputDict['statusCode'] == '-':
+                outputDict['statusCode'] = ''  # Status code of '-' means no qc issue
+        else:
+                outputDict['statusCode'] = ''
+        
         if isSeries(keystr): # We must construct it
             outputDict = getSeriesOutput(expSample,keystr,dateStr)
             if outputDict != None:
                 outputLs.append(outputDict)
-        else:  # Simple type or ignore
-            outputDict = {}
-            outputKey = db.verifyImpcCode(keystr)
-            if  outputKey > 0:
-                outputDict['name']= keystr
-                outputDict['outputValue'] = expSample[keystr]
-                outputDict['outputKey'] = outputKey
-                outputDict['collectedBy'] = "Amelia Willett"
-                outputDict['collectedDate'] = dateStr
+        elif isMediaSeries(keystr):# We must construct it
+            outputDict = getMediaSeriesOutput(expSample,keystr,dateStr)
+            if outputDict != None:
                 outputLs.append(outputDict)
+        else:  # Simple type or ignore
+            if 'JAX_' in keystr or 'IMPC_' in keystr:
+                outputKey = db.verifyImpcCode(keystr)
+                if  outputKey > 0:
+                    outputDict['name']= keystr
+                    outputDict['outputValue'] = expSample[keystr]
+                    outputDict['outputKey'] = outputKey
+                    outputDict['collectedBy'] = "Amelia Willett"
+                    outputDict['collectedDate'] = dateStr
+                    
+                    outputLs.append(outputDict)
             
     return outputLs
 
@@ -303,10 +351,10 @@ def getSeriesOutput(expSample,keystr,dateStr):
     # Build up the series. A dictionary. Key is increment value is value
     if keystr == FIRST_GTT_SERIES: # t0, t15, t30, t60, t120
         outputDictValue["0"] = expSample[keystr]
-        outputDictValue["15"] = expSample[keystr.replace('T0','15')]
-        outputDictValue["30"] = expSample[keystr.replace('T0','30')]
-        outputDictValue["60"] = expSample[keystr.replace('T0','60')]
-        outputDictValue["120"] = expSample[keystr.replace('T0','120')]
+        outputDictValue["15"] = expSample[keystr.replace('t0','t15')]
+        outputDictValue["30"] = expSample[keystr.replace('t0','t30')]
+        outputDictValue["60"] = expSample[keystr.replace('t0','t60')]
+        outputDictValue["120"] = expSample[keystr.replace('t0','t120')]
         idx = 16 # i.e. IMPC_
     elif  keystr == FIRST_OFD_DISTANCE_TRAVELLED_SERIES: # 1st5, 2nd5, 3rd5, 4th5
         outputDictValue["1"] = expSample[keystr]
@@ -334,9 +382,72 @@ def getSeriesOutput(expSample,keystr,dateStr):
     
     return outputDict 
 
+def mediaFileSftpName(directory_name,fullyQualifedPath):
+    # build the destination of this file on the SFTP server
+    if fullyQualifedPath is None or len(fullyQualifedPath) == 0:
+        return None
+    
+    filename_only = os.path.basename(fullyQualifedPath)
+    str = 'sftp://bhjlk02lp.jax.org/images/' + directory_name + filename_only 
+    
+    return str
+ 
+
+def getMediaSeriesOutput(expSample,keystr,dateStr):
+    
+    outputDictValue = {}
+    outputDict = {}
+    idx = 16
+    # Build up the series. A dictionary. Key is increment value is value
+    if keystr == FIRST_SHIRPA_DYS_IMAGE_SERIES: 
+        outputDictValue["1"] = mediaFileSftpName('IMPC_CSD_003',expSample[keystr])
+        outputDictValue["2"] = mediaFileSftpName('IMPC_CSD_003',expSample[keystr.replace('1','2')])
+        outputDictValue["3"] = mediaFileSftpName('IMPC_CSD_003',expSample[keystr.replace('1','3')])
+        outputDictValue["4"] = mediaFileSftpName('IMPC_CSD_003',expSample[keystr.replace('1','4')])
+        outputDictValue["5"] = mediaFileSftpName('IMPC_CSD_003',expSample[keystr.replace('1','5')])
+        outputDictValue["6"] = mediaFileSftpName('IMPC_CSD_003',expSample[keystr.replace('1','6')])
+    elif  keystr == FIRST_EYE_SLITLAMP_IMAGE_SERIES:
+        outputDictValue["1"] = mediaFileSftpName('IMPC_EYE_001',expSample[keystr])
+        outputDictValue["2"] = mediaFileSftpName('IMPC_EYE_001',expSample[keystr.replace('1','2')])
+        outputDictValue["3"] = mediaFileSftpName('IMPC_EYE_001',expSample[keystr.replace('1','3')])
+        outputDictValue["4"] = mediaFileSftpName('IMPC_EYE_001',expSample[keystr.replace('1','4')])
+        outputDictValue["5"] = mediaFileSftpName('IMPC_EYE_001',expSample[keystr.replace('1','5')])
+        outputDictValue["6"] = mediaFileSftpName('IMPC_EYE_001',expSample[keystr.replace('1','6')])
+    elif keystr == FIRST_EYE_FUNDUS_IMAGE_SERIES:
+        outputDictValue["1"] = mediaFileSftpName('IMPC_EYE_001',expSample[keystr])
+        outputDictValue["2"] = mediaFileSftpName('IMPC_EYE_001',expSample[keystr.replace('1','2')])
+        outputDictValue["3"] = mediaFileSftpName('IMPC_EYE_001',expSample[keystr.replace('1','3')])
+        outputDictValue["4"] = mediaFileSftpName('IMPC_EYE_001',expSample[keystr.replace('1','4')])
+        outputDictValue["5"] = mediaFileSftpName('IMPC_EYE_001',expSample[keystr.replace('1','5')])
+    elif keystr == FIRST_ECG_IMAGE_SERIES:  # Comes in as a single string. Needs to be converted
+        outputDictValue["1"] = mediaFileSftpName('IMPC_ECG_003',expSample[keystr])
+        outputDictValue["2"] = mediaFileSftpName('IMPC_ECG_003',expSample[keystr.replace('f1','f2')])
+    else:
+        # Error
+        return None
+    # Remove any None's from the Series
+    for key in outputDictValue:
+        if outputDictValue[key] is None:
+            outputDictValue.pop(key)
+            
+    outputDict['name'] = keystr[0:idx]
+    outputDict['outputValue'] = outputDictValue
+    outputDict['outputKey'] = db.verifyImpcCode(keystr[0:idx])  # Must exist
+    outputDict['collectedBy'] = "Amelia Willett"  # TODO Get from config file?
+    outputDict['collectedDate'] = dateStr
+    
+    return outputDict 
+
 def isSeries(impcCode):
     # If this is the IMPC code for a series and if it is the first one in the series, return True, else False
-    if impcCode.upper() in seriesImpcCodes:
+    if impcCode.upper() in seriesImpcCodes or isMediaSeries(impcCode):
+        return True
+    
+    return False
+
+def isMediaSeries(impcCode):
+    # If this is the IMPC code for a series and if it is the first one in the series, return True, else False
+    if impcCode.upper() in seriesMediaImpcCodes:
         return True
     
     return False
@@ -346,10 +457,9 @@ def getPfsTaskInfo():
     taskInfoListList= [] #
     
     for expName in kompExperimentNames:
-        expEndpoint = experimentEndpointTemplate.format(exp=expName)
         taskInfoList={}
-        numberOfKompRequest, valuelist = getExperimentData(expEndpoint)
-        print(numberOfKompRequest)
+        numberOfKompRequest, valuelist = getExperimentData(expName)
+        print("Number of requests:" + str(numberOfKompRequest))
           
         taskInfoList["taskInfo"] = buildTaskInfoList(valuelist)     
         taskInfoListList.append(taskInfoList)
