@@ -308,9 +308,9 @@ def createSeriesMediaParameter(procedureNode,impc_code, strVal,procedureImpcCode
     filenameSplit = image.split('\\')
     filenameOnly = filenameSplit[len(filenameSplit)-1]
     filenameOnly = filenameOnly.replace(' ','_',)
-    valueNode = ET.SubElement(paramNode, 'value', {'incrementValue': str(key), 'URI': getFtpServer() + procedureImpcCode + "/" + filenameOnly})
+    valueNode = ET.SubElement(paramNode, 'value', {'incrementValue': str(key), 'URI': getFtpServer() + 'images/' + procedureImpcCode + "/" + filenameOnly})
     #valueNode.text = ???
-    db.recordMediaSubmission(image, (getFtpServer() + procedureImpcCode + "/" + filenameOnly) ,taskKey,impc_code)
+    db.recordMediaSubmission(image, (getFtpServer() + 'images/' + procedureImpcCode + "/" + filenameOnly) ,taskKey,impc_code)
 
   return procedureNode
 
