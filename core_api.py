@@ -31,7 +31,7 @@ kompExperimentNames = [
 ]
 '''
 
-kompExperimentNames = ["BODY_WEIGHT"]
+kompExperimentNames = ["ELECTROCARDIOGRAM"]
 
 # Constants
 DCC_SIMPLE_TYPE = 1
@@ -260,12 +260,15 @@ def buildTaskInfoList(expDataLs):
     for procedure in expDataLs:
         animal = []
         animalInfo = {}
-        inputs = getInputs(procedure) # We get the inputs from the procedure
+        taskInfo = {}
+        inputs = getInputs(procedure) # We get the inputs from the procedure (experiment)
         
         dateStr = procedure['JAX_EXPERIMENT_STARTDATE']
+        i = 0
         for expSample in procedure['EXPERIMENT_SAMPLES']:
             taskInfo = {}
             animal = []
+            animalInfo = {}
             sampleEntity = expSample['ENTITY']
             animalInfo["animalName"] = sampleEntity['SAMPLE']['JAX_SAMPLE_EXTERNALID']
             animalInfo['stock'] = expSample['ASSAY_DATA']['JAX_ASSAY_STRAINNAME']

@@ -66,10 +66,16 @@ def setReviewedDate(proc):
     global g_ReviewedDate
     g_ReviewedDate = proc["dateReviewed"]
 
+def getReviewedDate(proc):
+    global g_ReviewedDate
+    if proc != None:
+        g_ReviewedDate = proc["dateReviewed"]
+    return g_ReviewedDate
+"""
 def getReviewedDate():
     global g_ReviewedDate
-    return g_ReviewedDate
-
+    g_ReviewedDate 
+"""
 # Have we submitted this successfully before?
 # Look up the test in the database and compare reviewed dates
 def testPreviouslySubmitted(proc):
@@ -363,7 +369,7 @@ def validateProcedure(proc):
     # TBD - Need to task key  for line submissions
     # lastReviewedDate = db.getLastReviewedDate(specimen["animalName"],task["workflowTaskName"])
     lastReviewedDate = db.getLastReviewedDate(task["taskInstanceKey"])
-    reviewedDateStr = getReviewedDate()
+    reviewedDateStr = getReviewedDate(task)
     currentReviewedDate = datetime.strptime(reviewedDateStr, "%Y-%m-%d")
     
     # I want to resubmit everthing to find out why these ae not at the DCC although the log says we uploaded them

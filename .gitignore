@@ -49,3 +49,5 @@ __pycache__/Climb.cpython-310.pyc
 *.log
 *.pyc
 filters.json
+__pycache__/validate_procedure.cpython-310.pyc
+__pycache__/validate_procedure.cpython-310.pyc

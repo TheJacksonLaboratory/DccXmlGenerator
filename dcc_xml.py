@@ -603,7 +603,7 @@ def buildMetadata(procedureNode,proc):
                   procedureNode = createMetadata(procedureNode, impcCode, inputVal)
       
       # Go through the outputs and if there is a climb_key match add the value
-      # We have to do this because CLIMB does not allow importation of inputs so some matadata are outputs
+      # We have to do this because CLIMB and PFS do not allow importation of inputs so some matadata are outputs
       outputLs = proc['outputs']
       for output in outputLs:
             outputKey = output['outputKey']
@@ -617,6 +617,9 @@ def buildMetadata(procedureNode,proc):
                 # Get the IMPC code from metadataDefLs and the value from input
                 outputVal = str(output['outputValue']).strip()
                 if len(outputVal) > 0: # only if there is a value there.
+                  if db.isExperimenterID(impcCode) == True:  # Can't use real names. Must insert numerical value
+                    outputVal = db.databaseGetExperimenterIdCode(outputVal)
+                  
                   procedureNode = createMetadata(procedureNode, impcCode, outputVal)
               
       return procedureNode
@@ -930,15 +933,18 @@ def handlePfsData():
             print("Rejected task: " + message)
             taskLs.remove(task)  # Do not record it 
             continue
-              
-        animalName = task["animal"][0]["animalName"]
-        
-        if len(task["taskInstance"]) > 0:
-          db.recordSubmissionAttempt(expFileName.split('\\')[-1],animalName, task["taskInstance"][0], 
-                                        getProcedureImpcCode(), v.getReviewedDate())
-          # TODO - Update the EXPERIMENT status to "Data Sent to DCC"
           
+      # OK. With list cleaned up, lets create the experiment XML
       createExperimentXML(taskLs, True)
+      
+      # task is a list of taskInstances but there will only be one for KOMP
+      for task in taskLs:
+        if len(task["taskInstance"]) > 0:
+          animalName = task["animal"][0]["animalName"]
+          db.recordSubmissionAttempt(expFileName.split('\\')[-1],animalName, task["taskInstance"][0], 
+                                        getProcedureImpcCode(), v.getReviewedDate(task["taskInstance"][0]))
+          # TODO - Update the EXPERIMENT status to "Data Sent to DCC"
+     
       return
 
 def handleJaxLimsData():
@@ -957,6 +963,8 @@ def handleJaxLimsData():
       for proc_code in impc_proc_ls:
         pi_key_ls, taskInstanceDictLs = db.getCombinedProcedureSpecimenData(proc_code,jax_study)
         createExperimentXML(taskInstanceDictLs,True)  # Second arg is 'experimentHasAnimals?'
+        # TODO Record the submission
+        # db.recordSubmissionAttempt(expFilename, animalName, taskInstance, procedure code, review date)
         all_mice.extend(pi_key_ls)
 
       
@@ -964,7 +972,9 @@ def handleJaxLimsData():
       for animal in reversed(animalLs):  # Remove those animals that failed
         if v.validateAnimal(animal) == False:
               animalLs.remove(animal)
+              
       createSpecimenXML(animalLs)
+      
   except Exception as e:
       print('handleJaxLimsData() failed')
       print(str(e))

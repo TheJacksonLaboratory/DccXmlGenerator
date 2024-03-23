@@ -77,11 +77,38 @@ series_info = {
 
 def isExperimenterID(impcCode):
     # Returns true if IMPC code is for an experimenter ID
-    return impcCode in ["IMPC_GEL_045_001","IMPC_GPL_008_001", 
-                    "IMPC_GEM_050_001","IMPC_GPM_008_001", 
-                    "IMPC_GPO_009_001", "IMPC_GEO_051_001", 
-                    "IMPC_GEP_065_001", "IMPC_GPP_008_001",
-                    "IMPC_EMA_002_001", "IMPC_EMO_002_001"]
+    return impcCode in [
+'IMPC_ABR_053_001',
+'IMPC_ACS_014_001',
+'IMPC_BWT_005_001',
+'IMPC_CBC_049_001',
+'IMPC_CSD_081_001',
+'IMPC_DXA_016_001',
+'IMPC_ECG_020_001',
+'IMPC_EMA_002_001',
+'IMPC_EMA_002_001',
+'IMPC_EMO_002_001',
+'IMPC_EOL_002_001',
+'IMPC_EYE_036_001',
+'IMPC_GEL_045_001',
+'IMPC_GEM_050_001',
+'IMPC_GEO_051_001',
+'IMPC_GEP_065_001',
+'IMPC_GPL_008_001',
+'IMPC_GPM_008_001',
+'IMPC_GPO_008_001',
+'IMPC_GPP_008_001',
+'IMPC_GRS_012_001',
+'IMPC_HEM_024_001',
+'IMPC_HWT_003_001',
+'IMPC_IPG_008_001',
+'IMPC_PAT_052_002',
+'JAX_ERG_029_001',
+'JAX_ERG_048_001',
+'JAX_HBD_003_001',
+'JAX_LDT_013_001',
+'JAX_OFD_035_001'
+]
 
 
 def databaseGetExperimenterIdCode(expName):
@@ -147,7 +174,7 @@ def databaseSelectImpcData(threeLetterCode, isMetatdata, usingInputs):
     else:
         whereStr = whereStr + ' AND IsInput = 0 ORDER BY _DccType_key' 
          
-    selectStmt = 'SELECT ImpcCode, _ClimbType_key, _DccType_key FROM komp.dccparameterdetails WHERE _ClimbType_key IS NOT NULL AND ImpcCode LIKE \'%{0}%\' AND '.format(threeLetterCode) + whereStr
+    selectStmt = 'SELECT ImpcCode, _ClimbType_key, _DccType_key FROM komp.dccparameterdetails WHERE _ClimbType_key > 0 AND ImpcCode LIKE \'%{0}%\' AND '.format(threeLetterCode) + whereStr
 
     lsOfTuples = []
     try:
