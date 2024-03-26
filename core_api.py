@@ -17,7 +17,7 @@ kompExperimentNames = [
 "CLINICAL_BLOOD_CHEMISTRY",
 "ELECTROCARDIOGRAM",
 "ELECTRORETINOGRAPHY",
-"EYE_MORPHOLOGY",  # CHANGE ONCE WE ARE IN PRODUCTION
+"EYE_MORPHOLOGY",
 "FUNDUS_IMAGING",
 "GLUCOSE_TOLERANCE_TEST",
 "GRIP_STRENGTH",
@@ -31,7 +31,7 @@ kompExperimentNames = [
 ]
 '''
 
-kompExperimentNames = ["ELECTROCARDIOGRAM"]
+kompExperimentNames = ["SHIRPA_DYSMORPHOLOGY","STARTLE_PPI"]
 
 # Constants
 DCC_SIMPLE_TYPE = 1
@@ -188,8 +188,6 @@ def getSampleList(kompRequestlist):
 
     return sampleDictls
 
-def getStatusCode(output):
-    return ''
 
 def jaxstrainToStocknumber(jaxstrain):
     # Find last occurance of "JR"
@@ -311,6 +309,16 @@ def getInputs(procedure):
             
     return inputLs
 
+def removeUnderscoresFromCvValue(key, outputvalue):
+    # The jerks at Thermo Fisher can't handle commas in their CVs.
+    if isinstance(outputvalue,str):
+        if 'EYE' in key:
+            return outputvalue.replace('_',',')
+        if 'CSD' in key:
+            return outputvalue.replace('_',',') 
+    
+    return outputvalue
+ 
 def getOutputs(expSample,dateStr):
     outputLs = []
     keyList = list(expSample.keys())
@@ -337,7 +345,7 @@ def getOutputs(expSample,dateStr):
                 outputKey = db.verifyImpcCode(keystr)
                 if  outputKey > 0:
                     outputDict['name']= keystr
-                    outputDict['outputValue'] = expSample[keystr]
+                    outputDict['outputValue'] = removeUnderscoresFromCvValue(keystr,expSample[keystr])
                     outputDict['outputKey'] = outputKey
                     outputDict['collectedBy'] = "Amelia Willett"
                     outputDict['collectedDate'] = dateStr

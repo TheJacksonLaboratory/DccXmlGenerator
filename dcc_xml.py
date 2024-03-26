@@ -945,7 +945,7 @@ def handlePfsData():
                                         getProcedureImpcCode(), v.getReviewedDate(task["taskInstance"][0]))
           # TODO - Update the EXPERIMENT status to "Data Sent to DCC"
      
-      return
+    return
 
 def handleJaxLimsData():
   try:
