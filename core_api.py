@@ -31,7 +31,7 @@ kompExperimentNames = [
 ]
 '''
 
-kompExperimentNames = ["SHIRPA_DYSMORPHOLOGY","STARTLE_PPI"]
+kompExperimentNames = ["AUDITORY_BRAINSTEM_RESPONSE"]
 
 # Constants
 DCC_SIMPLE_TYPE = 1
@@ -274,8 +274,10 @@ def buildTaskInfoList(expDataLs):
             taskInfo['animal'] = animal
             
             taskInfo['taskInstance'] = getTaskInfo(procedure,expSample['Id'])
-            taskInfo['taskInstance'][0]['inputs'] = inputs
+            taskInfo['taskInstance'][0]['inputs'] = inputs   # from the EXPERIMENT - not the ASSAY
             taskInfo['taskInstance'][0]['outputs'] = getOutputs(expSample['ASSAY_DATA'],dateStr)
+            
+            taskInfo["taskInstance"][0]["taskStatus"] = expSample['ASSAY_DATA']['JAX_ASSAY_ASSAYFAILREASON']
             taskInfoLs.append(taskInfo)
             
     return taskInfoLs
@@ -289,7 +291,8 @@ def getTaskInfo(procedure,taskInstanceKey):
     taskInstanceInfo['dateComplete'] = procedure['JAX_EXPERIMENT_STARTDATE']
     taskInstanceInfo['reviewedBy'] = 'Ame Willett'
     taskInstanceInfo['dateReviewed'] = procedure['JAX_EXPERIMENT_STARTDATE']
-    taskInstanceInfo['taskStatus'] = procedure['JAX_EXPERIMENT_STATUS']
+    # Cancelled at the ASSAY level. Not at experiment 
+    taskInstanceInfo['taskStatus'] = "Complete"  # The default. Assume complete until proven otherwise
     
     taskInstanceLs.append(taskInstanceInfo)
     return taskInstanceLs

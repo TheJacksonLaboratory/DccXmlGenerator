@@ -21,12 +21,12 @@ g_colonyId = ""         # We store the JR number as the colonyID for building th
 # Is the procedure completed or cancelled? i.e. not 'Active'
 def testTaskStatus(proc):
     # Assume it is active
-    msg = "Task not set to Complete or Cancelled"
-    success = False
+    msg = ''
+    success = True
     
-    if proc["taskStatus"] == 'Complete' or proc["taskStatus"] == 'Cancelled' or proc["taskStatus"] == 'Review Completed':
-        success = True
-        msg = ''
+    if proc["taskStatus"] == 'Active':  # or task status == NULL? would that work for CLIMB?
+        success = False
+        msg = 'Task status is not complete or cancelled.'
         
     return success, msg
 

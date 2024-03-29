@@ -247,12 +247,15 @@ def createCentreSpecimenSet(root):
     centerNode = ET.SubElement(root, 'centreSpecimenSet', {'centreID':'J', 'pipeline':'JAX_001', 'project':'JAX'})
     return  centerNode
 
-def createExperiment(centerNode, expName, expDate):
+def createExperiment(centerNode, expName, expDate,taskInstanceKey):
     # Generate the bones of the experiment node. No procedure or specimen info yet  
     experimentDictKeys = [ "experimentID", "dateOfExperiment" ]
     experimentDict = dict.fromkeys(experimentDictKeys)
     experimentDict["experimentID"] = expName
     experimentDict["dateOfExperiment"] = expDate
+    if 'body' in expName.lower() and 'weight' in expName.lower():
+      experimentDict["sequenceID"] = str(taskInstanceKey)
+      
     experimentNode = ET.SubElement(centerNode, 'experiment', experimentDict)
     
     return experimentNode
@@ -312,6 +315,27 @@ def createSeriesMediaParameter(procedureNode,impc_code, strVal,procedureImpcCode
     #valueNode.text = ???
     db.recordMediaSubmission(image, (getFtpServer() + 'images/' + procedureImpcCode + "/" + filenameOnly) ,taskKey,impc_code)
 
+  return procedureNode
+def createMediaParameter(procedureNode,impc_code, image,procedureImpcCode,taskKey, statusCode):
+    
+  if image == None:
+    return procedureNode # bail
+        
+    # The value is a dictionary with the key as the increment and the value as the value
+  paramNode = ET.SubElement(procedureNode, 'mediaParameter', { 'parameterID': '{code}'.format(code=impc_code)})
+  
+  if len(statusCode) > 0:
+    statusNode = ET.SubElement(paramNode,'statusCode')
+    statusNode.text = statusCode  
+  else:
+    # Looks like \\jax\jax\phenotype\EKG\KOMP\images\blah.jpg
+    filenameSplit = image.split('\\')
+    filenameOnly = filenameSplit[len(filenameSplit)-1]
+    filenameOnly = filenameOnly.replace(' ','_',)
+    ET.SubElement(paramNode, 'value', {'URI': getFtpServer() + 'images/' + procedureImpcCode + "/" + filenameOnly})
+    
+    db.recordMediaSubmission(image, (getFtpServer() + 'images/' + procedureImpcCode + "/" + filenameOnly) ,taskKey,impc_code)
+    
   return procedureNode
 
 def validateSeriesParameter(seriesValue: str): # Comes in a str, returns a dict
@@ -522,7 +546,7 @@ def generateExperimentXML(taskInfoLs, centerNode):
             
             # for each procedure in the list build up the XML
             numberOfProcs += 1
-            experimentNode = createExperiment(centerNode,(proc['workflowTaskName'] + ' - ' +  mouseInfo['animalName'] + ' - ' + str(proc["taskInstanceKey"])), proc['dateComplete'])
+            experimentNode = createExperiment(centerNode,(proc['workflowTaskName'] + ' - ' +  mouseInfo['animalName'] + ' - ' + str(proc["taskInstanceKey"])), proc['dateComplete'],proc["taskInstanceKey"])
             experimentNode = createSpecimen(experimentNode,mouseInfo['animalName'])
             procedureNode = createProcedure(experimentNode,db.databaseSelectProcedureCode(proc['workflowTaskName']))
             
@@ -694,7 +718,8 @@ def buildParameters(procedureNode,proc):
           elif dccType == 2: #  Ontology TBD
               procedureNode = createSimpleParameter(procedureNode, impcCode, outputVal,output_status_code)
           elif dccType == 3: # Media - ABR (014) and ERG (047)
-              procedureNode = createSimpleParameter(procedureNode, impcCode, outputVal,output_status_code)
+              taskKey = int(proc["taskInstanceKey"])
+              procedureNode = createMediaParameter(procedureNode,impcCode, outputVal,procedureImpcCode,taskKey,output_status_code)
           elif dccType == 4: # Series 
               outputVal = outputVal.replace("\'","\"")  # TODO - will this handle VIABILITY?
               procedureNode = createSeriesParameter(procedureNode, impcCode, json.loads(json.dumps(outputVal)))
