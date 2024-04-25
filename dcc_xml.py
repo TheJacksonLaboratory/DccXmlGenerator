@@ -390,12 +390,18 @@ def createSpecimenRecord(specimenRecord,specimenSetNode,statusCode):
   isEmbryo = specimenRecord["generation"][0] == 'E'
   
   if v.validateMouseFields(specimenRecord) == True:
+    # A little preprocessing...if zygosity is +/+ then it is baseline. No colony ID 
+    if specimenRecord["zygosity"] == 'wild type':
+      specimenRecord["isBaseline"] = 'true'
+      specimenRecord["colonyId"] = ''
+      
     if isEmbryo == True:
         paramNode = ET.SubElement(specimenSetNode, 'embryo', {
                               'stage': '{stage}'.format(stage=specimenRecord["generation"][1:]),
                               'stageUnit': 'DPC',
                               'isBaseline': '{isBaseline}'.format(isBaseline=str(specimenRecord["isBaseline"]).lower()),
-                              'colonyID': '{colonyID}'.format(colonyID=specimenRecord["colonyId"]),'strainID': '{strainID}'.format(strainID=getBackgroundStrainId()),
+                              'colonyID': '{colonyID}'.format(colonyID=specimenRecord["colonyId"]),
+                              'strainID': '{strainID}'.format(strainID=getBackgroundStrainId()),
                               'specimenID': '{specimenID}'.format(specimenID=specimenRecord["specimenID"]),
                               'gender': '{gender}'.format(gender=specimenRecord["gender"].lower()),
                               'zygosity': '{zygosity}'.format(zygosity=specimenRecord["zygosity"]),
@@ -926,7 +932,7 @@ def handleClimbData(filterFileName):
             expFileName = getNextExperimentFilename(getDatadir()) # We get the exp filename now so we can log it as submitted.
             if len(task["taskInstance"]) > 0:
               db.recordSubmissionAttempt(expFileName.split('\\')[-1],animalName, task["taskInstance"][0], 
-                                        getProcedureImpcCode(), v.getReviewedDate())
+                                        getProcedureImpcCode(), v.getReviewedDate(task["taskInstance"][0]))
       
       #End of loop 
       createExperimentXML(taskLs,procedureHasAnimals(json.loads(climbFilter)))
@@ -935,6 +941,7 @@ def handleClimbData(filterFileName):
 def handlePfsData():
     # For CORE PFS komp mice
     
+    # This gets ALL the KOMP mice. 
     animalLs = pfs.getPfsAnimalInfo()
     
     for animal in reversed(animalLs):  # Remove those animals that failed
@@ -1037,7 +1044,7 @@ if __name__ == '__main__':
     #add_arguments(args)
     # Otherwise, hard coded
     setDataDir("C:\\Users\\michaelm\\Source\\Workspaes\\Teams\\Lab Informatics\\JAXLIMS\\Main\\DccReporter\\data\\")
-    setDataSrc('PFS')
+    setDataSrc('CLIMB')
     
     mycfg = cfg.parse_config(path="config.yml")
     # Setup properties for any of the three sources
@@ -1051,7 +1058,7 @@ if __name__ == '__main__':
                # logging no matter what data source we are using.
     
     if getDataSrc() == 'CLIMB':
-      handleClimbData()
+      handleClimbData('filters-with-mice.json')
     elif getDataSrc() == 'JAXLIMS':
       handleJaxLimsData()
     elif getDataSrc() == 'PFS':

@@ -2,7 +2,7 @@ jaxlims_database:
  name: rslims
  user: dba
  password: rsdba
- host: rslims-dev.jax.org
+ host: rslims.jax.org
 
 corepfs_database:
  baseURL: https://jacksonlabstest.platformforscience.com/KOMP_UAT_Testing_01202024/odata/

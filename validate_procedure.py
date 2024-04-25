@@ -371,13 +371,13 @@ def validateProcedure(proc):
     lastReviewedDate = db.getLastReviewedDate(task["taskInstanceKey"])
     reviewedDateStr = getReviewedDate(task)
     currentReviewedDate = datetime.strptime(reviewedDateStr, "%Y-%m-%d")
-    
+    """
     # I want to resubmit everthing to find out why these ae not at the DCC although the log says we uploaded them
     if lastReviewedDate is not None and currentReviewedDate is not None:
         if lastReviewedDate >= currentReviewedDate:  # Is the SME resubmitting this procedure?
             task["taskStatus"]  = 'Already submitted'  # else remove the Complete or Cancelled status to avoid unnecessary resubmission
             createLogEntry(specimen, task, lineInfo, None, overallMsg + ' *Already submitted')
-        
+    """  
     if overallSuccess == False:
         createLogEntry(specimen, task, lineInfo, None, overallMsg)
         task["taskStatus"]  = 'Failed QC'  # Local to this app
