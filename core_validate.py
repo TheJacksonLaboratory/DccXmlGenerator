@@ -19,14 +19,11 @@ Rules:
 """
 
 from logging import NullHandler
-import requests
-from requests.auth import HTTPBasicAuth
 import os
 import json
 from datetime import datetime
 import jaxlims_api as db
-
-import read_config as cfg
+import core_api as api
 
 
 kompExperimentNames = [
@@ -91,82 +88,7 @@ FIRST_ECG_IMAGE_SERIES
 ]
 
 ############################# MICE/SAMPLES #################
-def getKompMice():
-    
-    mycfg = cfg.parse_config(path="config.yml")
-      # Setup credentials for database
-    baseURL = mycfg['corepfs_database']['baseURL']
-    mouseEndpoint = mycfg['corepfs_database']['mouseEndpoint']
-    username = mycfg['corepfs_database']['username']
-    password = mycfg['corepfs_database']['password']
-      
-    try:
-        my_auth = HTTPBasicAuth(username, password)
-        query = baseURL + mouseEndpoint
 
-        result = requests.get(query, auth=my_auth,headers = {"Prefer": "odata.maxpagesize=5000"})    
-        wgJson = result.json()
-        
-        #Get list of values
-        valueLs = wgJson.get('value')
-        totalCount = wgJson.get('@odata.count')
-
-        return totalCount,valueLs
-    except requests.exceptions.Timeout as e: 
-        #print(e.message())
-        raise 
-    except requests.exceptions.InvalidHeader as e:  
-        #print(e.message())
-        raise 
-    except requests.exceptions.InvalidURL as e:  
-        #print(e.message())
-        raise 
-    except requests.exceptions.RequestException as e:  # All others
-        #print(e.message())
-        raise 
-    
-    pass
-
-
-def getExperimentData(experimentname):
-        
-    try:
-        mycfg = cfg.parse_config(path="config.yml")
-        baseURL = mycfg['corepfs_database']['baseURL']
-        username = mycfg['corepfs_database']['username']
-        password = mycfg['corepfs_database']['password']
-        experimentEndpointTemplate = mycfg['corepfs_database']['experimentEndpointTemplate']
-        
-        experimentEndpoint = experimentEndpointTemplate.format(exp=experimentname)
-        
-        my_auth = HTTPBasicAuth(username, password)
-        query = baseURL + experimentEndpoint
-
-        result = requests.get(query, auth=my_auth,headers = {"Prefer": "odata.maxpagesize=5000"})    
-        wgJson = result.json()
-        
-        #Get list of values
-        valueLs = wgJson.get('value')
-        totalCount = wgJson.get('@odata.count')
-
-        return len(valueLs),valueLs
-    except requests.exceptions.Timeout as e: 
-        #print(e.message())
-        raise 
-    except requests.exceptions.InvalidHeader as e:  
-        #print(e.message())
-        raise 
-    except requests.exceptions.InvalidURL as e:  
-        #print(e.message())
-        raise 
-    except requests.exceptions.RequestException as e:  # All others
-        #print(e.message())
-        raise 
-    
-    return 0,None
-    
-    
-    
 def jaxstrainToStocknumber(jaxstrain):
     # Find last occurance of "JR"
     # Copy the next 6 characters
@@ -356,7 +278,7 @@ def isMediaSeries(impcCode):
 
 def getPfsAnimalInfo():
     # Return a list of animal info
-    numberOfKompRequest, valuelist = getKompMice()
+    numberOfKompRequest, valuelist = api.getKompMice()
 
 def getPfsTaskInfo():
     taskInfoList= {} # For each experiment type
@@ -364,14 +286,13 @@ def getPfsTaskInfo():
     
     for expName in kompExperimentNames:
         taskInfoList={}
-        numberOfKompRequest, valuelist = getExperimentData(expName)
+        numberOfKompRequest, valuelist = api.getExperimentData(expName)
         print("Number of requests:" + str(numberOfKompRequest))
           
         with open(expName+".json","w") as outfile:
             outfile.write(json.dumps(valuelist,indent=4))
         
     return valuelist
-
 
 """
 Example of a PUT
@@ -393,91 +314,12 @@ Body =
     "JAX_ASSAY_ASSAYFAILCOMMENTS": "Did this work?",
     "IMPC_BWT_005_001": "EM732"
 }
-
 """
-def updateAssayWithFailReason(expName,assayBarcode,failreason,failcomments):
-    # Update the assay failed reason and comments
-    
-    put_data =  { "Barcode": "",
-    "JAX_ASSAY_PENBARCODE": "PN26407",
-    "JAX_ASSAY_PRIMARYIDVALUE": "R",
-    "JAX_ASSAY_SEX": "F",
-    "JAX_ASSAY_DATEOFBIRTH": "2024-01-19",
-    "JAX_ASSAY_STRAINNAME": "JR038347",
-    "JAX_ASSAY_TEST_DATE": "2024-02-14",
-    "JAX_ASSAY_TESTER": "Jade Kaplan",
-    "IMPC_BWT_001_001": 18.72,
-    "IMPC_BWT_001_001_QC": "Above upper limit of quantitation",
-    "IMPC_BWT_002_001": "-",
-    "JAX_ASSAY_ASSAYFAILREASON": "",
-    "JAX_ASSAY_ASSAYFAILCOMMENTS": "",
-    "IMPC_BWT_005_001": "EM732"
-    }
-    
-    put_data['Barcode'] = assayBarcode
-    put_data['JAX_ASSAY_ASSAYFAILREASON'] = failreason
-    put_data['JAX_ASSAY_ASSAYFAILCOMMENTS'] = failcomments
-    
-    mycfg = cfg.parse_config(path="config.yml")
-    baseURL = mycfg['corepfs_database']['baseURL']
-    username = mycfg['corepfs_database']['username']
-    password = mycfg['corepfs_database']['password']
-    
-    my_auth = HTTPBasicAuth(username, password)
-    query = baseURL + "KOMP_{0}_ASSAY_DATA('{1}')".format(expName,assayBarcode) # expName is like BODY_WEIGHT
 
-    result = requests.put(query, data=json.dumps(put_data), auth=my_auth,headers = {"Content-Type": "application/json", "If-Match": "*" })  
-    print(result.text)
-    # Did it work? Chekc for code 200
-    return 200
-    
-def updateExperimentStatus(expName,expBarcode,status,comments):
-    put_data = {
-   "EntityTypeName": "KOMP_BODY_WEIGHT_EXPERIMENT",
-    "Id": 226546711,
-    "Name": "KBWE1",
-    "Barcode": "",
-    "Sequence": 1,
-    "Created": "2024-02-13T19:11:27.413Z",
-    "Modified": "2024-04-01T18:54:46.911Z",
-    "Active": True,
-    "LikedBy": 0,
-    "FollowedBy": 0,
-    "Locked": False,
-    "JAX_EXPERIMENT_STATUS": "",
-    "JAX_EXPERIMENT_STARTDATE": "2024-02-13",
-    "JAX_EXPERIMENT_TARGETDATE": None,
-    "JAX_EXPERIMENT_COMMENTS": "",
-    "JAX_EXPERIMENT_KOMP_NOSCAN_RUNSHEET": None,
-    "JAX_EXPERIMENT_KOMP_KBWE_FULLOUTPUTREPORT": None,
-    "IMPC_BWT_003_001": "Scout",
-    "IMPC_BWT_004_001": "Ohaus",
-    "IMPC_BWT_007_001": "Adventurer Pro",
-    "DAEMONEVAL":False,
-    "PUBLISHED": False
-    }
-
-    
-    put_data['Barcode'] = expBarcode
-    put_data['JAX_EXPERIMENT_STATUS'] = status
-    put_data['JAX_EXPERIMENT_COMMENTS'] = comments
-    
-    mycfg = cfg.parse_config(path="config.yml")
-    baseURL = mycfg['corepfs_database']['baseURL']
-    username = mycfg['corepfs_database']['username']
-    password = mycfg['corepfs_database']['password']
-    
-    my_auth = HTTPBasicAuth(username, password)
-    query = baseURL + "KOMP_{0}_EXPERIMENT('{1}')".format(expName,expBarcode) # expName is like BODY_WEIGHT
-
-    result = requests.put(query, data=json.dumps(put_data), auth=my_auth,headers = {"Content-Type": "application/json", "If-Match": "*" })  
-    print(result.text)
-    
-    
 if __name__ == '__main__':
     
-    updateAssayWithFailReason('BODY_WEIGHT','XBWE1','Procedure QC Failed','Testing API')
-    updateExperimentStatus('BODY_WEIGHT','KBWE1','Data Public','Testing from API')
+    api.updateAssayWithFailReason('BODY_WEIGHT','XBWE1','Procedure QC Failed','monday, april 29')
+    api.updateExperimentStatus('BODY_WEIGHT','KBWE1','Data Public','monday the 29th')
     """
     Get all KOMP Mice))
     """

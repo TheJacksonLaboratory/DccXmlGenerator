@@ -189,6 +189,84 @@ def getSampleList(kompRequestlist):
     return sampleDictls
 
 
+def updateAssayWithFailReason(expName,assayBarcode,failreason,failcomments):
+    # Update the assay failed reason and comments
+  
+    put_data = getAssay(expName,assayBarcode)
+    put_data['Barcode'] = assayBarcode
+    put_data['JAX_ASSAY_ASSAYFAILREASON'] = failreason
+    put_data['JAX_ASSAY_ASSAYFAILCOMMENTS'] = failcomments
+    
+    mycfg = cfg.parse_config(path="config.yml")
+    baseURL = mycfg['corepfs_database']['baseURL']
+    username = mycfg['corepfs_database']['username']
+    password = mycfg['corepfs_database']['password']
+    
+    my_auth = HTTPBasicAuth(username, password)
+    query = baseURL + "KOMP_{0}_ASSAY_DATA('{1}')".format(expName,assayBarcode) # expName is like BODY_WEIGHT
+
+    result = requests.put(query, data=json.dumps(put_data), auth=my_auth,headers = {"Content-Type": "application/json", "If-Match": "*" })  
+    print(result.text)
+    # Did it work? Chekc for code 200
+    return 200
+    
+def updateExperimentStatus(expName,expBarcode,status,comments):
+   
+    put_data = getExperiment(expName,expBarcode)
+    put_data['Barcode'] = expBarcode
+    put_data['JAX_EXPERIMENT_STATUS'] = status
+    put_data['JAX_EXPERIMENT_COMMENTS'] = comments
+    
+    mycfg = cfg.parse_config(path="config.yml")
+    baseURL = mycfg['corepfs_database']['baseURL']
+    username = mycfg['corepfs_database']['username']
+    password = mycfg['corepfs_database']['password']
+    
+    my_auth = HTTPBasicAuth(username, password)
+    query = baseURL + "KOMP_{0}_EXPERIMENT('{1}')".format(expName,expBarcode) # expName is like BODY_WEIGHT
+
+    result = requests.put(query, data=json.dumps(put_data), auth=my_auth,headers = {"Content-Type": "application/json", "If-Match": "*" })  
+    print(result.text)
+  
+def getExperiment(expName:str, expBarcode:str) -> dict:
+    # Get the experiment from the barcode and return it as a dict
+    mycfg = cfg.parse_config(path="config.yml")
+    baseURL = mycfg['corepfs_database']['baseURL']
+    username = mycfg['corepfs_database']['username']
+    password = mycfg['corepfs_database']['password']
+    
+    my_auth = HTTPBasicAuth(username, password)
+    query = baseURL + "KOMP_{0}_EXPERIMENT('{1}')".format(expName, expBarcode) # expName is like BODY_WEIGHT
+
+    result = requests.get(query, auth=my_auth,headers = {"Content-Type": "application/json", "If-Match": "*" })  
+    cont = result.content
+    print(cont)
+    print(type(cont))
+    d = json.loads(cont.decode('utf-8'))
+    d.pop("@odata.context", None)
+    return d
+      
+      
+def getAssay(expName:str, assayBarcode:str) -> dict:
+    # Get the experiment from the barcode and return it as a dict
+    mycfg = cfg.parse_config(path="config.yml")
+    baseURL = mycfg['corepfs_database']['baseURL']
+    username = mycfg['corepfs_database']['username']
+    password = mycfg['corepfs_database']['password']
+    
+    my_auth = HTTPBasicAuth(username, password)
+    query = baseURL + "KOMP_{0}_ASSAY_DATA('{1}')".format(expName, assayBarcode) # expName is like BODY_WEIGHT
+
+    result = requests.get(query, auth=my_auth,headers = {"Content-Type": "application/json", "If-Match": "*" })  
+    cont = result.content
+    print(cont)
+    print(type(cont))
+    d = json.loads(cont.decode('utf-8'))
+    d.pop("@odata.context", None)
+    return d
+      
+    
+
 def jaxstrainToStocknumber(jaxstrain):
     # Find last occurance of "JR"
     # Copy the next 6 characters
