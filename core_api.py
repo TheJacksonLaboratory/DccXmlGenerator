@@ -9,7 +9,6 @@ import jaxlims_api as db
 
 import read_config as cfg
 
-'''
 kompExperimentNames = [
 "AUDITORY_BRAINSTEM_RESPONSE",
 "BODY_COMPOSITION",
@@ -29,9 +28,7 @@ kompExperimentNames = [
 "SHIRPA_DYSMORPHOLOGY",
 "STARTLE_PPI"
 ]
-'''
 
-kompExperimentNames = ["AUDITORY_BRAINSTEM_RESPONSE"]
 
 # Constants
 DCC_SIMPLE_TYPE = 1

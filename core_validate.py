@@ -96,6 +96,8 @@ def isRequired(impcCode:str):
 def getInputs(procedure):
     # Note: These come from the EXPERIMENT (not the assay)
     inputLs = []
+    errCode = 0
+    msg = ''
     # If the name of the input can be found in KOMP.DCCPARAMETERDETAILS then include it.
     keyList = list(procedure.keys())
     for keystr in keyList:
@@ -111,11 +113,15 @@ def getInputs(procedure):
             inputDict['inputKey'] = inputKey
             inputLs.append(inputDict)
             
-    return inputLs
+    return errCode, msg # Do not return a list of dicts. tuple? errcode , message
 
 
-def getOutputs(expSample,dateStr):
+def getOutputs(expSample):
     outputLs = []
+    errCode = 0
+    msg = ''
+    
+    # NB :  Special case for Experimenter ID? Or just treat it like any other attribute?
     keyList = list(expSample.keys())
     for keystr in keyList:
         outputDict = {}
@@ -127,11 +133,12 @@ def getOutputs(expSample,dateStr):
             outputDict['statusCode'] = expSample[(keystr+'_QC')]  
             if outputDict['statusCode'] == '-': # Default is a dash
                 outputDict['statusCode'] = ''  # Status code of '-' means no qc issue
+                # else skip validation
         else:
                 outputDict['statusCode'] = ''
         
         if isSeries(keystr): # We must construct it
-            outputDict = getSeriesOutput(expSample,keystr,dateStr)
+            outputDict = getSeriesOutput(expSample,keystr)
             if outputDict != None:
                 outputLs.append(outputDict)
         elif isMediaSeries(keystr):# We must construct it
@@ -145,11 +152,10 @@ def getOutputs(expSample,dateStr):
                     outputDict['name']= keystr
                     outputDict['outputValue'] = expSample[keystr]
                     outputDict['outputKey'] = outputKey
-                    outputDict['collectedDate'] = dateStr
-                    
+                    b = isRequired(keystr)
                     outputLs.append(outputDict)
             
-    return outputLs
+    return errCode, msg
 
 
 def getSeriesOutput(expSample,keystr):
@@ -311,28 +317,51 @@ if __name__ == '__main__':
     #   Get the outputs
     # Record errors in assaya
     # Record errors in exoeriments
-    
+
+    """   Experiment Statuses
+        Cancelled
+        Data Public
+        Data Sent to DCC
+        Pending
+        Ready for Data Review
+        Review Complete
+        Review Passed
+        Pre-upload QC Failed
     """
-    Get all KOMP Mice
+   
+    """ Assay Fail Reason
+        Cancelled
+        Cancelled - Pipeline stopped - scheduling
+        Cancelled - Pipeline stopped - welfare
+        Cancelled - Single procedure not performed - welfare
+        Incomplete
+        Incomplete - Procedure Failed - Equipment Failed
+        Incomplete - see comments
+        Incomplete - Single procedure not performed - schedule
+        Procedure Failed - Insufficient Sample
+        Procedure Failed - Process Failed
+        Procedure Failed - Sample Lost
+        Procedure QC Failed
+        Removed
+        Removed - Mouse culled
+        Removed - Mouse died
+        Software failure
+        Uncooperative mouse
+        Withdrawn
     """
-    
-    '''
-    get the experiments and assays
-    '''           
+
     db.init()
     
-    print('IMPC_ACS_012_001 ' + str(isRequired('IMPC_ACS_012_001')))
-    print('IMPC_XRY_040_001 ' + str(isRequired('IMPC_XRY_040_001')))
-    print('JAX_OFD_039_001 ' + str(isRequired('JAX_OFD_039_001')))
-    print('IMPC_ECG_018_001 ' + str(isRequired('IMPC_ECG_018_001')))
-    print('NOT_A_CODE ' + str(isRequired('NOT_A_CODE')))
-    
-    _,expDataLs = api.getExperimentData('BODY_WEIGHT') 
+    _,expDataLs = api.getExperimentData(api.kompExperimentNames[0]) # Cycle
     for procedure in expDataLs:
         animalInfo = {}  # Validate the animal?
         
         # local function
-        inputs = getInputs(procedure) # We get the inputs from the procedure (experiment)
+        errCode, msg = getInputs(procedure) # We get the inputs from the procedure (experiment) But not the experimenter ID
+        if errCode > 0:
+            expStatus = '' # experimentStatus[errCode]
+            comments = msg
+            # Update experiment with 
         # Do something with them?
         dateStr = procedure['JAX_EXPERIMENT_STARTDATE']  # Worth validating?
         
@@ -342,8 +371,11 @@ if __name__ == '__main__':
             animalInfo["animalName"] = sampleEntity['SAMPLE']['JAX_SAMPLE_EXTERNALID']
             animalInfo['stock'] = expSample['ASSAY_DATA']['JAX_ASSAY_STRAINNAME']
             # the test data
-            outputs = getOutputs(expSample['ASSAY_DATA'])
- 
+            errcode, msg = getOutputs(expSample['ASSAY_DATA'])
+            if errCode > 0:
+                assayFailReason = '' # assayFailReasonTable[errCode]
+                assayFailComments = msg
+                
     with open("pfsExperiment.json","w") as outfile:
         outfile.write(json.dumps(api.getExperimentData('BODY_WEIGHT'),indent=4))
     db.close()
