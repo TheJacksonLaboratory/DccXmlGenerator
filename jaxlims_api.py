@@ -163,6 +163,23 @@ def databaseSelectProcedureCode(procName):
     return threeLetterCode
 
 
+def isRequired(impcCode:str) -> bool:
+    # Look up IMPC code in komp.dccparametedetils and return truw if IsRequired isnon-zero
+         
+    selectStmt = "SELECT IsRequired FROM komp.dccparameterdetails WHERE ImpcCode= \'{0}\'".format(impcCode)
+
+    isRequired = False
+    try:
+        g_MysqlCursor.execute(selectStmt)
+        
+        for IsRequired in g_MysqlCursor:
+            isRequired = (IsRequired[0] == 1)
+    except Exception as e:
+        print('SELECT FAILED FOR: ' + selectStmt)
+    
+    return isRequired
+
+
 def databaseSelectImpcData(threeLetterCode, isMetatdata, usingInputs):
     
     whereStr = ' _DccType_key <> 7 '

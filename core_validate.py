@@ -87,27 +87,14 @@ FIRST_EYE_FUNDUS_IMAGE_SERIES,
 FIRST_ECG_IMAGE_SERIES
 ]
 
+#######################  SOME UTILITIES ####################
+def isRequired(impcCode:str):
+        return db.isRequired(impcCode)
+    
 ############################# MICE/SAMPLES #################
 
-def jaxstrainToStocknumber(jaxstrain):
-    # Find last occurance of "JR"
-    # Copy the next 6 characters
-    index = jaxstrain.rfind('JR')
-    if index != -1:
-        return jaxstrain[index+2:index+8]
-    else:
-        return jaxstrain
-
-def jaxstrainToAssay(jaxstrain):
-    # Find last occurance of "JR"
-    # Copy the next 6 characters
-    index = jaxstrain.rfind('JR')
-    if index != -1:
-        return jaxstrain[0:index]
-    else:
-        return jaxstrain
-
 def getInputs(procedure):
+    # Note: These come from the EXPERIMENT (not the assay)
     inputLs = []
     # If the name of the input can be found in KOMP.DCCPARAMETERDETAILS then include it.
     keyList = list(procedure.keys())
@@ -115,6 +102,10 @@ def getInputs(procedure):
         inputDict = {}
         inputKey = db.verifyImpcCode(keystr)
         if inputKey > 0:
+            # TODO: Do something to validate the attribute.
+            # A good example would be experimenter ID
+            # Ignore building the dict
+            # Build status string for experiment issues 
             inputDict['name']= keystr
             inputDict['inputValue'] = procedure[keystr]
             inputDict['inputKey'] = inputKey
@@ -122,25 +113,19 @@ def getInputs(procedure):
             
     return inputLs
 
-def removeUnderscoresFromCvValue(key, outputvalue):
-    # The jerks at Thermo Fisher can't handle commas in their CVs.
-    if isinstance(outputvalue,str):
-        if 'EYE' in key:
-            return outputvalue.replace('_',',')
-        if 'CSD' in key:
-            return outputvalue.replace('_',',') 
-    
-    return outputvalue
- 
+
 def getOutputs(expSample,dateStr):
     outputLs = []
     keyList = list(expSample.keys())
     for keystr in keyList:
         outputDict = {}
         # Check for failed output
+        # Are mandatory outputs set?
+        # If the the output from expSample is invalid and the QC flag is not set
+        #   then that is an error
         if (keystr+'_QC') in expSample:
             outputDict['statusCode'] = expSample[(keystr+'_QC')]  
-            if outputDict['statusCode'] == '-':
+            if outputDict['statusCode'] == '-': # Default is a dash
                 outputDict['statusCode'] = ''  # Status code of '-' means no qc issue
         else:
                 outputDict['statusCode'] = ''
@@ -158,7 +143,7 @@ def getOutputs(expSample,dateStr):
                 outputKey = db.verifyImpcCode(keystr)
                 if  outputKey > 0:
                     outputDict['name']= keystr
-                    outputDict['outputValue'] = removeUnderscoresFromCvValue(keystr,expSample[keystr])
+                    outputDict['outputValue'] = expSample[keystr]
                     outputDict['outputKey'] = outputKey
                     outputDict['collectedDate'] = dateStr
                     
@@ -167,7 +152,7 @@ def getOutputs(expSample,dateStr):
     return outputLs
 
 
-def getSeriesOutput(expSample,keystr,dateStr):
+def getSeriesOutput(expSample,keystr):
     outputDictValue = {}
     outputDict = {}
     idx=15 # For "JAX_"
@@ -201,7 +186,6 @@ def getSeriesOutput(expSample,keystr,dateStr):
     outputDict['outputValue'] = outputDictValue
     outputDict['outputKey'] = db.verifyImpcCode(keystr[0:idx])  # Must exist
     outputDict['collectedBy'] = "Amelia Willett"  # TODO Get from config file?
-    outputDict['collectedDate'] = dateStr
     
     return outputDict 
 
@@ -217,7 +201,7 @@ def mediaFileSftpName(directory_name,fullyQualifedPath):
     return str
  
 
-def getMediaSeriesOutput(expSample,keystr,dateStr):
+def getMediaSeriesOutput(expSample,keystr):
     
     outputDictValue = {}
     outputDict = {}
@@ -258,7 +242,6 @@ def getMediaSeriesOutput(expSample,keystr,dateStr):
     outputDict['outputValue'] = outputDictValue
     outputDict['outputKey'] = db.verifyImpcCode(keystr[0:idx])  # Must exist
     outputDict['collectedBy'] = "Amelia Willett"  # TODO Get from config file?
-    outputDict['collectedDate'] = dateStr
     
     return outputDict 
 
@@ -318,13 +301,50 @@ Body =
 
 if __name__ == '__main__':
     
-    api.updateAssayWithFailReason('BODY_WEIGHT','XBWE1','Procedure QC Failed','monday, april 29')
-    api.updateExperimentStatus('BODY_WEIGHT','KBWE1','Data Public','monday the 29th')
+    #api.updateAssayWithFailReason('BODY_WEIGHT','XBWE1','Procedure QC Failed','monday, april 29')
+    #api.updateExperimentStatus('BODY_WEIGHT','KBWE1','Data Public','monday the 29th')
+    #pfsExpData = api.getExperimentData()
+    # Get the animals in the ASSAY OBJECT
+    # Get the experiments
+    #   Get the inputs
+    # Get the assays
+    #   Get the outputs
+    # Record errors in assaya
+    # Record errors in exoeriments
+    
     """
-    Get all KOMP Mice))
+    Get all KOMP Mice
     """
+    
+    '''
+    get the experiments and assays
+    '''           
     db.init()
-    with open("taskInfoList.json","w") as outfile:
-        outfile.write(json.dumps(getPfsTaskInfo(),indent=4))
+    
+    print('IMPC_ACS_012_001 ' + str(isRequired('IMPC_ACS_012_001')))
+    print('IMPC_XRY_040_001 ' + str(isRequired('IMPC_XRY_040_001')))
+    print('JAX_OFD_039_001 ' + str(isRequired('JAX_OFD_039_001')))
+    print('IMPC_ECG_018_001 ' + str(isRequired('IMPC_ECG_018_001')))
+    print('NOT_A_CODE ' + str(isRequired('NOT_A_CODE')))
+    
+    _,expDataLs = api.getExperimentData('BODY_WEIGHT') 
+    for procedure in expDataLs:
+        animalInfo = {}  # Validate the animal?
+        
+        # local function
+        inputs = getInputs(procedure) # We get the inputs from the procedure (experiment)
+        # Do something with them?
+        dateStr = procedure['JAX_EXPERIMENT_STARTDATE']  # Worth validating?
+        
+        for expSample in procedure['EXPERIMENT_SAMPLES']:  # i.e. mouse/test pair
+            # the mouse
+            sampleEntity = expSample['ENTITY']
+            animalInfo["animalName"] = sampleEntity['SAMPLE']['JAX_SAMPLE_EXTERNALID']
+            animalInfo['stock'] = expSample['ASSAY_DATA']['JAX_ASSAY_STRAINNAME']
+            # the test data
+            outputs = getOutputs(expSample['ASSAY_DATA'])
+ 
+    with open("pfsExperiment.json","w") as outfile:
+        outfile.write(json.dumps(api.getExperimentData('BODY_WEIGHT'),indent=4))
     db.close()
     print("SUCCESS")
