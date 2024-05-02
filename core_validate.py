@@ -318,65 +318,69 @@ if __name__ == '__main__':
     # Record errors in assaya
     # Record errors in exoeriments
 
-    """   Experiment Statuses
-        Cancelled
-        Data Public
-        Data Sent to DCC
-        Pending
-        Ready for Data Review
-        Review Complete
-        Review Passed
-        Pre-upload QC Failed
-    """
+    #Experiment Statuses
+    experimentStatusTable = [
+        "Cancelled",
+        "Data Public",
+        "Data Sent to DCC",
+        "Pending",
+        "Ready for Data Review",
+        "Review Complete",
+        "Review Passed",
+        "Pre-upload QC Failed"
+    ]
    
-    """ Assay Fail Reason
-        Cancelled
-        Cancelled - Pipeline stopped - scheduling
-        Cancelled - Pipeline stopped - welfare
-        Cancelled - Single procedure not performed - welfare
-        Incomplete
-        Incomplete - Procedure Failed - Equipment Failed
-        Incomplete - see comments
-        Incomplete - Single procedure not performed - schedule
-        Procedure Failed - Insufficient Sample
-        Procedure Failed - Process Failed
-        Procedure Failed - Sample Lost
-        Procedure QC Failed
-        Removed
-        Removed - Mouse culled
-        Removed - Mouse died
-        Software failure
-        Uncooperative mouse
-        Withdrawn
-    """
+    # Assay Fail Reason
+    assayFailReasonTable = [
+        "Cancelled",
+        "Cancelled - Pipeline stopped - scheduling",
+        "Cancelled - Pipeline stopped - welfare",
+        "Cancelled - Single procedure not performed - welfare",
+        "Incomplete",
+        "Incomplete - Procedure Failed - Equipment Failed",
+        "Incomplete - see comments",
+        "Incomplete - Single procedure not performed - schedule",
+        "Procedure Failed - Insufficient Sample",
+        "Procedure Failed - Process Failed",
+        "Procedure Failed - Sample Lost",
+        "Procedure QC Failed",
+        "Removed",
+        "Removed - Mouse culled",
+        "Removed - Mouse died",
+        "Software failure",
+        "Uncooperative mouse",
+        "Withdrawn",
+    ]
 
     db.init()
     
-    _,expDataLs = api.getExperimentData(api.kompExperimentNames[0]) # Cycle
-    for procedure in expDataLs:
-        animalInfo = {}  # Validate the animal?
-        
-        # local function
-        errCode, msg = getInputs(procedure) # We get the inputs from the procedure (experiment) But not the experimenter ID
-        if errCode > 0:
-            expStatus = '' # experimentStatus[errCode]
-            comments = msg
-            # Update experiment with 
-        # Do something with them?
-        dateStr = procedure['JAX_EXPERIMENT_STARTDATE']  # Worth validating?
-        
-        for expSample in procedure['EXPERIMENT_SAMPLES']:  # i.e. mouse/test pair
-            # the mouse
-            sampleEntity = expSample['ENTITY']
-            animalInfo["animalName"] = sampleEntity['SAMPLE']['JAX_SAMPLE_EXTERNALID']
-            animalInfo['stock'] = expSample['ASSAY_DATA']['JAX_ASSAY_STRAINNAME']
-            # the test data
-            errcode, msg = getOutputs(expSample['ASSAY_DATA'])
+    for experimentName in api.kompExperimentNames:
+        _,expDataLs = api.getExperimentData(experimentName) # Cycle
+        for expr in expDataLs:
+            animalInfo = {}  # Validate the animal?
+            
+            # local function
+            errCode, msg = getInputs(expr) # We get the inputs from the procedure (experiment) But not the experimenter ID
             if errCode > 0:
-                assayFailReason = '' # assayFailReasonTable[errCode]
-                assayFailComments = msg
+                expStatus = experimentStatusTable[errCode]
+                comments = msg
+                # Update experiment with 
+            # Do something with them?
+            dateStr = expr['JAX_EXPERIMENT_STARTDATE']  # Worth validating?
+            
+            for expSample in expr['EXPERIMENT_SAMPLES']:  # i.e. mouse/test pair
+                # the mouse
+                sampleEntity = expSample['ENTITY']
+                animalInfo["animalName"] = sampleEntity['SAMPLE']['JAX_SAMPLE_EXTERNALID']
+                animalInfo['stock'] = expSample['ASSAY_DATA']['JAX_ASSAY_STRAINNAME']
+                # the test data
+                errcode, msg = getOutputs(expSample['ASSAY_DATA'])
+                if errCode > 0:
+                    assayFailReason = '' # assayFailReasonTable[errCode]
+                    assayFailComments = msg
                 
-    with open("pfsExperiment.json","w") as outfile:
-        outfile.write(json.dumps(api.getExperimentData('BODY_WEIGHT'),indent=4))
+        with open("results" + experimentName + ".json","w") as outfile:
+            outfile.write(json.dumps(api.getExperimentData(experimentName),indent=4))
+    
     db.close()
     print("SUCCESS")
