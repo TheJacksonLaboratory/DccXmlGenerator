@@ -3,16 +3,18 @@ jaxlims_database:
  user: dba
  password: rsdba
  host: rslims.jax.org
+ whereClause:
 
 corepfs_database:
- baseURL: https://jacksonlabstest.platformforscience.com/KOMP_UAT_Testing_01202024/odata/
+ #baseURL: https://jacksonlabstest.platformforscience.com/KOMP_UAT_Testing_01202024/odata/
+ baseURL: https://jacksonlabs.platformforscience.com/PROD/odata/
  mouseEndpoint: KOMP_REQUEST?$expand=REV_MOUSESAMPLELOT_KOMPREQUEST($expand=SAMPLE/pfs.MOUSE_SAMPLE)&$count=true
  experimentEndpointTemplate: KOMP_{exp}_EXPERIMENT?$filter= JAX_EXPERIMENT_STATUS eq 'Review Completed'&$expand=EXPERIMENT_SAMPLES($expand=ASSAY_DATA/pfs.KOMP_{exp}_ASSAY_DATA,ENTITY/pfs.MOUSE_SAMPLE_LOT($expand=SAMPLE/pfs.MOUSE_SAMPLE))
  username: svc-corePFS@jax.org
  password: hRbP&6K&(Qvw
 
 jax_study:
-    study: KOMP Phenotype
+    study: KOMP Aging
     eap: KOMP Phenotype
     lap: KOMP Aging
 
@@ -23,7 +25,7 @@ impc_pipeline:
     lap_pipeline: JAXLA_001
 
 impc_proc_codes:
-    impc_code_list: IMPC_IPG_001
+    impc_code_list: IMPC_BWT_001
     eap_code_list: IMPC_BWT_001
     lap_code_list: IMPC_BWT_001
     ip_code_list: IMPC_BWT

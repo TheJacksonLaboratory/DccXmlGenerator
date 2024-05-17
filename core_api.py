@@ -8,6 +8,9 @@ from datetime import datetime
 import jaxlims_api as db
 
 import read_config as cfg
+from datetime import timedelta
+
+import re
 
 kompExperimentNames = [
 "AUDITORY_BRAINSTEM_RESPONSE",
@@ -28,8 +31,7 @@ kompExperimentNames = [
 "SHIRPA_DYSMORPHOLOGY",
 "STARTLE_PPI"
 ]
-
-
+ 
 # Constants
 DCC_SIMPLE_TYPE = 1
 DCC_MEDIA_TYPE = 3
@@ -100,16 +102,16 @@ def getKompMice():
 
         return totalCount,valueLs
     except requests.exceptions.Timeout as e: 
-        #print(e.message())
+        print(repr(e))
         raise 
     except requests.exceptions.InvalidHeader as e:  
-        #print(e.message())
+        print(repr(e))
         raise 
     except requests.exceptions.InvalidURL as e:  
-        #print(e.message())
+        print(repr(e))
         raise 
     except requests.exceptions.RequestException as e:  # All others
-        #print(e.message())
+        print(repr(e))
         raise 
     
     pass
@@ -202,7 +204,10 @@ def updateAssayWithFailReason(expName,assayBarcode,failreason,failcomments):
     my_auth = HTTPBasicAuth(username, password)
     query = baseURL + "KOMP_{0}_ASSAY_DATA('{1}')".format(expName,assayBarcode) # expName is like BODY_WEIGHT
 
+    print(put_data)
+    
     result = requests.put(query, data=json.dumps(put_data), auth=my_auth,headers = {"Content-Type": "application/json", "If-Match": "*" })  
+    
     print(result.text)
     # Did it work? Chekc for code 200
     return 200
@@ -237,8 +242,7 @@ def getExperiment(expName:str, expBarcode:str) -> dict:
 
     result = requests.get(query, auth=my_auth,headers = {"Content-Type": "application/json", "If-Match": "*" })  
     cont = result.content
-    print(cont)
-    print(type(cont))
+    
     d = json.loads(cont.decode('utf-8'))
     d.pop("@odata.context", None)
     return d
@@ -256,8 +260,7 @@ def getAssay(expName:str, assayBarcode:str) -> dict:
 
     result = requests.get(query, auth=my_auth,headers = {"Content-Type": "application/json", "If-Match": "*" })  
     cont = result.content
-    print(cont)
-    print(type(cont))
+    
     d = json.loads(cont.decode('utf-8'))
     d.pop("@odata.context", None)
     return d
@@ -312,16 +315,16 @@ def getExperimentData(experimentname):
 
         return len(valueLs),valueLs
     except requests.exceptions.Timeout as e: 
-        #print(e.message())
+        print(repr(e))
         raise 
     except requests.exceptions.InvalidHeader as e:  
-        #print(e.message())
+        print(repr(e))
         raise 
     except requests.exceptions.InvalidURL as e:  
-        #print(e.message())
+        print(repr(e))
         raise 
     except requests.exceptions.RequestException as e:  # All others
-        #print(e.message())
+        print(repr(e))
         raise 
     
     return 0,None
@@ -337,7 +340,6 @@ def buildTaskInfoList(expDataLs):
         inputs = getInputs(procedure) # We get the inputs from the procedure (experiment)
         
         dateStr = procedure['JAX_EXPERIMENT_STARTDATE']
-        i = 0
         for expSample in procedure['EXPERIMENT_SAMPLES']:
             taskInfo = {}
             animal = []
@@ -354,7 +356,6 @@ def buildTaskInfoList(expDataLs):
             
             taskInfo["taskInstance"][0]["taskStatus"] = expSample['ASSAY_DATA']['JAX_ASSAY_ASSAYFAILREASON']
             taskInfoLs.append(taskInfo)
-            
     return taskInfoLs
 
 def getTaskInfo(procedure,taskInstanceKey):
@@ -378,7 +379,7 @@ def getInputs(procedure):
     keyList = list(procedure.keys())
     for keystr in keyList:
         inputDict = {}
-        inputKey = db.verifyImpcCode(keystr)
+        inputKey = db.getKeyFromImpcCode(keystr)
         if inputKey > 0:
             inputDict['name']= keystr
             inputDict['inputValue'] = procedure[keystr]
@@ -420,7 +421,7 @@ def getOutputs(expSample,dateStr):
                 outputLs.append(outputDict)
         else:  # Simple type or ignore
             if 'JAX_' in keystr or 'IMPC_' in keystr:
-                outputKey = db.verifyImpcCode(keystr)
+                outputKey = db.getKeyFromImpcCode(keystr)
                 if  outputKey > 0:
                     outputDict['name']= keystr
                     outputDict['outputValue'] = removeUnderscoresFromCvValue(keystr,expSample[keystr])
@@ -465,7 +466,7 @@ def getSeriesOutput(expSample,keystr,dateStr):
     
     outputDict['name'] = keystr[0:idx]
     outputDict['outputValue'] = outputDictValue
-    outputDict['outputKey'] = db.verifyImpcCode(keystr[0:idx])  # Must exist
+    outputDict['outputKey'] = db.getKeyFromImpcCode(keystr[0:idx])  # Must exist
     outputDict['collectedBy'] = "Amelia Willett"  # TODO Get from config file?
     outputDict['collectedDate'] = dateStr
     
@@ -521,7 +522,7 @@ def getMediaSeriesOutput(expSample,keystr,dateStr):
             
     outputDict['name'] = keystr[0:idx]
     outputDict['outputValue'] = outputDictValue
-    outputDict['outputKey'] = db.verifyImpcCode(keystr[0:idx])  # Must exist
+    outputDict['outputKey'] = db.getKeyFromImpcCode(keystr[0:idx])  # Must exist
     outputDict['collectedBy'] = "Amelia Willett"  # TODO Get from config file?
     outputDict['collectedDate'] = dateStr
     

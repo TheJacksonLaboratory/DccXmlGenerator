@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Apr 30 12:45:44 2020
 
 This module is responsible for generating the XML files for the DCC upload.
 
@@ -11,7 +10,7 @@ There are two XMLs to be generated:
   
 This module queries CLIMB for data based on a filter
 set up by the user. It then gathers DCC-specific information from
-a table in the MySQL schema `komp` table names `dccparameterdetails` and
+a table in the MySQL schema `komp` table names `dccparameterdetails` +and
 `taskimpccodes`.
 
 Given that information it can create the XML files.
@@ -31,6 +30,7 @@ from os import listdir
 from os.path import isfile, join, basename
 import time
 
+import zipfile
 from zipfile import ZipFile
 import xml.etree.ElementTree as ET
 
@@ -53,6 +53,7 @@ g_dataDir = ''
 g_filterFileName = 'filters-with-mice.json'
 g_image_dir = '.'
 g_logger = None
+g_DryRun = True
 # "environment variables"
 
 # From YAML file            
@@ -199,10 +200,12 @@ def createSpecimenXML(animalLs):
     tree = ET.ElementTree(indent(root))
     specimenFileName = getNextSpecimenFilename(getDatadir())
     tree.write(specimenFileName, xml_declaration=True, encoding='utf-8')
-      
+    
+    g_logger.info("Creating specimen file {0}".format(specimenFileName))
+    
     # Now zip it up.
     zipfilename = specimenFileName.replace('specimen.','').replace('xml','zip')
-    with ZipFile(zipfilename,'w') as zipper:
+    with ZipFile(zipfilename,'w',zipfile.ZIP_DEFLATED) as zipper:
       zipper.write(specimenFileName,basename(specimenFileName))
       zipper.close()
       
@@ -217,13 +220,16 @@ def createExperimentXML(experimentLs, procedureHasAnimals):
           numberOfProcs = generateLineCallExperimentXML(experimentLs, centerNode)
     
     expFileName = getNextExperimentFilename(getDatadir())
+    
+    g_logger.info("Creating experiment file {0}".format(expFileName))
+    
     if(numberOfProcs > 0):      # write the new XML file
       tree = ET.ElementTree(indent(root))
       tree.write(expFileName, xml_declaration=True, encoding='utf-8')
       
       # Now zip it up.
       zipfilename = expFileName.replace('experiment.','').replace('xml','zip')
-      with ZipFile(zipfilename,'w') as zipper:
+      with ZipFile(zipfilename,'w',zipfile.ZIP_DEFLATED) as zipper:
         zipper.write(expFileName,basename(expFileName))
         zipper.close()  
        
@@ -352,8 +358,8 @@ def validateSeriesParameter(seriesValue: str): # Comes in a str, returns a dict
     
     # TODO : Handle viability -> paramDict["noLitter"] = seriesValue  # VIA only for now
   except Exception as e:
-    print(seriesValue)
-    print(repr(e))
+    g_logger.info(repr(e))
+    
     
   return paramDict  
 # e.g. for Primary Viability
@@ -549,6 +555,7 @@ def generateExperimentXML(taskInfoLs, centerNode):
             if proc["taskStatus"]  == "Failed QC" or proc["taskStatus"]  == "Already submitted":
                   continue # We failed it or we've already submitted it.
             
+            g_logger.info("Generating XML for " + (proc['workflowTaskName'] + ' - ' +  mouseInfo['animalName'] + ' - ' + str(proc["taskInstanceKey"])))
             
             # for each procedure in the list build up the XML
             numberOfProcs += 1
@@ -735,14 +742,29 @@ def buildParameters(procedureNode,proc):
           elif dccType == 8:  # colony ids are stored as ouputs for line calls
                 setColonyId(outputVal)
           elif dccType == 6: # MediaSample - unsupported
-              print("MediaSample for an output type? Output key:" + str(outputKey))
+              g_logger.info("MediaSample for an output type? Output key:" + str(outputKey))
           else:
-              print("Metadata for an output? Output key:" + str(outputKey))
+              g_logger.info("Metadata for an output? Output key:" + str(outputKey))
                     
               
       return procedureNode
 
 # SPECIMEN
+def removeDuplicates(animalInfoLs):
+  # We only want one of each specimen in the specimen file
+  animalNames = {''}  # A set
+  animalInfoLs = animalInfoLs[::-1]
+  i=0
+  for animalInfo in animalInfoLs:
+    animal = animalInfo["animal"]
+    if animal['animalName'] in animalNames:
+      animalInfoLs.pop(i)
+    else:
+      animalNames.add(animal['animalName'])
+    i += 1
+    
+  return animalInfoLs
+  
 def generateSpecimenXML(animalInfoLs, centerNode):  # List of dictionaries
     if  animalInfoLs == None:
         return
@@ -751,6 +773,8 @@ def generateSpecimenXML(animalInfoLs, centerNode):  # List of dictionaries
           return
     
     # Otherwise we have some data
+    # Remove duplicates - if any
+    animalInfoLs = removeDuplicates(animalInfoLs)
    
     specimenRecord = {}
     # Hardcoded / constants
@@ -829,7 +853,7 @@ def extractThreeLetterCode(s):
       try:
         return s[(s.index('_') + 1):(s.index('_') + 4)]
       except ValueError:
-        print("Could not resolve three letter code for" + s)
+        g_logger.info("Could not resolve three letter code for" + s)
         return ""
 
 """ 
@@ -893,6 +917,9 @@ def indent(elem, level=0):
     return elem
 
 def handleClimbData(filterFileName):
+    
+    g_logger.info("Attempting to buils XMLs from CLIMB.")
+    g_logger.info("Filter filename="+filterFileName)
     # Get filter from file - temporary
     with open(filterFileName) as f:
       filterLines = f.read().splitlines()
@@ -907,8 +934,10 @@ def handleClimbData(filterFileName):
       animalLs = results["animalInfo"]
       
       for animal in reversed(animalLs):  # Remove those animals that failed
+        g_logger.info("Validate specimen:"+animal)
         isValid = v.validateAnimal(animal)
         if isValid == False:
+              g_logger.info("Failed specimen:"+animal["animal"])
               animalLs.remove(animal)
       
       createSpecimenXML(animalLs) # With the remaining embryos that have passed
@@ -930,7 +959,7 @@ def handleClimbData(filterFileName):
           animalName = getAnimalNameFromTaskInfo(task)
           if len(animalName) > 0: # Need a JR or animal name. 
             expFileName = getNextExperimentFilename(getDatadir()) # We get the exp filename now so we can log it as submitted.
-            if len(task["taskInstance"]) > 0:
+            if len(task["taskInstance"]) > 0 and g_DryRun == False:
               db.recordSubmissionAttempt(expFileName.split('\\')[-1],animalName, task["taskInstance"][0], 
                                         getProcedureImpcCode(), v.getReviewedDate(task["taskInstance"][0]))
       
@@ -941,6 +970,7 @@ def handleClimbData(filterFileName):
 def handlePfsData():
     # For CORE PFS komp mice
     
+    g_logger.info("Attempting to buils XMLs from CORE PFS.")
     # This gets ALL the KOMP mice. 
     animalLs = pfs.getPfsAnimalInfo()
     
@@ -948,6 +978,7 @@ def handlePfsData():
         if v.validateAnimal(animal) == False:
               animalLs.remove(animal)
     
+    g_logger.info("Building specimen file for {0} animals.".format(len(animalLs)))
     createSpecimenXML(animalLs)
     
     # Now the procedures
@@ -962,10 +993,15 @@ def handlePfsData():
         animalName = ''  # Not all tasks have animals
         success, message = v.validateProcedure(task)  # Sets the task status to 'Failed QC' if it fails.
         if success == False:
-            print("Rejected task: " + message)
+            mouse_name = task["animal"][0]["animalName"]
+            exp_name = task["taskInstance"][0]["workflowTaskName"]
+            date_complete = task["taskInstance"][0]["dateComplete"]
+            g_logger.info("Rejected " + exp_name + ": " + message +  " Name " +  mouse_name + " Complete date: " + date_complete )
             taskLs.remove(task)  # Do not record it 
             continue
-          
+      
+      
+      g_logger.info("Creating experiment file for {0} tasks.".format(len(animalLs)))
       # OK. With list cleaned up, lets create the experiment XML
       createExperimentXML(taskLs, True)
       
@@ -973,9 +1009,10 @@ def handlePfsData():
       for task in taskLs:
         if len(task["taskInstance"]) > 0:
           animalName = task["animal"][0]["animalName"]
-          db.recordSubmissionAttempt(expFileName.split('\\')[-1],animalName, task["taskInstance"][0], 
+          if g_DryRun == False:
+            db.recordSubmissionAttempt(expFileName.split('\\')[-1],animalName, task["taskInstance"][0], 
                                         getProcedureImpcCode(), v.getReviewedDate(task["taskInstance"][0]))
-          # TODO - Update the EXPERIMENT status to "Data Sent to DCC"
+            # TODO - Update the EXPERIMENT status to "Data Sent to DCC"
      
     return
 
@@ -986,6 +1023,7 @@ def handleJaxLimsData():
       impc_pipeline = mycfg['impc_pipeline']['pipeline']
       impc_proc_ls = mycfg['impc_proc_codes']['impc_code_list'].split(',')
       jax_study = mycfg['jax_study']['study']
+      whereClasue = mycfg['jaxlims_database']['whereClause']
       setDataDir(mycfg['directories']['dest'])
       
       all_mice = []
@@ -993,10 +1031,11 @@ def handleJaxLimsData():
       
       # For each procedure code in the list, generate an experient XML file
       for proc_code in impc_proc_ls:
-        pi_key_ls, taskInstanceDictLs = db.getCombinedProcedureSpecimenData(proc_code,jax_study)
+        pi_key_ls, taskInstanceDictLs = db.getCombinedProcedureSpecimenData(proc_code,jax_study,whereClasue)
         createExperimentXML(taskInstanceDictLs,True)  # Second arg is 'experimentHasAnimals?'
         # TODO Record the submission
-        # db.recordSubmissionAttempt(expFilename, animalName, taskInstance, procedure code, review date)
+        #if g_DryRun == False:
+        #  db.recordSubmissionAttempt(expFilename, animalName, taskInstance, procedure code, review date)
         all_mice.extend(pi_key_ls)
 
       
@@ -1004,12 +1043,12 @@ def handleJaxLimsData():
       for animal in reversed(animalLs):  # Remove those animals that failed
         if v.validateAnimal(animal) == False:
               animalLs.remove(animal)
-              
+      # Note that we only create specimen files for mice we are sticking ito the experiment file 
       createSpecimenXML(animalLs)
       
   except Exception as e:
       print('handleJaxLimsData() failed')
-      print(str(e))
+      g_logger.info(str(e))
   return    
     
 def add_arguments(argparser):
@@ -1021,7 +1060,11 @@ def add_arguments(argparser):
         )
     
     argparser.add_argument(
-            '-i', '--images', type=str, help='Images folder', required=False  #TODO
+            '-i', '--images', type=str, help='Images folder', required=False
+        )
+    
+    argparser.add_argument(
+            '-d', '--dry_run', type=str, help='Dry run. Do not record in database if not True', required=False
         )
         
     args = argparser.parse_args()
@@ -1029,8 +1072,12 @@ def add_arguments(argparser):
     setDataSrc(args.source)
     setDataDir(args.datadir)
     
+    global g_filterFileName
     g_filterFileName = args.filter_file
+    global g_image_dir
     g_image_dir = args.images
+    global g_DryRun
+    g_DryRun = args.dry_run.lower() == 'true'
     
     return
 
@@ -1044,12 +1091,12 @@ if __name__ == '__main__':
     #add_arguments(args)
     # Otherwise, hard coded
     setDataDir("C:\\Users\\michaelm\\Source\\Workspaes\\Teams\\Lab Informatics\\JAXLIMS\\Main\\DccReporter\\data\\")
-    setDataSrc('CLIMB')
+    setDataSrc('PFS')
     
     mycfg = cfg.parse_config(path="config.yml")
     # Setup properties for any of the three sources
     log_dir = mycfg['directories']['log_path']
-      
+    
     g_logger = createLogHandler(log_dir+'/xml-generator')  
     g_logger.info('Logger has been created')
 	
@@ -1064,7 +1111,7 @@ if __name__ == '__main__':
     elif getDataSrc() == 'PFS':
       handlePfsData()
     else:
-      print("The data source {0} is invalid. Must be CLIMB, JAXLIMS, or PFS".format(getDataSrc()))
+      g_logger.info("The data source {0} is invalid. Must be CLIMB, JAXLIMS, or PFS".format(getDataSrc()))
       
     # All done
     db.close()      

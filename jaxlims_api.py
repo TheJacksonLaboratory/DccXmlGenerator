@@ -13,6 +13,8 @@ import json
 g_mysqldb = None
 g_MysqlCursor=None
 
+g_code_keys = {}
+
 #ImpcCode,IncrementStartValue,IncrementValue)
 series_info = {
 'IMPC_ALZ_075_001':  (1,1),
@@ -269,6 +271,29 @@ def recordMediaSubmission(srcFilename, destFilename, taskKey, impcCode):
         print('INSERT FAILED FOR: ' + insertStmt)        
     return
 
+def populateGlobalImpcCodeKeys():
+    selectStmt = "SELECT ImpcCode, _ClimbType_key FROM komp.dccparameterdetails"
+    typeKey = 0
+    try:
+        g_MysqlCursor.execute(selectStmt)
+        
+        for ImpcCode, _ClimbType_key in g_MysqlCursor:
+            g_code_keys[ImpcCode] = _ClimbType_key
+    except Exception as e:
+        print('SELECT FAILED FOR: ' + selectStmt)
+    
+
+
+def getKeyFromImpcCode(impc_code:str):
+    if len(g_code_keys) == 0:
+        # populate it
+        populateGlobalImpcCodeKeys()
+        
+    if impc_code in g_code_keys.keys():
+        return g_code_keys[impc_code]
+    else:
+        return 0
+    
 def verifyImpcCode(impccode):   
     selectStmt = "SELECT _ClimbType_key FROM komp.dccparameterdetails WHERE ImpcCode = '{0}'".format(impccode)
     typeKey = 0
@@ -365,11 +390,11 @@ def getMice(procedure_instance_key_ls:list):
     """
     Return a list of the specimen and experiment data
     """
-def getCombinedProcedureSpecimenData(impc_code:str,pipeline:str):
+def getCombinedProcedureSpecimenData(impc_code:str,pipeline:str,whereClause:str):
     taskInfoDictLs = [] # List taskInfo dicts
     taskInfoDict = {}   # Dict where each dict has 'animal' list and a 'taskInstance'list.
     pi_keys = []
-    animalDictLs, taskInstanceDictLs = getProcedureData(impc_code,pipeline) # one to one
+    animalDictLs, taskInstanceDictLs = getProcedureData(impc_code,pipeline,whereClause) # one to one
     # Get the inputs and outputs for each task instance
     for taskInstanceDict,animalDict in zip(taskInstanceDictLs,animalDictLs):
         taskInfoDict = {}
@@ -399,7 +424,7 @@ def getCombinedProcedureSpecimenData(impc_code:str,pipeline:str):
     List of dicts 
         Each dict has a list called 'taskInfo' which contains a list called 'animal' and a list called 'taskInstance'.
 """
-def getProcedureData(impc_code:str,pipeline:str):
+def getProcedureData(impc_code:str,pipeline:str,whereClause:str=''):
     # Return the animal dict list and the taskinstance dict list
     proc_query = """ 
     SELECT 
@@ -429,7 +454,7 @@ def getProcedureData(impc_code:str,pipeline:str):
         AND DateCompleteMap.DateComplete IS NOT NULL
         AND _ProcedureStatus_key NOT IN (1,27,37,28) 
     """
-    proc_query = proc_query.format(impc_code,pipeline)
+    proc_query = proc_query.format(impc_code,pipeline) + whereClause
     taskInstanceDict = {}
     animalDict = {}
     animalDictLs = []
