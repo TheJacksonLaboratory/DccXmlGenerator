@@ -34,8 +34,11 @@ impc_proc_status_codes:
     
 impc_param_status_codes:
 
+filenames:
+    dcc_xml_logfile_name: dcc_xml
+    
 directories:
     dest: C:\Users\michaelm\Source\Workspaes\Teams\Lab Informatics\JAXLIMS\Main\DccReporter\data\
     src: \\jax.org\jax\omero-drop\dropbox
-    log_path: .
+    xml_log_path: .\log\
 
