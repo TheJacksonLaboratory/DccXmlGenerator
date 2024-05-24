@@ -1,14 +1,47 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from logging import NullHandler
 import requests
-import sys
 import json
 from datetime import datetime
-import logging
 import csv
 
+import my_logger
+
+seriesParameter = [
+{ "outputKey" :673, "impcCode" : "IMPC_VIA_037_001" } ,
+{ "outputKey" :674, "impcCode" : "IMPC_VIA_038_001" } ,
+{ "outputKey" :675, "impcCode" : "IMPC_VIA_039_001" } ,
+{ "outputKey" :676, "impcCode" : "IMPC_VIA_040_001" } ,
+{ "outputKey" :677, "impcCode" : "IMPC_VIA_041_001" } ,
+{ "outputKey" :678, "impcCode" : "IMPC_VIA_042_001" } ,
+{ "outputKey" :679, "impcCode" : "IMPC_VIA_043_001" } ,
+{ "outputKey" :680, "impcCode" : "IMPC_VIA_044_001" } ,
+{ "outputKey" :682, "impcCode" : "IMPC_VIA_045_001" } ,
+{ "outputKey" :683, "impcCode" : "IMPC_VIA_046_001" } ,
+{ "outputKey" :684, "impcCode" : "IMPC_VIA_047_001" } ,
+{ "outputKey" :685, "impcCode" : "IMPC_VIA_048_001" }
+]
+
+seriesMediaParameter = [
+{ "outputKey" :65, "impcCode" : "IMPC_GEM_049_001" } ,
+{ "outputKey" :23, "impcCode" : "IMPC_GEL_044_001" } ,
+{ "outputKey" :155, "impcCode" : "IMPC_GEP_064_001" } ,
+{ "outputKey" :112, "impcCode" : "IMPC_GEO_050_001" } ,
+{ "outputKey" :658, "impcCode" : "IMPC_EMA_001_001" } ,
+{ "outputKey" :46, "impcCode" : "IMPC_GPL_007_001" } ,
+{ "outputKey" :195, "impcCode" : "IMPC_GPM_007_001" } ,
+{ "outputKey" :193, "impcCode" : "IMPC_GPO_007_001" } ,
+{ "outputKey" :192, "impcCode" : "IMPC_GPP_007_001" } ,
+{ "outputKey" :653, "impcCode" : "IMPC_GEL_044_001" } ,
+{ "outputKey" :654, "impcCode" : "IMPC_GPL_007_001" } ,
+{ "outputKey" :647, "impcCode" : "IMPC_GEM_049_001" } ,
+{ "outputKey" :648, "impcCode" : "IMPC_GPM_007_001" } ,
+{ "outputKey" :649, "impcCode" : "IMPC_GEO_050_001" } ,
+{ "outputKey" :650, "impcCode" : "IMPC_GPO_007_001" } ,
+{ "outputKey" :651, "impcCode" : "IMPC_GEP_064_001" } ,
+{ "outputKey" :652, "impcCode" : "IMPC_GPP_007_001" }
+]
 
 """
 This module provides the necessary fucntions to query and update genotypes in CLIMB.
@@ -31,19 +64,19 @@ def getToken(username, password):
         response = requests.get('http://climb-admin.azurewebsites.net/api/token',auth=(username,password), timeout=15)
         myContent = response.json()
         token = myContent['access_token']
-        #print(token)
+        my_logger.info(token)
         return token
     except requests.exceptions.Timeout as e: 
-        #print(e.message())
+        my_logger.info(e.message())
         raise Exception(e)
     except requests.exceptions.InvalidHeader as e:  
-        #print(e.message())
+        my_logger.info(e.message())
         raise ValueError(e)
     except requests.exceptions.InvalidURL as e:  
-        #print(e.message())
+        my_logger.info(e.message())
         raise ValueError(e)
     except requests.exceptions.RequestException as e:  # All others
-        #print(e.message())
+        my_logger.info(e.message())
         raise SystemExit(e)
     
 def getTokenEx():
@@ -53,16 +86,16 @@ def getTokenEx():
         token = response.json()
         return token
     except requests.exceptions.Timeout as e: 
-        #print(e.message())
+        my_logger.info(e.message())
         raise Exception(e)
     except requests.exceptions.InvalidHeader as e:  
-        #print(e.message())
+        my_logger.info(e.message())
         raise ValueError(e)
     except requests.exceptions.InvalidURL as e:  
-        #print(e.message())
+        my_logger.info(e.message())
         raise ValueError(e)
     except requests.exceptions.RequestException as e:  # All others
-        #print(e.message())
+        my_logger.info(e.message())
         raise SystemExit(e)
 
 
@@ -86,7 +119,6 @@ def escapeHtmlCharacter(html):
     return html
 
 def getTaskNames():
-    #taskNames = ['Eye Morphology', 'Body Weight', 'First Body Weight', 'Open Field', 'Grip Strength', 'Light/Dark', 'Holeboard', 'EKGv3', 'GTT', 'Body Composition', 'Heart Weight', 'Clinical Blood Chemistry', 'Hematology', 'SHIRPA', 'Startle/PPI', 'Dysmorphology', 'ABR', 'ERGv2']
     taskNames = ['E12.5 Embryo Gross Morphology', 'E12.5 Placenta Morphology', 'E15.5 Embryo Gross Morphology', 'E15.5 Placenta Morphology', 'E18.5 Embryo Gross Morphology', 'E18.5 Placenta Morphology', 'E9.5 Embryo Gross Morphology', 'E9.5 Placenta Morphology']
     return taskNames
     
@@ -111,16 +143,16 @@ def getWorkgroups():
         dict_list = outer_dict.get('items')
         return dict_list
     except requests.exceptions.Timeout as e: 
-        #print(e.message())
+        my_logger.info(e.message())
         raise 
     except requests.exceptions.InvalidHeader as e:  
-        #print(e.message())
+        my_logger.info(e.message())
         raise 
     except requests.exceptions.InvalidURL as e:  
-        #print(e.message())
+        my_logger.info(e.message())
         raise 
     except requests.exceptions.RequestException as e:  # All others
-        #print(e.message())
+        my_logger.info(e.message())
         raise 
     
 def setWorkgroup(workgroupName=None):
@@ -173,21 +205,22 @@ def getWorkflowTaskNameKey(taskName):
         return wfKey
 
     except requests.exceptions.Timeout as e: 
-        #print(e.message())
+        my_logger.info(e.message())
         raise 
     except requests.exceptions.InvalidHeader as e:  
-        #print(e.message())
+        my_logger.info(e.message())
         raise 
     except requests.exceptions.InvalidURL as e:  
-        #print(e.message())
+        my_logger.info(e.message())
         raise 
     except requests.exceptions.RequestException as e:  # All others
-        #print(e.message())
+        my_logger.info(e.message())
         raise 
     
     return 0
 
 def getInputsFromTaskName(taskName):
+    # Given a task name, get the input definitions
     key = getWorkflowTaskNameKey(taskName)
     
     if key == None:
@@ -205,6 +238,7 @@ def getInputsFromTaskName(taskName):
     return dict_list
 
 def getInputsFromTaskNames():
+    # For each task get the inputs and write them to a CSV file
     createInputCsvFileHeader()
     taskNames = getTaskNames()
     for taskName in taskNames:
@@ -214,6 +248,7 @@ def getInputsFromTaskNames():
 
 
 def getOutputsFromTaskName(taskName):
+    # Get the put defintions for the given task
     key = getWorkflowTaskNameKey(taskName)
     
     if key == None:
@@ -232,6 +267,7 @@ def getOutputsFromTaskName(taskName):
     return dict_list
 
 def getOutputsFromTaskNames():
+    # For each task get the outputs and write them to a CSV file
     createOutputCsvFileHeader()
     taskNames = getTaskNames()
     for taskName in taskNames:
@@ -240,29 +276,35 @@ def getOutputsFromTaskNames():
     return outputDictLs
 
 def getTaskInfoFromFilter(taskInfoFiler):
-    taskInfoLs = []
+    # A main entry point to get procedure data from CLIMB
+    taskInfoLs = {}
     call_header = {'Authorization' : 'Bearer ' + token()}
     try:
-        #print(">"+json.dumps(taskInfoFiler)+"<")
         wgResponse = requests.post(endpoint()+'/taskAnimalInfo', data=json.dumps(taskInfoFiler), headers=call_header, timeout=60)
         taskInfoLs = wgResponse.json()
     except requests.exceptions.Timeout as e: 
-        #print(e.message())
+        my_logger.info(e.message())
         raise 
     except requests.exceptions.InvalidHeader as e:  
-        #print(e.message())
+        my_logger.info(e.message())
         raise 
     except requests.exceptions.InvalidURL as e:  
-        #print(e.message())
+        my_logger.info(e.message())
         raise 
     except requests.exceptions.RequestException as e:  # All others
-        #print(e.message())
+        my_logger.info(e.message())
         raise  
-       
+    
+    # Do any post-processing required for generating XML
+    if taskInfoLs != None:
+        for taskInfo in taskInfoLs["taskInfo"]:
+            post_process_outputs(taskInfo["taskInstance"][0]["outputs"])
+        
     return taskInfoLs
 
 def getAnimalInfoFromFilter(animalInfoFilter):
-    #print(json.dumps(animalInfoFilter))
+    # A main entry point to get animal data from CLIMB
+    my_logger.info("Animal info: " + json.dumps(animalInfoFilter))
     animalInfoLs = []
     call_header = {'Authorization' : 'Bearer ' + token()}
     try:
@@ -275,21 +317,21 @@ def getAnimalInfoFromFilter(animalInfoFilter):
         elif wgResponse.status_code == 200:
             animalInfoLs = wgResponse.json()
     except requests.exceptions.Timeout as e: 
-        #print(e.message())
+        my_logger.info(e.message())
         raise 
     except requests.exceptions.InvalidHeader as e:  
-        #print(e.message())
+        my_logger.info(e.message())
         raise 
     except requests.exceptions.InvalidURL as e:  
-        #print(e.message())
+        my_logger.info(e.message())
         raise 
     except requests.exceptions.RequestException as e:  # All others
-        #print(e.message())
+        my_logger.info(e.message())
         raise  
        
     return animalInfoLs
 
-def getMinMaxFromOutput(key):
+def getMinMaxFromOutput(key):  # TBD if needed
     min = None
     max = None
     
@@ -438,7 +480,7 @@ def getProceduresGivenFilter(taskNameFilter):
             inputLs = wgResponse.json()
             inputsOnly = inputLs["data"]["items"]
             # clean up unwanted input objects
-            inputsOnly = cleanupInputs(inputsOnly)
+            inputsOnly = cleanupInputs(inputsOnly) # Remove unwanted key+value pairs
             taskinstance["inputs"] = inputsOnly
             
         # Get the outputs
@@ -447,7 +489,8 @@ def getProceduresGivenFilter(taskNameFilter):
             outputLs = wgResponse.json()
             outputsOnly = outputLs["data"]["items"]
             # clean up unwanted output objects
-            outputsOnly = cleanupOutputs(outputsOnly)
+            outputsOnly = cleanupOutputs(outputsOnly) # Remove unwanted key+value pairs
+            #outputsOnly = prepareSeriesAndSeriesMediaOutputValues(outputsOnly)
             taskinstance["outputs"] = outputsOnly
             
             # List inside a dict inside a list
@@ -455,16 +498,16 @@ def getProceduresGivenFilter(taskNameFilter):
         # A list containing one element that is a dict that is a llst of taskInstances
  
     except requests.exceptions.Timeout as e: 
-        #print(e.message())
+        my_logger.info(e.message())
         raise 
     except requests.exceptions.InvalidHeader as e:  
-        #print(e.message())
+        my_logger.info(e.message())
         raise 
     except requests.exceptions.InvalidURL as e:  
-        #print(e.message())
+        my_logger.info(e.message())
         raise 
     except requests.exceptions.RequestException as e:  # All others
-        #print(e.message())
+        my_logger.info(e.message())
         raise  
     
     return taskInfoReturnDictLs
@@ -530,6 +573,25 @@ def cleanupOutputs(outputLs):
         del outputObj["dateCreated"]
     return outputLs
 
+def post_process_outputs(outputLs):
+    # Do what needs to be done to prepare the outputs for the XML generator
+    return prepareSeriesAndSeriesMediaOutputValues(outputLs)
+
+def prepareSeriesAndSeriesMediaOutputValues(outputLs):
+    # Sereies types and seriesMedia types must be in the format of a JSON object dictionay.
+    for outputObj in outputLs:
+        # if the output key in in either of the lists of series parameters, munge it to a dict
+        tmp = next((item for item in seriesParameter if item["outputKey"] == int(outputObj["outputKey"])), None)
+        if tmp == None:
+            tmp = next((item for item in seriesMediaParameter if item["outputKey"] == int(outputObj["outputKey"])), None)
+            
+        if tmp != None:
+           dictVal = {}
+           dictVal["1"] = outputObj["outputValue"]
+           outputObj["outputValue"] = str(dictVal)
+    
+    return outputLs
+
 
 def getProceduresAndDataGivenName(procName):
     # Return a list of dictionaries where dictionary is a procedure with inputs and putputs
@@ -542,7 +604,7 @@ def getAnimalsGivenProcedureName(proName):
     
 ######## END OF USEFUL, SPECIAL CLIMB METHODS
 
-#### CSV CSV #########################################
+#### CSV funcs #########################################
 def createInputCsvFileHeader():
     header = ['TaskName', 'InputName', 'InputKey' ]
     f = open('inputs.csv', 'w', newline='')
@@ -596,7 +658,7 @@ def createUserCsv(userDictLs):
             row.append(x.get("userLastName"))
             writer.writerow(row)
     return
-#######################################################
+###############  END OF CSV funcs ########################################
 
 if __name__ == '__main__':
     setWorkgroup('KOMP-JAX Lab')

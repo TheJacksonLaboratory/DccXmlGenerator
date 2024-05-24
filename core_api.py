@@ -12,10 +12,16 @@ from datetime import timedelta
 
 import re
 
+import my_logger
+
 kompExperimentNames = [
+"BODY_WEIGHT"
+]
+"""
+kompExperimentNames = [
+"BODY_WEIGHT",
 "AUDITORY_BRAINSTEM_RESPONSE",
 "BODY_COMPOSITION",
-"BODY_WEIGHT",
 "CLINICAL_BLOOD_CHEMISTRY",
 "ELECTROCARDIOGRAM",
 "ELECTRORETINOGRAPHY",
@@ -31,7 +37,7 @@ kompExperimentNames = [
 "SHIRPA_DYSMORPHOLOGY",
 "STARTLE_PPI"
 ]
- 
+"""
 # Constants
 DCC_SIMPLE_TYPE = 1
 DCC_MEDIA_TYPE = 3
@@ -92,26 +98,30 @@ def getKompMice():
     try:
         my_auth = HTTPBasicAuth(username, password)
         query = baseURL + mouseEndpoint
-
         result = requests.get(query, auth=my_auth,headers = {"Prefer": "odata.maxpagesize=5000"})    
         wgJson = result.json()
         
         #Get list of values
         valueLs = wgJson.get('value')
+        # Make sure we got all the mice
         totalCount = wgJson.get('@odata.count')
 
         return totalCount,valueLs
     except requests.exceptions.Timeout as e: 
         print(repr(e))
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.InvalidHeader as e:  
         print(repr(e))
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.InvalidURL as e:  
         print(repr(e))
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.RequestException as e:  # All others
         print(repr(e))
+        my_logger.info(repr(e))
         raise 
     
     pass
@@ -167,7 +177,7 @@ def getSampleList(kompRequestlist):
                 sex = 'Female'
             animalDict["sex"] = sex
             
-            animalDict["generation"] = "F1"
+            animalDict["generation"] = "F1"  # Is this OK
             tmpDict["animal"] = animalDict
             
             lineDict["stock"] = jaxstrainToStocknumber(sampleDict["JAX_MOUSESAMPLE_ALLELE"])
@@ -205,10 +215,12 @@ def updateAssayWithFailReason(expName,assayBarcode,failreason,failcomments):
     query = baseURL + "KOMP_{0}_ASSAY_DATA('{1}')".format(expName,assayBarcode) # expName is like BODY_WEIGHT
 
     print(put_data)
+    my_logger.info(put_data)
     
     result = requests.put(query, data=json.dumps(put_data), auth=my_auth,headers = {"Content-Type": "application/json", "If-Match": "*" })  
     
     print(result.text)
+    my_logger.info(result.text)
     # Did it work? Chekc for code 200
     return 200
     
@@ -229,6 +241,7 @@ def updateExperimentStatus(expName,expBarcode,status,comments):
 
     result = requests.put(query, data=json.dumps(put_data), auth=my_auth,headers = {"Content-Type": "application/json", "If-Match": "*" })  
     print(result.text)
+    my_logger.info(result.text)
   
 def getExperiment(expName:str, expBarcode:str) -> dict:
     # Get the experiment from the barcode and return it as a dict
@@ -316,15 +329,19 @@ def getExperimentData(experimentname):
         return len(valueLs),valueLs
     except requests.exceptions.Timeout as e: 
         print(repr(e))
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.InvalidHeader as e:  
         print(repr(e))
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.InvalidURL as e:  
         print(repr(e))
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.RequestException as e:  # All others
         print(repr(e))
+        my_logger.info(repr(e))
         raise 
     
     return 0,None
@@ -550,6 +567,7 @@ def getPfsTaskInfo():
         taskInfoList={}
         numberOfKompRequest, valuelist = getExperimentData(expName)
         print("Number of requests:" + str(numberOfKompRequest))
+        my_logger.info("Number of requests for {0}:".format(expName) + str(numberOfKompRequest))
           
         taskInfoList["taskInfo"] = buildTaskInfoList(valuelist)     
         taskInfoListList.append(taskInfoList)

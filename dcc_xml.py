@@ -39,18 +39,17 @@ import jaxlims_api as db
 import climb_api as c
 import validate_procedure as v
 import core_api as pfs
-
 import my_logger
 
 
 # Globals - set either from the command line or config file
 g_ImpcCode = ''
 g_ColonyId =''
-g_DataSrc = ''   # CLIMB, PFS, or JAXLIMS
-g_dataDir = ''
-g_filterFileName = 'filters-with-mice.json'
-g_image_dir = '.'
-g_DryRun = True
+g_DataSrc = ''   # CLIMB, PFS, or JAXLIMS Set on command line
+g_dataDir = '' # Set from config file
+g_filterFileName = 'microct-fix.json'  # Set on command line
+g_image_dir = '.'  # Currentoly unused
+g_DryRun = None
 # "environment variables"
 
 # From YAML file            
@@ -80,7 +79,7 @@ def setDataSrc(sourceName:str):
   g_DataSrc = sourceName
   
 def getFtpServer():
-      return 'sftp://bhjlk02lp.jax.org/'
+      return 'sftp://bhjlk02lp.jax.org/'  # Probably should come from config file
 
 # Global map: Look up a proc status string and return the IMPC code
 procedure_status_message_map = {
@@ -306,6 +305,7 @@ def createSeriesMediaParameter(procedureNode,impc_code, strVal,procedureImpcCode
     db.recordMediaSubmission(image, (getFtpServer() + 'images/' + procedureImpcCode + "/" + filenameOnly) ,taskKey,impc_code)
 
   return procedureNode
+
 def createMediaParameter(procedureNode,impc_code, image,procedureImpcCode,taskKey, statusCode):
     
   if image == None:
@@ -585,14 +585,12 @@ def generateLineCallExperimentXML(taskInfoLs, centerNode):
           
           procedureNode = buildMetadata(procedureNode,proc)
           
-          lineNode = buildExperimentStatusCode(lineNode,getProcedureStatusCode(proc))  # ??????
-          # Clear the colony Id
-          #setColonyId('')
+          lineNode = buildExperimentStatusCode(lineNode,getProcedureStatusCode(proc))
           
     return numberOfProcs
 
 def buildMetadata(procedureNode,proc):
-      # Ugly - If there are no inputs then this may be an embryo lethal ask that was unfortunately created with no inputs.
+      # Ugly - If there are no inputs then this may be an embryo lethal task that was unfortunately created with no inputs.
       if len(proc['inputs']) == 0:
             embryoKluge(proc['workflowTaskName'],procedureNode)
             return procedureNode
@@ -900,7 +898,7 @@ def indent(elem, level=0):
             elem.tail = j
     return elem
 
-def handleClimbData(filterFileName):
+def handleClimbData():
     
     # For CORE PFS komp mice
     mycfg = cfg.parse_config(path="config.yml")
@@ -908,9 +906,9 @@ def handleClimbData(filterFileName):
     setDataDir(mycfg['directories']['dest'])
     
     my_logger.info("Attempting to buils XMLs from CLIMB.")
-    my_logger.info("Filter filename="+filterFileName)
+    my_logger.info("Filter filename="+getClimbFilterFile())
     # Get filter from file - temporary
-    with open(filterFileName) as f:
+    with open(getClimbFilterFile()) as f:
       filterLines = f.read().splitlines()
       
     c.setWorkgroup()  # Inits CLIMB
@@ -923,7 +921,7 @@ def handleClimbData(filterFileName):
       animalLs = results["animalInfo"]
       
       for animal in reversed(animalLs):  # Remove those animals that failed
-        my_logger.info("Validate specimen:"+animal)
+        my_logger.info("CLIMB Validate specimen:" + repr(animal))
         isValid = v.validateAnimal(animal)
         if isValid == False:
               my_logger.info("Failed specimen:"+animal["animal"])
@@ -1079,9 +1077,11 @@ if __name__ == '__main__':
 
     # Uncomment out the next two lines when running from the commandline
     args = argparse.ArgumentParser()
-    #add_arguments(args)
+    add_arguments(args)
     # Otherwise, hard coded
-    setDataSrc('PFS')
+    #setDataSrc('CLIMB')
+    #setClimbFilterFile('microct-fix.json')  # CLIMB Only
+    #g_DryRun = True
     
     my_logger.info('Logger has been created')
 	
@@ -1089,7 +1089,7 @@ if __name__ == '__main__':
                # logging no matter what data source we are using.
     
     if getDataSrc() == 'CLIMB':
-      handleClimbData('filters-with-mice.json')
+      handleClimbData()
     elif getDataSrc() == 'JAXLIMS':
       handleJaxLimsData()
     elif getDataSrc() == 'PFS':
