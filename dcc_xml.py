@@ -618,7 +618,13 @@ def buildMetadata(procedureNode,proc):
                 inputVal = input['inputValue'].strip()
                 if len(inputVal) > 0:  # only if there is a value there.
                   if db.isExperimenterID(impcCode) == True:  # Can't use real names. Must insert numerical value
+                    my_logger.info("Looking up " + inputVal + " for experimenterID.")
+                    if len(inputVal) == 0 or inputVal is None:
+                      my_logger.info("Missing experimenterID for .")
                     inputVal = db.databaseGetExperimenterIdCode(inputVal)
+                    if len(inputVal) == 0:
+                      my_logger.info("    Couldn't resolve experimenter ID")
+                      
                   procedureNode = createMetadata(procedureNode, impcCode, inputVal)
       
       # Go through the outputs and if there is a climb_key match add the value
@@ -637,8 +643,10 @@ def buildMetadata(procedureNode,proc):
                 outputVal = str(output['outputValue']).strip()
                 if len(outputVal) > 0: # only if there is a value there.
                   if db.isExperimenterID(impcCode) == True:  # Can't use real names. Must insert numerical value
+                    my_logger.info("Looking up " + outputVal + " for experimenterID.")
                     outputVal = db.databaseGetExperimenterIdCode(outputVal)
-                  
+                    if len(outputVal) == 0:
+                      my_logger.info("    Couldn't resolve experimenter ID")
                   procedureNode = createMetadata(procedureNode, impcCode, outputVal)
               
       return procedureNode
@@ -1003,6 +1011,7 @@ def handlePfsData():
             db.recordSubmissionAttempt(expFileName.split('\\')[-1],animalName, task["taskInstance"][0], 
                                         getProcedureImpcCode(), v.getReviewedDate(task["taskInstance"][0]))
             # TODO - Update the EXPERIMENT status to "Data Sent to DCC"
+            #pfs.updateExperimentStatus(expName,expBarcode,status,comments)
      
     return
 
@@ -1077,11 +1086,11 @@ if __name__ == '__main__':
 
     # Uncomment out the next two lines when running from the commandline
     args = argparse.ArgumentParser()
-    add_arguments(args)
+    #add_arguments(args)
     # Otherwise, hard coded
-    #setDataSrc('CLIMB')
-    #setClimbFilterFile('microct-fix.json')  # CLIMB Only
-    #g_DryRun = True
+    setDataSrc('PFS')
+    #setClimbFilterFile('microct-fix-day-2-b.json')  # CLIMB Only
+    g_DryRun = False
     
     my_logger.info('Logger has been created')
 	

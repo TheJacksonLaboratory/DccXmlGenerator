@@ -14,10 +14,7 @@ import re
 
 import my_logger
 
-kompExperimentNames = [
-"BODY_WEIGHT"
-]
-"""
+
 kompExperimentNames = [
 "BODY_WEIGHT",
 "AUDITORY_BRAINSTEM_RESPONSE",
@@ -37,7 +34,7 @@ kompExperimentNames = [
 "SHIRPA_DYSMORPHOLOGY",
 "STARTLE_PPI"
 ]
-"""
+
 # Constants
 DCC_SIMPLE_TYPE = 1
 DCC_MEDIA_TYPE = 3
@@ -156,10 +153,15 @@ def getSampleList(kompRequestlist):
     for kompRequest in kompRequestlist:
         mouseSampleLotList = kompRequest["REV_MOUSESAMPLELOT_KOMPREQUEST"]
         for mouseSampleLot in mouseSampleLotList:
-            sampleDict = mouseSampleLot["SAMPLE"]
-            # TEMP - filter out garbage from test env
-            if sampleDict["JAX_MOUSESAMPLE_ALLELE"] == None or "(JR0" not in sampleDict["JAX_MOUSESAMPLE_ALLELE"]:
+            if mouseSampleLot["SAMPLE"] is None:
                 continue
+            
+            sampleDict = mouseSampleLot["SAMPLE"]
+            
+            # TEMP - filter out garbage from test env
+            #if sampleDict["JAX_MOUSESAMPLE_ALLELE"] == None or "(JR0" not in sampleDict["JAX_MOUSESAMPLE_ALLELE"]:
+            #    continue
+            
             # End of TEMP
             tmpDict = {}
             animalDict = {}
@@ -224,12 +226,13 @@ def updateAssayWithFailReason(expName,assayBarcode,failreason,failcomments):
     # Did it work? Chekc for code 200
     return 200
     
-def updateExperimentStatus(expName,expBarcode,status,comments):
+def updateExperimentStatus(expName,expBarcode,status='Data Sent to DCC',comments=''):
    
     put_data = getExperiment(expName,expBarcode)
     put_data['Barcode'] = expBarcode
     put_data['JAX_EXPERIMENT_STATUS'] = status
     put_data['JAX_EXPERIMENT_COMMENTS'] = comments
+    my_logger.info("PUT data:" + str(put_data))
     
     mycfg = cfg.parse_config(path="config.yml")
     baseURL = mycfg['corepfs_database']['baseURL']
@@ -371,7 +374,7 @@ def buildTaskInfoList(expDataLs):
             taskInfo['taskInstance'][0]['inputs'] = inputs   # from the EXPERIMENT - not the ASSAY
             taskInfo['taskInstance'][0]['outputs'] = getOutputs(expSample['ASSAY_DATA'],dateStr)
             
-            taskInfo["taskInstance"][0]["taskStatus"] = expSample['ASSAY_DATA']['JAX_ASSAY_ASSAYFAILREASON']
+            taskInfo["taskInstance"][0]["taskStatus"] = expSample['ASSAY_DATA']['JAX_ASSAY_ASSAYFAILREASON'] # Is dash OK?
             taskInfoLs.append(taskInfo)
     return taskInfoLs
 
@@ -443,7 +446,7 @@ def getOutputs(expSample,dateStr):
                     outputDict['name']= keystr
                     outputDict['outputValue'] = removeUnderscoresFromCvValue(keystr,expSample[keystr])
                     outputDict['outputKey'] = outputKey
-                    outputDict['collectedBy'] = "Amelia Willett"
+                    outputDict['collectedBy'] = "Amelia Willett"  # ["JAX_ASSAY_TESTER"]
                     outputDict['collectedDate'] = dateStr
                     
                     outputLs.append(outputDict)
@@ -464,10 +467,10 @@ def getSeriesOutput(expSample,keystr,dateStr):
         outputDictValue["120"] = expSample[keystr.replace('t0','t120')]
         idx = 16 # i.e. IMPC_
     elif  keystr == FIRST_OFD_DISTANCE_TRAVELLED_SERIES: # 1st5, 2nd5, 3rd5, 4th5
-        outputDictValue["1"] = expSample[keystr]
-        outputDictValue["2"] = expSample[keystr.replace('1ST5','2ND5')]
-        outputDictValue["3"] = expSample[keystr.replace('1ST5','3RD5')]
-        outputDictValue["4"] = expSample[keystr.replace('1ST5','4TH5')]
+        outputDictValue["5"] = expSample[keystr]
+        outputDictValue["10"] = expSample[keystr.replace('1ST5','2ND5')]
+        outputDictValue["15"] = expSample[keystr.replace('1ST5','3RD5')]
+        outputDictValue["20"] = expSample[keystr.replace('1ST5','4TH5')]
     elif keystr == FIRST_GRS_FORELIMB_SERIES or keystr == FIRST_GRS_FOREHINDLIMB_SERIES:  #t1, t2, t3
         outputDictValue["1"] = expSample[keystr]
         outputDictValue["2"] = expSample[keystr.replace('T1','T2')]
@@ -484,7 +487,7 @@ def getSeriesOutput(expSample,keystr,dateStr):
     outputDict['name'] = keystr[0:idx]
     outputDict['outputValue'] = outputDictValue
     outputDict['outputKey'] = db.getKeyFromImpcCode(keystr[0:idx])  # Must exist
-    outputDict['collectedBy'] = "Amelia Willett"  # TODO Get from config file?
+    outputDict['collectedBy'] = "Amelia Willett"  # ["JAX_ASSAY_TESTER"]
     outputDict['collectedDate'] = dateStr
     
     return outputDict 
@@ -562,6 +565,14 @@ def isMediaSeries(impcCode):
 def getPfsTaskInfo():
     taskInfoList= {} # For each experiment type
     taskInfoListList= [] #
+    
+    # Are we overiding the hard-coded list of experimens?
+    mycfg = cfg.parse_config(path="config.yml")
+      # Setup credentials for database
+    exps = mycfg['impc_proc_codes']['impc_code_list']
+    if len(exps) > 0:   # Else use the default list. See line 18 or thereabouts
+        kompExperimentNames = exps.split(',')
+        
     
     for expName in kompExperimentNames:
         taskInfoList={}
