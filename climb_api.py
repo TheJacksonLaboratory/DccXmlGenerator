@@ -490,7 +490,7 @@ def getProceduresGivenFilter(taskNameFilter):
             outputsOnly = outputLs["data"]["items"]
             # clean up unwanted output objects
             outputsOnly = cleanupOutputs(outputsOnly) # Remove unwanted key+value pairs
-            #outputsOnly = prepareSeriesAndSeriesMediaOutputValues(outputsOnly)
+            outputsOnly = prepareSeriesAndSeriesMediaOutputValues(outputsOnly)
             taskinstance["outputs"] = outputsOnly
             
             # List inside a dict inside a list
