@@ -298,7 +298,10 @@ def getTaskInfoFromFilter(taskInfoFiler):
     # Do any post-processing required for generating XML
     if taskInfoLs != None:
         for taskInfo in taskInfoLs["taskInfo"]:
-            post_process_outputs(taskInfo["taskInstance"][0]["outputs"])
+            if "taskInstance" in taskInfo:
+                if len(taskInfo["taskInstance"]):
+                    if "outputs" in taskInfo["taskInstance"][0]:
+                        post_process_outputs(taskInfo["taskInstance"][0]["outputs"]) # Check for existence of outputs
         
     return taskInfoLs
 
