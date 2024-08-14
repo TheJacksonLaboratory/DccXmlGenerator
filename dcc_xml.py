@@ -22,6 +22,7 @@ It determines the XML file name and writes it out to the working directory.
 
 import json
 import glob
+import pandas as pd
 
 import argparse
 from datetime import datetime
@@ -163,15 +164,6 @@ def findColonyId(proc):
 def getBackgroundStrainId():
   # C57BL/6NJ
   return 'MGI:3056279'
-
-def checkAnimalKeys(mouseInfo):
-  # If the animal object does not have the keys required to help build an experiment, return false
-  # Should  never happen in the real world
-  is_ok = False
-  if "animalName" in mouseInfo:
-    if mouseInfo["animalName"] != None:
-      is_ok = True
-  return is_ok
 
 # XML XML XML
 def createSpecimenXML(animalLs):
@@ -531,13 +523,11 @@ def generateExperimentXML(taskInfoLs, centerNode):
         # For each animal thee are one or more tasks 
         mouseInfoLs = exps["animal"]
         for mouseInfo in mouseInfoLs:
-          if checkAnimalKeys(mouseInfo) == False: # Should never happen in real world
-            continue
-          
           procLs = exps["taskInstance"]
           for proc in procLs:
             if proc["taskStatus"]  == "Failed QC" or proc["taskStatus"]  == "Already submitted":
-                  continue # We failed it or we've already submitted it.
+              my_logger.info("XML generation: Experiment not processed for " + mouseInfo['animalName'] + ". Task status:" + proc["taskStatus"] )
+              continue # We failed it or we've already submitted it.
             
             my_logger.info("Generating XML for " + (proc['workflowTaskName'] + ' - ' +  mouseInfo['animalName'] + ' - ' + str(proc["taskInstanceKey"])))
             
@@ -619,12 +609,17 @@ def buildMetadata(procedureNode,proc):
                 if len(inputVal) > 0:  # only if there is a value there.
                   if db.isExperimenterID(impcCode) == True:  # Can't use real names. Must insert numerical value
                     my_logger.info("Looking up " + inputVal + " for experimenterID.")
-                    if len(inputVal) == 0 or inputVal is None:
-                      my_logger.info("Missing experimenterID for .")
                     inputVal = db.databaseGetExperimenterIdCode(inputVal)
                     if len(inputVal) == 0:
                       my_logger.info("    Couldn't resolve experimenter ID")
-                      
+                  elif db.isDate(impcCode) == True:  # Format YYYY-MM-DD
+                    inputVal = str(pd.to_datetime(inputVal))[0:10]
+                    my_logger.info("Reformating date:"+ input['inputValue'].strip() + " to " + inputVal)
+                  elif db.isDateTime(impcCode) == True: # Format YYYY-M-DD hh:mm:ss
+                    inputVal = str(pd.to_datetime(inputVal))[0:19]
+                    my_logger.info("Reformating datetime:"+ input['inputValue'].strip() + " to " + inputVal)
+                    
+                       
                   procedureNode = createMetadata(procedureNode, impcCode, inputVal)
       
       # Go through the outputs and if there is a climb_key match add the value
@@ -647,6 +642,13 @@ def buildMetadata(procedureNode,proc):
                     outputVal = db.databaseGetExperimenterIdCode(outputVal)
                     if len(outputVal) == 0:
                       my_logger.info("    Couldn't resolve experimenter ID")
+                  elif db.isDate(impcCode) == True:  # Format YYYY-MM-DD
+                    outputVal = str(pd.to_datetime(outputVal))[0:10]
+                    my_logger.info("Reformating date:"+ output['outputValue'].strip() + " to " + outputVal)
+                  elif db.isDateTime(impcCode) == True: # Format YYYY-M-DD hh:mm:ss
+                    outputVal = str(pd.to_datetime(outputVal))[0:19]
+                    my_logger.info("Reformating datetime:"+ output['outputValue'].strip() + " to " + outputVal)
+                    
                   procedureNode = createMetadata(procedureNode, impcCode, outputVal)
               
       return procedureNode
@@ -969,41 +971,33 @@ def handlePfsData():
     setDataDir(mycfg['directories']['dest'])
       
     my_logger.info("Attempting to buils XMLs from CORE PFS.")
-    # This gets ALL the KOMP mice. 
-    animalLs = pfs.getPfsAnimalInfo()
-    
-    for animal in reversed(animalLs):  # Remove those animals that failed
-        if v.validateAnimal(animal) == False:
-              animalLs.remove(animal)
-    
-    my_logger.info("Building specimen file for {0} animals.".format(len(animalLs)))
-    createSpecimenXML(animalLs)
     
     # Now the procedures
     resultsLs = pfs.getPfsTaskInfo()  # This should return a list of lists where each element corresponds to an experiment type
     
     # We get the exp filename now so we can log it.
     expFileName = getNextExperimentFilename(getDatadir())
-                
+    animalsInprocedures = set()   # These will be in the specimen file
     for results in resultsLs:
       taskLs = results["taskInfo"]  # A list of dictionaries
       for task in reversed(taskLs):  # task should be a dictionary { "animal" : [], "taskInstance": []}
-        animalName = ''  # Not all tasks have animals
         success, message = v.validateProcedure(task)  # Sets the task status to 'Failed QC' if it fails.
         if success == False:
-            mouse_name = task["animal"][0]["animalName"]
-            exp_name = task["taskInstance"][0]["workflowTaskName"]
-            date_complete = task["taskInstance"][0]["dateComplete"]
-            my_logger.info("Rejected " + exp_name + ": " + message +  " Name " +  mouse_name + " Complete date: " + date_complete )
+            date_complete = 'None'
+            if task["taskInstance"][0]["dateComplete"] != None:
+              date_complete = task["taskInstance"][0]["dateComplete"]
+            my_logger.info("Rejected " + task["taskInstance"][0]["workflowTaskName"] + ": " + message +  " Name " +  task["animal"][0]["animalName"] + " Complete date: " + date_complete )
             taskLs.remove(task)  # Do not record it 
             continue
+        else: # Record the mouse name for later filtering
+          animalsInprocedures.add(task["animal"][0]["animalName"])
       
+      my_logger.info("Creating experiment file for {0} tasks.".format(len(taskLs)))
       
-      my_logger.info("Creating experiment file for {0} tasks.".format(len(animalLs)))
       # OK. With list cleaned up, lets create the experiment XML
       createExperimentXML(taskLs, True)
       
-      # task is a list of taskInstances but there will only be one for KOMP
+      # Now record what we wull attempt to submit. (Move up to line 993?)
       for task in taskLs:
         if len(task["taskInstance"]) > 0:
           animalName = task["animal"][0]["animalName"]
@@ -1012,7 +1006,18 @@ def handlePfsData():
                                         getProcedureImpcCode(), v.getReviewedDate(task["taskInstance"][0]))
             # TODO - Update the EXPERIMENT status to "Data Sent to DCC"
             #pfs.updateExperimentStatus(expName,expBarcode,status,comments)
-     
+    
+    animalLs = pfs.getPfsAnimalInfo()
+    
+    for animal in reversed(animalLs):  # Remove those animals that failed or are not in the procedure list
+      if animal["animal"]["animalName"] not in animalsInprocedures:
+        animalLs.remove(animal)
+      elif v.validateAnimal(animal) == False:
+        animalLs.remove(animal)
+    
+    my_logger.info("Building specimen file for {0} animals.".format(len(animalLs)))
+    createSpecimenXML(animalLs)
+       
     return
 
 def handleJaxLimsData():
@@ -1089,8 +1094,8 @@ if __name__ == '__main__':
     #add_arguments(args)
     # Otherwise, hard coded
     setDataSrc('PFS')
-    #setClimbFilterFile('microct-fix-day-2-b.json')  # CLIMB Only
-    g_DryRun = False
+    setClimbFilterFile('via-filters.json')  # CLIMB Only
+    g_DryRun = True
     
     my_logger.info('Logger has been created')
 	

@@ -184,6 +184,40 @@ def isRequired(impcCode:str) -> bool:
     return isRequired
 
 
+def isDate(impcCode:str) -> bool:
+    # Look up IMPC code in komp.dccparametedetils and return truw if IsRequired isnon-zero
+         
+    selectStmt = "SELECT IsDate FROM komp.dccparameterdetails WHERE ImpcCode= \'{0}\'".format(impcCode)
+
+    isDate = False
+    try:
+        g_MysqlCursor.execute(selectStmt)
+        
+        for IsDate in g_MysqlCursor:
+            isDate = (IsDate[0] == 1)
+    except Exception as e:
+        print('SELECT FAILED FOR: ' + selectStmt)
+    
+    return isDate
+
+
+def isDateTime(impcCode:str) -> bool:
+    # Look up IMPC code in komp.dccparametedetils and return truw if IsRequired isnon-zero
+         
+    selectStmt = "SELECT IsDateTime FROM komp.dccparameterdetails WHERE ImpcCode= \'{0}\'".format(impcCode)
+
+    isDateTime = False
+    try:
+        g_MysqlCursor.execute(selectStmt)
+        
+        for IsDateTime in g_MysqlCursor:
+            isDateTime = (IsDateTime[0] == 1)
+    except Exception as e:
+        print('SELECT FAILED FOR: ' + selectStmt)
+    
+    return isDateTime
+
+
 def databaseSelectImpcData(threeLetterCode, isMetatdata, usingInputs):
     
     whereStr = ' _DccType_key <> 7 '
@@ -343,7 +377,7 @@ def getMice(procedure_instance_key_ls:list):
         INNER JOIN Genotype USING (_Organism_key)
         INNER JOIN cv_GenotypeSymbol USING (_GenotypeSymbol_key)
         INNER JOIN cv_Generation USING (_Generation_key)
-    WHERE _ProcedureInstance_key IN ({0});
+    WHERE _ProcedureInstance_key IN ({0}) 
     """
     pi_key_str = ''
     for pikey in procedure_instance_key_ls:

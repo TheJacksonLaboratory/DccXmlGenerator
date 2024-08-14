@@ -359,11 +359,18 @@ def buildTaskInfoList(expDataLs):
         taskInfo = {}
         inputs = getInputs(procedure) # We get the inputs from the procedure (experiment)
         
-        dateStr = procedure['JAX_EXPERIMENT_STARTDATE']
+        # Remove? dateStr = procedure['JAX_EXPERIMENT_STARTDATE']
         for expSample in procedure['EXPERIMENT_SAMPLES']:
             taskInfo = {}
             animal = []
             animalInfo = {}
+            # Yuck. 
+            dateStr = ""
+            if 'JAX_ASSAY_TEST_DATE' in expSample['ASSAY_DATA'].keys():
+                dateStr =  expSample['ASSAY_DATA']['JAX_ASSAY_TEST_DATE']
+            elif 'JAX_ASSAY_TESTDATE' in expSample['ASSAY_DATA'].keys():
+                dateStr =  expSample['ASSAY_DATA']['JAX_ASSAY_TESTDATE']
+            
             sampleEntity = expSample['ENTITY']
             animalInfo["animalName"] = sampleEntity['SAMPLE']['JAX_SAMPLE_EXTERNALID']
             animalInfo['stock'] = expSample['ASSAY_DATA']['JAX_ASSAY_STRAINNAME']
@@ -371,8 +378,9 @@ def buildTaskInfoList(expDataLs):
             taskInfo['animal'] = animal
             
             taskInfo['taskInstance'] = getTaskInfo(procedure,expSample['Id'])
+            taskInfo['taskInstance'][0]['dateComplete'] = dateStr   # from the EXPERIMENT - not the ASSAY
             taskInfo['taskInstance'][0]['inputs'] = inputs   # from the EXPERIMENT - not the ASSAY
-            taskInfo['taskInstance'][0]['outputs'] = getOutputs(expSample['ASSAY_DATA'],dateStr)
+            taskInfo['taskInstance'][0]['outputs'] = getOutputs(expSample['ASSAY_DATA'],dateStr)  # dateStr unneeded
             
             taskInfo["taskInstance"][0]["taskStatus"] = expSample['ASSAY_DATA']['JAX_ASSAY_ASSAYFAILREASON'] # Is dash OK?
             taskInfoLs.append(taskInfo)
@@ -384,7 +392,7 @@ def getTaskInfo(procedure,taskInstanceKey):
     taskInstanceInfo = {}
     taskInstanceInfo['taskInstanceKey'] =   taskInstanceKey
     taskInstanceInfo['workflowTaskName'] =  procedure['EntityTypeName']
-    taskInstanceInfo['dateComplete'] = procedure['JAX_EXPERIMENT_STARTDATE']
+    # TODO - remove taskInstanceInfo['dateComplete'] = procedure['JAX_EXPERIMENT_STARTDATE']
     taskInstanceInfo['reviewedBy'] = 'Ame Willett'
     taskInstanceInfo['dateReviewed'] = procedure['JAX_EXPERIMENT_STARTDATE']
     # Cancelled at the ASSAY level. Not at experiment 
@@ -446,8 +454,13 @@ def getOutputs(expSample,dateStr):
                     outputDict['name']= keystr
                     outputDict['outputValue'] = removeUnderscoresFromCvValue(keystr,expSample[keystr])
                     outputDict['outputKey'] = outputKey
-                    outputDict['collectedBy'] = "Amelia Willett"  # ["JAX_ASSAY_TESTER"]
-                    outputDict['collectedDate'] = dateStr
+                    outputDict['collectedBy'] = expSample["JAX_ASSAY_TESTER"]
+                    if 'JAX_ASSAY_TEST_DATE' in expSample.keys():
+                        outputDict['collectedDate'] = expSample["JAX_ASSAY_TEST_DATE"]
+                    elif 'JAX_ASSAY_TESTDATE' in expSample.keys():
+                        outputDict['collectedDate'] = expSample["JAX_ASSAY_TESTDATE"]
+                    else:    
+                        outputDict['collectedDate'] = ""
                     
                     outputLs.append(outputDict)
             
@@ -487,8 +500,14 @@ def getSeriesOutput(expSample,keystr,dateStr):
     outputDict['name'] = keystr[0:idx]
     outputDict['outputValue'] = outputDictValue
     outputDict['outputKey'] = db.getKeyFromImpcCode(keystr[0:idx])  # Must exist
-    outputDict['collectedBy'] = "Amelia Willett"  # ["JAX_ASSAY_TESTER"]
-    outputDict['collectedDate'] = dateStr
+    outputDict['collectedBy'] = expSample["JAX_ASSAY_TESTER"]
+    outputDict['collectedDate'] = expSample["JAX_ASSAY_TEST_DATE"]
+    if 'JAX_ASSAY_TEST_DATE' in expSample.keys():
+        outputDict['collectedDate'] =  expSample['JAX_ASSAY_TEST_DATE']
+    elif 'JAX_ASSAY_TESTDATE' in expSample.keys():
+        outputDict['collectedDate'] = expSample['JAX_ASSAY_TESTDATE']
+    else:    
+        outputDict['collectedDate'] = ""
     
     return outputDict 
 

@@ -582,15 +582,19 @@ def post_process_outputs(outputLs):
 
 def prepareSeriesAndSeriesMediaOutputValues(outputLs):
     # Sereies types and seriesMedia types must be in the format of a JSON object dictionay.
+    incrVal = "noLitter"
     for outputObj in outputLs:
         # if the output key in in either of the lists of series parameters, munge it to a dict
         tmp = next((item for item in seriesParameter if item["outputKey"] == int(outputObj["outputKey"])), None)
         if tmp == None:
             tmp = next((item for item in seriesMediaParameter if item["outputKey"] == int(outputObj["outputKey"])), None)
-            
+            if tmp !=None:
+                incrVal = "1" # TODO - Increment if multiple images for one embryo
+        
+        # Increment value should be incrementable except if Viability, then it must be noLitter
         if tmp != None:
            dictVal = {}
-           dictVal["1"] = outputObj["outputValue"]
+           dictVal[incrVal] = outputObj["outputValue"]  # Must be noLitter for VIA. 
            outputObj["outputValue"] = str(dictVal)
     
     return outputLs
