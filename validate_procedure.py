@@ -21,6 +21,7 @@ g_colonyId = ""         # We store the JR number as the colonyID for building th
 # Is the procedure completed or cancelled? i.e. not 'Active'
 def testTaskStatus(proc):
     # Assume it is active
+    # TODO - What about a dash?
     msg = ''
     success = True
     
@@ -71,11 +72,8 @@ def getReviewedDate(proc):
     if proc != None:
         g_ReviewedDate = proc["dateReviewed"]
     return g_ReviewedDate
-"""
-def getReviewedDate():
-    global g_ReviewedDate
-    g_ReviewedDate 
-"""
+
+
 # Have we submitted this successfully before?
 # Look up the test in the database and compare reviewed dates
 def testPreviouslySubmitted(proc):
@@ -122,12 +120,18 @@ def testInputs(proc):
 
     return success, msg
 
+def validateSeriesType(output):
+    # TODO - if it is a series or mediaSeries it must be a dict 
+    return output["outputValue"]
 
 # Are all outputs set? 
 def testOutputs(proc):
     # This function assumes that the validity of individual outputs are already done
     msg = ""
     success = True
+    if "outputs" not in proc.keys():
+        return False, "No outputs!" # TODO - This is a bug in the API
+    
     outputLs = proc["outputs"]
     if outputLs == None or len(outputLs) == 0:
         msg = "No outputs!"
@@ -135,6 +139,17 @@ def testOutputs(proc):
         return success, msg
     
     for output in outputLs:  # TODO - testCollectedXXX returns a tuple, not a boolean. If success setCollectedXXX will be called
+        keystr = ''
+        if "outputName" in output.keys():
+            keystr = "outputName"   # CLIMB
+        elif "name" in output.keys():
+            keystr = "name"   # the others
+            
+        if output['outputValue'] == None or output['outputValue'] == '':
+            if db.isRequired(output[keystr]):
+                success = False
+                msg = "Missing mandatory parameter " + output['name']
+                
         ok, err = testCollectedBy(output) 
         success = (ok and success)
         msg = msg + err
@@ -142,6 +157,8 @@ def testOutputs(proc):
         ok, err = testCollectedDate(output)
         success = (ok and success)
         msg = msg + err
+        
+        output['outputValue'] = validateSeriesType(output)
        
     return success, msg
     
@@ -326,7 +343,7 @@ def validateProcedure(proc):
     if "animal" in proc:
         specimenLs = proc["animal"]
         specimen = specimenLs[0]  # TODO - Handle multiple mice?
-        lineInfo = { "stock" : specimen["stock"] }
+        #lineInfo = { "stock" : specimen["stock"] }  # TODO Specimen has no stock number??
         
     taskLs = proc["taskInstance"] 
     if len(taskLs) == 0:
@@ -337,13 +354,7 @@ def validateProcedure(proc):
     msg = ""
     overallMsg = ""
     overallSuccess = True
-    
-#    We don't need to do validateAnimal(). Each animal is evaluated separately    
-#    success, msg = validateAnimal(specimen)
-#    overallSuccess = overallSuccess and success
-#    if len(msg) > 0:
-#        overallMsg = overallMsg + "; " + msg
-    
+  
     success, msg = testOutputs(task)
     overallSuccess = overallSuccess and success
     if len(msg) > 0:
@@ -367,17 +378,22 @@ def validateProcedure(proc):
     #success, msg = testInputs(task) # Embryo lethal tasks were erronoeusly created with no inputs
     
     # TBD - Need to task key  for line submissions
-    # lastReviewedDate = db.getLastReviewedDate(specimen["animalName"],task["workflowTaskName"])
+    #lastReviewedDate = db.getLastReviewedDate(specimen["animalName"],task["workflowTaskName"])
     lastReviewedDate = db.getLastReviewedDate(task["taskInstanceKey"])
     reviewedDateStr = getReviewedDate(task)
-    currentReviewedDate = datetime.strptime(reviewedDateStr, "%Y-%m-%d")
-    """
-    # I want to resubmit everthing to find out why these ae not at the DCC although the log says we uploaded them
+    if reviewedDateStr != None and len(reviewedDateStr) > 0:
+        currentReviewedDate = datetime.strptime(reviewedDateStr, "%Y-%m-%d")
+    else:
+        overallMsg = overallMsg + " No Reviewed Date task."
+        overallSuccess = False
+        
+    # Exclude those we have already successfully uploaded
     if lastReviewedDate is not None and currentReviewedDate is not None:
         if lastReviewedDate >= currentReviewedDate:  # Is the SME resubmitting this procedure?
-            task["taskStatus"]  = 'Already submitted'  # else remove the Complete or Cancelled status to avoid unnecessary resubmission
-            createLogEntry(specimen, task, lineInfo, None, overallMsg + ' *Already submitted')
-    """  
+            print("Already submitted but submitting anyway.")
+            #task["taskStatus"]  = 'Already submitted'  # else remove the Complete or Cancelled status to avoid unnecessary resubmission
+            #createLogEntry(specimen, task, lineInfo, None, overallMsg + ' *Already submitted')
+      
     if overallSuccess == False:
         createLogEntry(specimen, task, lineInfo, None, overallMsg)
         task["taskStatus"]  = 'Failed QC'  # Local to this app

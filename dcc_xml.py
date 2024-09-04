@@ -514,10 +514,18 @@ def generateExperimentXML(taskInfoLs, centerNode):
     # It looks like "taskInfo" [ { "animal" [] , "taskInstance" : [] }, { "animal" [] , "taskInstance" : [] }, ...]
     # If an animal has multiple procedures the animal will only appear once.
     # Get the list of mouse info. For KOMP it should always be 1 element
-    if taskInfoLs == None:
+    if taskInfoLs == None or len(taskInfoLs) == 0:
           return 0
     
     # otherwise, we have some data
+    # Go to database once for needed DCC data
+    # e.g. BWT
+    threeLetterImpcCode = extractThreeLetterCode(db.databaseSelectProcedureCode(taskInfoLs[0]["taskInstance"][0]['workflowTaskName']))
+    # Returns a list of tuples (impccode, climb_key, dccType_key) from komp.cv_dcctypes
+    parameterDefLs = db.databaseSelectImpcData(threeLetterImpcCode,False, False)
+    # Now get the full code e.g. IMPC_BWT_001
+    procedureImpcCode = db.databaseSelectProcedureCode(taskInfoLs[0]["taskInstance"][0]['workflowTaskName'])
+
     numberOfProcs = 0
     for exps in taskInfoLs:
         # For each animal thee are one or more tasks 
@@ -535,10 +543,10 @@ def generateExperimentXML(taskInfoLs, centerNode):
             numberOfProcs += 1
             experimentNode = createExperiment(centerNode,(proc['workflowTaskName'] + ' - ' +  mouseInfo['animalName'] + ' - ' + str(proc["taskInstanceKey"])), proc['dateComplete'],proc["taskInstanceKey"])
             experimentNode = createSpecimen(experimentNode,mouseInfo['animalName'])
-            procedureNode = createProcedure(experimentNode,db.databaseSelectProcedureCode(proc['workflowTaskName']))
+            procedureNode = createProcedure(experimentNode,procedureImpcCode)
             
             # Now create the metadata from the inputs and outputs
-            procedureNode = buildParameters(procedureNode,proc)
+            procedureNode = buildParameters(procedureNode,proc,parameterDefLs,procedureImpcCode)
             procedureNode = buildMetadata(procedureNode,proc)
             
             experimentNode = buildExperimentStatusCode(experimentNode,getProcedureStatusCode(proc))
@@ -553,6 +561,13 @@ def generateLineCallExperimentXML(taskInfoLs, centerNode):
     # Get the list of mouse info. For KOMP it should always be 1 element
     if taskInfoLs == None:
           return 0
+    
+    # e.g. BWT
+    threeLetterImpcCode = extractThreeLetterCode(db.databaseSelectProcedureCode(taskInfoLs[0]["taskInstance"][0]['workflowTaskName']))
+    # Returns a list of tuples (impccode, climb_key, dccType_key) from komp.cv_dcctypes
+    parameterDefLs = db.databaseSelectImpcData(threeLetterImpcCode,False, False)
+    # Now get the full code e.g. IMPC_BWT_001
+    procedureImpcCode = db.databaseSelectProcedureCode(taskInfoLs[0]["taskInstance"][0]['workflowTaskName'])
     
     # Else we have some data
     numberOfProcs = 0
@@ -571,7 +586,7 @@ def generateLineCallExperimentXML(taskInfoLs, centerNode):
           procedureNode = createProcedure(lineNode,db.databaseSelectProcedureCode(proc['workflowTaskName']))  # TODO Add status code is present
           
           # Now create the metadata from the inputs and outputs
-          procedureNode = buildParameters(procedureNode,proc)
+          procedureNode = buildParameters(procedureNode,proc,parameterDefLs,procedureImpcCode)
           
           procedureNode = buildMetadata(procedureNode,proc)
           
@@ -678,18 +693,8 @@ def getOutputStatusCode(output:dict):
       
   return impc_status_code
 
-def buildParameters(procedureNode,proc):
+def buildParameters(procedureNode,proc,parameterDefLs,procedureImpcCode):
       # Get the data from the Outputs
-      
-      # Get short version of code e.g. BWT
-      procedureImpcCode = extractThreeLetterCode(
-                                                db.databaseSelectProcedureCode(proc['workflowTaskName']))
-      
-      # Returns a list of tuples (impccode, climb_key, dccType_key) from komp.cv_dcctypes
-      parameterDefLs = db.databaseSelectImpcData(procedureImpcCode,False, False)
-      
-      # Now get the full code e.g. IMPC_BWT_001
-      procedureImpcCode = db.databaseSelectProcedureCode(proc['workflowTaskName'])
       
       output_status_code = ''
       # Go through the outputs and if there is a climb_key match add the value
@@ -699,7 +704,6 @@ def buildParameters(procedureNode,proc):
         impcCode = None
         dccType = None
         for output in outputLs:
-          
           outputKey = output['outputKey']
           if v[1] == outputKey:
                   impcCode = v[0]
@@ -793,8 +797,13 @@ def generateSpecimenXML(animalInfoLs, centerNode):  # List of dictionaries
         specimenRecord["colonyId"]  = ""
       #specimenRecord["strainID"] = line["references"]
       specimenRecord["zygosity"] = extractGenotype(genotypes)   # must be present
-      specimenRecord["litterId"] = litter['birthID']
       specimenRecord["generation"] = animal['generation']
+      
+      if litter != None: # Not required
+        specimenRecord["litterId"] = litter['birthID']
+      else:
+        specimenRecord["litterId"] = ''
+    
       
       createSpecimenRecord(specimenRecord,centerNode,"")
 
@@ -923,35 +932,34 @@ def handleClimbData():
       
     c.setWorkgroup()  # Inits CLIMB
     
+    animalLs = []
+    taskLs = []
+    
     # Each line in the input file can be a filter and 
     #   can generate a specimen and experiment XML
     for climbFilter in filterLines:
+      animalLs, taskLs = c.getMiceAndProcedures(json.loads(climbFilter))
+      
       # Get the animals and validate
-      results = c.getAnimalInfoFromFilter(json.loads(climbFilter))
-      animalLs = results["animalInfo"]
-      
-      for animal in reversed(animalLs):  # Remove those animals that failed
-        my_logger.info("CLIMB Validate specimen:" + repr(animal))
-        isValid = v.validateAnimal(animal)
-        if isValid == False:
-              my_logger.info("Failed specimen:"+animal["animal"])
-              animalLs.remove(animal)
-      
-      createSpecimenXML(animalLs) # With the remaining embryos that have passed
+      if len(animalLs) > 0:  
+        for animal in reversed(animalLs):  # Remove those animals that failed
+          my_logger.info("CLIMB Validate specimen:" + repr(animal))
+          isValid = v.validateAnimal(animal)
+          if isValid == False:
+                my_logger.info("Failed specimen:"+animal["animal"])
+                animalLs.remove(animal)
+        
+        createSpecimenXML(animalLs) # With the remaining embryos that have passed
           
-      # Using the same filter get the task data
-      if procedureHasAnimals(json.loads(climbFilter)):  # i.e. not a line call like fertility
-        results = c.getTaskInfoFromFilter(json.loads(climbFilter))    # For procs with animals
-      else:
-        results = c.getProceduresGivenFilter(json.loads(climbFilter))  # For line calls
-      
-      taskLs = results["taskInfo"]  # A list of dictionaries
       for task in reversed(taskLs):  # task should be a dictionary { "animal" : [], "taskInstance": []}
-        success, message = v.validateProcedure(task)  # Sets the task status to 'Failed QC' if it fails.
+        #FIX
+        success, message = v.validateProcedure(task)  # Sets the task status to 'Failed QC' if it fails.  TODO - Fix this 
         if success == False:
           taskLs.remove(task)  # Do not record it 
+          
         elif success == True and task["taskInstance"][0]['taskStatus'] == 'Already submitted':
           taskLs.remove(task)  # Do not record it 
+          
         else: # Record it as submitted
           animalName = getAnimalNameFromTaskInfo(task)
           if len(animalName) > 0: # Need a JR or animal name. 
@@ -982,13 +990,10 @@ def handlePfsData():
       taskLs = results["taskInfo"]  # A list of dictionaries
       for task in reversed(taskLs):  # task should be a dictionary { "animal" : [], "taskInstance": []}
         success, message = v.validateProcedure(task)  # Sets the task status to 'Failed QC' if it fails.
+        date_complete = 'None' if task["taskInstance"][0]["dateComplete"] == None else task["taskInstance"][0]["dateComplete"]
         if success == False:
-            date_complete = 'None'
-            if task["taskInstance"][0]["dateComplete"] != None:
-              date_complete = task["taskInstance"][0]["dateComplete"]
             my_logger.info("Rejected " + task["taskInstance"][0]["workflowTaskName"] + ": " + message +  " Name " +  task["animal"][0]["animalName"] + " Complete date: " + date_complete )
             taskLs.remove(task)  # Do not record it 
-            continue
         else: # Record the mouse name for later filtering
           animalsInprocedures.add(task["animal"][0]["animalName"])
       
@@ -1093,8 +1098,8 @@ if __name__ == '__main__':
     args = argparse.ArgumentParser()
     #add_arguments(args)
     # Otherwise, hard coded
-    setDataSrc('PFS')
-    setClimbFilterFile('via-filters.json')  # CLIMB Only
+    setDataSrc('CLIMB')
+    setClimbFilterFile('test.json')  # CLIMB Only
     g_DryRun = True
     
     my_logger.info('Logger has been created')

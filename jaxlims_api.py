@@ -419,7 +419,7 @@ def getMice(procedure_instance_key_ls:list):
             animalDictLs.append(animalInfoDict)
     except Exception as e:
         print('SELECT FAILED FOR: ' + query_stmt) 
-        
+ 
     return animalDictLs
 
 
@@ -724,7 +724,7 @@ def close():
 
 if __name__ == '__main__':
     init()
-    
+   
     taskInfoDictLs = [] # List taskInfo dicts
     taskInfoDict = {}   # Dict where each dict has 'animal' list and a 'taskInstance'list.
     

@@ -5,8 +5,9 @@ import requests
 import json
 from datetime import datetime
 import csv
-
+import pandas as pd
 import my_logger
+
 
 seriesParameter = [
 { "outputKey" :673, "impcCode" : "IMPC_VIA_037_001" } ,
@@ -56,6 +57,63 @@ def username():
 
 def password():
     return '1banana1'
+
+
+#### CSV funcs #########################################
+def createInputCsvFileHeader():
+    header = ['TaskName', 'InputName', 'InputKey' ]
+    f = open('inputs.csv', 'w', newline='')
+    writer = csv.writer(f)
+    writer.writerow(header)
+    return
+
+def createInputCsv(taskName, inputDictLs):
+    with open('inputs.csv', 'a', newline='') as f:
+        # create the csv writer
+        writer = csv.writer(f)
+        for x in inputDictLs:
+            row = []
+            row.append(taskName)
+            row.append(x.get("name"))
+            row.append(x.get("input_key"))
+            #row.append(x.get("inputKey"))  Native version
+            # write a row to the csv file
+            writer.writerow(row)
+    return
+
+def createOutputCsvFileHeader():
+    header = ['TaskName', 'OutputName', 'OutputKey' ]
+    f = open('outputs.csv', 'w', newline='')
+    writer = csv.writer(f)
+    writer.writerow(header)
+    return
+    
+def createOutputCsv(taskName, inputDictLs):
+    with open('outputs.csv', 'a', newline='') as f:
+        # create the csv writer
+        writer = csv.writer(f)
+        for x in inputDictLs:
+            row = []
+            row.append(taskName)
+            row.append(x.get("name"))
+            row.append(x.get("output_key"))
+            # row.append(x.get("outputKey"))  Native version
+            # write a row to the csv file
+            writer.writerow(row)
+    return
+
+def createUserCsv(userDictLs):
+    with open("C:\\TEMP\\users.csv", 'a', newline='') as f:
+        # create the csv writer
+        writer = csv.writer(f)
+        for x in userDictLs:
+            row = []
+            row.append(userDictLs)
+            row.append(x.get("userFirstName"))
+            row.append(x.get("userLastName"))
+            writer.writerow(row)
+    return
+###############  END OF CSV funcs ########################################
 
 # TOKEN TOKEN TOKEN 
 def getToken(username, password):
@@ -305,20 +363,22 @@ def getTaskInfoFromFilter(taskInfoFiler):
         
     return taskInfoLs
 
-def getAnimalInfoFromFilter(animalInfoFilter):
+
+def getAnimalInfoFromFilter(whereClause):
     # A main entry point to get animal data from CLIMB
-    my_logger.info("Animal info: " + json.dumps(animalInfoFilter))
+    my_logger.info("Animal info: " + whereClause)
     animalInfoLs = []
     call_header = {'Authorization' : 'Bearer ' + token()}
     try:
-        wgResponse = requests.post(endpoint()+'/animalInfo', data=json.dumps(animalInfoFilter), headers=call_header, timeout=300)
+        wgResponse = requests.get(endpoint()+'/animals' + whereClause + '&PageNumber=0&PageSize=2000', headers=call_header, timeout=300)
         
         if wgResponse.status_code == 500: # Server error
             print(wgResponse.content)
         elif wgResponse.status_code == 422:
             print(wgResponse.content)
         elif wgResponse.status_code == 200:
-            animalInfoLs = wgResponse.json()
+            response = wgResponse.json()
+            animalInfoLs = response["data"]["items"]
     except requests.exceptions.Timeout as e: 
         my_logger.info(e.message())
         raise 
@@ -334,11 +394,188 @@ def getAnimalInfoFromFilter(animalInfoFilter):
        
     return animalInfoLs
 
+
+def getAnimalInfoFromFilterEx(whereClause):
+    # A main entry point to get animal data from CLIMB
+    my_logger.info("Animal info: " + whereClause)
+    animalInfoLs = []
+    call_header = {'Authorization' : 'Bearer ' + token()}
+    try:
+        wgResponse = requests.get(endpoint()+'/animals' + whereClause + '&PageNumber=0&PageSize=2000', headers=call_header, timeout=300)
+        
+        if wgResponse.status_code == 500: # Server error
+            print(wgResponse.content)
+        elif wgResponse.status_code == 422:
+            print(wgResponse.content)
+        elif wgResponse.status_code == 200:
+            response = wgResponse.json()
+            animalInfoLs = response["data"]["items"]
+    except requests.exceptions.Timeout as e: 
+        my_logger.info(e.message())
+        raise 
+    except requests.exceptions.InvalidHeader as e:  
+        my_logger.info(e.message())
+        raise 
+    except requests.exceptions.InvalidURL as e:  
+        my_logger.info(e.message())
+        raise 
+    except requests.exceptions.RequestException as e:  # All others
+        my_logger.info(e.message())
+        raise  
+       
+    return animalInfoLs
+
+
+def getGenotypesGivenLineKey(lineKey):
+    line_ls = []
+    call_header = {'Authorization' : 'Bearer ' + token()}
+    try:
+        wgResponse = requests.get(endpoint()+'/genotypes?LineKey=' + str(lineKey) , headers=call_header, timeout=300)
+        
+        if wgResponse.status_code == 500: # Server error
+            print(wgResponse.content)
+        elif wgResponse.status_code == 422:
+            print(wgResponse.content)
+        elif wgResponse.status_code == 200:
+            response = wgResponse.json()
+            line_ls = response["data"]["items"]
+    except requests.exceptions.Timeout as e: 
+        my_logger.info(e.message())
+        raise 
+    except requests.exceptions.InvalidHeader as e:  
+        my_logger.info(e.message())
+        raise 
+    except requests.exceptions.InvalidURL as e:  
+        my_logger.info(e.message())
+        raise 
+    except requests.exceptions.RequestException as e:  # All others
+        my_logger.info(e.message())
+        raise  
+       
+    return line_ls
+
+def getLineGivenLineName(lineName):
+    line_ls = []
+    call_header = {'Authorization' : 'Bearer ' + token()}
+    try:
+        wgResponse = requests.get(endpoint()+'/lines?Name=' + lineName , headers=call_header, timeout=300)
+        
+        if wgResponse.status_code == 500: # Server error
+            print(wgResponse.content)
+        elif wgResponse.status_code == 422:
+            print(wgResponse.content)
+        elif wgResponse.status_code == 200:
+            response = wgResponse.json()
+            line_ls = response["data"]["items"]
+    except requests.exceptions.Timeout as e: 
+        my_logger.info(e.message())
+        raise 
+    except requests.exceptions.InvalidHeader as e:  
+        my_logger.info(e.message())
+        raise 
+    except requests.exceptions.InvalidURL as e:  
+        my_logger.info(e.message())
+        raise 
+    except requests.exceptions.RequestException as e:  # All others
+        my_logger.info(e.message())
+        raise  
+       
+    return line_ls
+
+def getLineGivenLineKey(lineKey):
+    line_ls = []
+    call_header = {'Authorization' : 'Bearer ' + token()}
+    try:
+        wgResponse = requests.get(endpoint()+'/lines?LineKey=' + str(lineKey) , headers=call_header, timeout=300)
+        
+        if wgResponse.status_code == 500: # Server error
+            print(wgResponse.content)
+        elif wgResponse.status_code == 422:
+            print(wgResponse.content)
+        elif wgResponse.status_code == 200:
+            response = wgResponse.json()
+            line_ls = response["data"]["items"]
+    except requests.exceptions.Timeout as e: 
+        my_logger.info(e.message())
+        raise 
+    except requests.exceptions.InvalidHeader as e:  
+        my_logger.info(e.message())
+        raise 
+    except requests.exceptions.InvalidURL as e:  
+        my_logger.info(e.message())
+        raise 
+    except requests.exceptions.RequestException as e:  # All others
+        my_logger.info(e.message())
+        raise  
+       
+    return line_ls
+
+def getBirthGivenBirthId(birthId):
+    litter_ls = []
+    call_header = {'Authorization' : 'Bearer ' + token()}
+    try:
+        wgResponse = requests.get(endpoint()+'/birth?BirthID=' + str(birthId) , headers=call_header, timeout=300)
+        
+        if wgResponse.status_code == 500: # Server error
+            print(wgResponse.content)
+        elif wgResponse.status_code == 422:
+            print(wgResponse.content)
+        elif wgResponse.status_code == 200:
+            response = wgResponse.json()
+            litter_ls = response["data"]["items"]
+    except requests.exceptions.Timeout as e: 
+        my_logger.info(e.message())
+        raise 
+    except requests.exceptions.InvalidHeader as e:  
+        my_logger.info(e.message())
+        raise 
+    except requests.exceptions.InvalidURL as e:  
+        my_logger.info(e.message())
+        raise 
+    except requests.exceptions.RequestException as e:  # All others
+        my_logger.info(e.message())
+        raise  
+       
+    return litter_ls
+
+
+def getGenotypesGivenMaterialKey(materialKey):
+    # A main entry point to get genotype. Zero will return all genotypes!
+    gt_ls = []
+    call_header = {'Authorization' : 'Bearer ' + token()}
+    try:
+        wgResponse = requests.get(endpoint()+'/genotypes?MaterialKey=' + str(materialKey) , headers=call_header, timeout=300)
+        
+        if wgResponse.status_code == 500: # Server error
+            print(wgResponse.content)
+        elif wgResponse.status_code == 422:
+            print(wgResponse.content)
+        elif wgResponse.status_code == 200:
+            response = wgResponse.json()
+            gt_ls = response["data"]["items"]
+    except requests.exceptions.Timeout as e: 
+        my_logger.info(e.message())
+        raise 
+    except requests.exceptions.InvalidHeader as e:  
+        my_logger.info(e.message())
+        raise 
+    except requests.exceptions.InvalidURL as e:  
+        my_logger.info(e.message())
+        raise 
+    except requests.exceptions.RequestException as e:  # All others
+        my_logger.info(e.message())
+        raise  
+       
+    return gt_ls
+
 def getMinMaxFromOutput(key):  # TBD if needed
     min = None
     max = None
-    
     return min, max
+
+def intersection(lst1, lst2):
+    lst3 = [set(lst1)+set(lst2)]
+    return lst3
 
 ######## SOME USEFUL, SPECIAL CLIMB METHODS
 
@@ -406,8 +643,11 @@ def getMinMaxFromOutput(key):  # TBD if needed
 	]
 }
 
+Filter at server:
+http://bhlit01wp.jax.org:8000/api/taskinstances?WorkflowTaskName=E18.5%20MicroCT&CompletedStartDate=2024-05-01&CompletedEndDate=2024-08-01&PageNumber=1&PageSize=50
 """
-def getProceduresGivenFilter(taskNameFilter):
+def getProceduresGivenFilter(taskNameFilter,page=1,pageSize=500):
+    
     # Return a list of dictionaries where each dictionary is a procedure
     # This will also work when there are no animals associated with the task.
     if taskNameFilter is None or taskNameFilter["taskInstance"] is None:
@@ -417,14 +657,14 @@ def getProceduresGivenFilter(taskNameFilter):
     if workFlowTaskName is None:
         return []
     
+    whereClause = workFlowTaskName
+    
     # OK. Let's extract the filters
-    startDateFilter = None;
     if 'completedStartDate' in  taskNameFilter["taskInstance"].keys():
-        startDateFilter =  taskNameFilter["taskInstance"]["completedStartDate"]
+        whereClause = whereClause + '&CompletedStartDate=' +  taskNameFilter["taskInstance"]["completedStartDate"]
         
-    endDateFilter = None;
-    if 'completedStartDate' in  taskNameFilter["taskInstance"].keys():
-        endDateFilter = taskNameFilter["taskInstance"]["completedEndDate"]
+    if 'completedEndDate' in  taskNameFilter["taskInstance"].keys():
+        whereClause = whereClause + '&CompletedEndDate=' +  taskNameFilter["taskInstance"]["completedEndDate"]
     
     workFlowTaskStatusFilter = ""
     if 'workflowTaskStatus' in  taskNameFilter["taskInstance"].keys():
@@ -435,15 +675,25 @@ def getProceduresGivenFilter(taskNameFilter):
     # end of filters (we can expand as needed)
     
     taskInfoLs = [] # Response from CLIMB
-    taskInfoReturnDictLs = { "taskInfo":[] } # What we return - a list of dictionaries
+    taskInfoDictLs = { "taskInfo":[] } # What we return - a list of dictionaries
     
     call_header = {'Authorization' : 'Bearer ' + token()}
     try:
         # Start calls to CLIMB -- first are tasks
-        endpointUrl = endpoint() +'/taskinstances?WorkflowTaskName=' + escapeHtmlCharacter(workFlowTaskName) + '&PageNumber=0&PageSize=2000'
+        endpointUrl = endpoint() +'/taskinstances?WorkflowTaskName=' + escapeHtmlCharacter(whereClause) + f'&PageNumber={page}&PageSize={pageSize}'
         wgResponse = requests.get(endpointUrl, headers=call_header, timeout=60)
         taskInfoLs = wgResponse.json()
         taskInfoLs = taskInfoLs["data"]["items"]
+        
+        totalItemCount = wgResponse.json()["data"]["totalItemCount"]
+        pageNumber = wgResponse.json()["data"]["pageNumber"]
+        pageCount = wgResponse.json()["data"]["pageCount"]   # Total pages
+        pageSize = wgResponse.json()["data"]["pageSize"]   
+        if totalItemCount - (pageSize * pageNumber) > 0:
+            page = pageNumber + 1
+        else:
+            page = 0  # We're done
+        
         
         # Big loop: Remove tasks that fail the filter
         for taskinstance in reversed(taskInfoLs):
@@ -452,28 +702,99 @@ def getProceduresGivenFilter(taskNameFilter):
                 taskInfoLs.remove(taskinstance)
                 continue
             
-            # Are we filtering by date complete?
-            if startDateFilter != None:
-                if taskinstance["dateComplete"] == '':
+            # Are we filtering by reviewed only?
+            isReviewed = (taskinstance["reviewedBy"] != None) and (taskinstance["reviewedBy"] != '') # some value for reviewedBy
+            if isReviewed == False and reviewedOnlyFilter == True:
                     taskInfoLs.remove(taskinstance)
                     continue
-                elif startDateFilter > taskinstance["dateComplete"]:
-                    taskInfoLs.remove(taskinstance)
-                    continue
-                    
-            if endDateFilter != None:
-                if taskinstance["dateComplete"] == '':
-                    taskInfoLs.remove(taskinstance)
-                    continue
-                elif endDateFilter < taskinstance["dateComplete"]:
-                    taskInfoLs.remove(taskinstance)
-                    continue
+            else:   
+                taskInfoDictLs["taskInfo"].append(taskinstance) 
+        
+    except requests.exceptions.Timeout as e: 
+        my_logger.info(e.message())
+        raise 
+    except requests.exceptions.InvalidHeader as e:  
+        my_logger.info(e.message())
+        raise 
+    except requests.exceptions.InvalidURL as e:  
+        my_logger.info(e.message())
+        raise 
+    except requests.exceptions.RequestException as e:  # All others
+        my_logger.info(e.message())
+        raise  
+    
+    if page > 0:
+        d = getProceduresGivenFilter(taskNameFilter,page,pageSize)  
+        if d != None and "taskInfo" in d.keys():
+            taskInfoDictLs["taskInfo"] = taskInfoDictLs["taskInfo"] + d["taskInfo"]
+            
+    return taskInfoDictLs
+
+
+
+def getProceduresGivenFilterWithIO(taskNameFilter,page=1,pageSize=500):
+    
+    # Return a list of dictionaries where each dictionary is a procedure
+    # This will also work when there are no animals associated with the task.
+    if taskNameFilter is None or taskNameFilter["taskInstance"] is None:
+        return []
+    
+    workFlowTaskName =  taskNameFilter["taskInstance"]["workflowTaskName"]
+    if workFlowTaskName is None:
+        return []
+    
+    whereClause = workFlowTaskName
+    
+    # OK. Let's extract the filters
+    if 'completedStartDate' in  taskNameFilter["taskInstance"].keys():
+        whereClause = whereClause + '&CompletedStartDate=' +  taskNameFilter["taskInstance"]["completedStartDate"]
+        
+    if 'completedEndDate' in  taskNameFilter["taskInstance"].keys():
+        whereClause = whereClause + '&CompletedEndDate=' +  taskNameFilter["taskInstance"]["completedEndDate"]
+    
+    workFlowTaskStatusFilter = ""
+    if 'workflowTaskStatus' in  taskNameFilter["taskInstance"].keys():
+        workFlowTaskStatusFilter = taskNameFilter["taskInstance"]["workflowTaskStatus"]
+    
+    reviewedOnlyFilter = taskNameFilter["taskInstance"]["isReviewed"] == True
+    
+    # end of filters (we can expand as needed)
+    
+    taskInfoLs = [] # Response from CLIMB
+    taskInfoDictLs = { "taskInfo":[] }  # A list of one
+    taskInfoReturnDictLs =  [] # What we return - a list of dictionaries - taskInfoDict
+    
+    call_header = {'Authorization' : 'Bearer ' + token()}
+    try:
+        # Start calls to CLIMB -- first are tasks
+        endpointUrl = endpoint() +'/taskinstances?WorkflowTaskName=' + escapeHtmlCharacter(whereClause) + f'&PageNumber={page}&PageSize={pageSize}'
+        wgResponse = requests.get(endpointUrl, headers=call_header, timeout=60)
+        taskInfoLs = wgResponse.json()
+        taskInfoLs = taskInfoLs["data"]["items"]
+        
+        totalItemCount = wgResponse.json()["data"]["totalItemCount"]
+        pageNumber = wgResponse.json()["data"]["pageNumber"]
+        pageCount = wgResponse.json()["data"]["pageCount"]   # Total pages
+        pageSize = wgResponse.json()["data"]["pageSize"]   
+        if totalItemCount - (pageSize * pageNumber) > 0:
+            page = pageNumber + 1
+        else:
+            page = 0  # We're done
+        
+        
+        # Big loop: Remove tasks that fail the filter
+        for taskinstance in reversed(taskInfoLs):
+            # Are we filtering by status?
+            if len(workFlowTaskStatusFilter) > 0 and taskinstance["taskStatus"] != workFlowTaskStatusFilter:
+                taskInfoLs.remove(taskinstance)
+                continue
             
             # Are we filtering by reviewed only?
             isReviewed = (taskinstance["reviewedBy"] != None) and (taskinstance["reviewedBy"] != '') # some value for reviewedBy
             if isReviewed == False and reviewedOnlyFilter == True:
                     taskInfoLs.remove(taskinstance)
                     continue
+            
         # End of loop
         
         for taskinstance in taskInfoLs:
@@ -497,8 +818,8 @@ def getProceduresGivenFilter(taskNameFilter):
             taskinstance["outputs"] = outputsOnly
             
             # List inside a dict inside a list
-            taskInfoReturnDictLs["taskInfo"].append({'taskInstance' : [taskinstance]}) 
-        # A list containing one element that is a dict that is a llst of taskInstances
+            taskInfoDictLs["taskInfo"].append(taskinstance)
+            
  
     except requests.exceptions.Timeout as e: 
         my_logger.info(e.message())
@@ -513,10 +834,67 @@ def getProceduresGivenFilter(taskNameFilter):
         my_logger.info(e.message())
         raise  
     
-    return taskInfoReturnDictLs
+    if page > 0:
+        d = getProceduresGivenFilterWithIO(taskNameFilter,page,pageSize)  
+        if d != None and "taskInfo" in d.keys():
+            taskInfoDictLs["taskInfo"] = taskInfoDictLs["taskInfo"] + d["taskInfo"]
+                     
+    
+    print(taskInfoDictLs) 
+    return taskInfoDictLs
 
+
+def getInputs(taskInstanceKey):
+    # Get the inputs
+    call_header = {'Authorization' : 'Bearer ' + token()}
+    try:
+        endpointUrl = endpoint() +'/taskinstances/taskInputs?TaskInstanceKey=' + str(taskInstanceKey) + '&PageNumber=0&PageSize=200'
+        wgResponse = requests.get(endpointUrl, headers=call_header, timeout=60)
+        inputLs = wgResponse.json()
+        inputsOnly = inputLs["data"]["items"]
+        # clean up unwanted input objects
+        inputsOnly = cleanupInputs(inputsOnly) # Remove unwanted key+value pairs
+        return inputsOnly
+    except requests.exceptions.Timeout as e: 
+        my_logger.info(e.message())
+        raise 
+    except requests.exceptions.InvalidHeader as e:  
+        my_logger.info(e.message())
+        raise 
+    except requests.exceptions.InvalidURL as e:  
+        my_logger.info(e.message())
+        raise 
+    except requests.exceptions.RequestException as e:  # All others
+        my_logger.info(e.message())
+        raise  
+                
+def getOutputs(taskInstanceKey):
+            
+    # Get the outputs
+    call_header = {'Authorization' : 'Bearer ' + token()}
+    try:
+        endpointUrl = endpoint() +'/taskinstances/taskOutputs?TaskInstanceKey=' + str(taskInstanceKey) + '&PageNumber=0&PageSize=200'
+        wgResponse = requests.get(endpointUrl, headers=call_header, timeout=60)
+        outputLs = wgResponse.json()
+        outputsOnly = outputLs["data"]["items"]
+        # clean up unwanted output objects
+        outputsOnly = cleanupOutputs(outputsOnly) # Remove unwanted key+value pairs
+        outputsOnly = prepareSeriesAndSeriesMediaOutputValues(outputsOnly)
+        return outputsOnly
+    except requests.exceptions.Timeout as e: 
+        my_logger.info(e.message())
+        raise 
+    except requests.exceptions.InvalidHeader as e:  
+        my_logger.info(e.message())
+        raise 
+    except requests.exceptions.InvalidURL as e:  
+        my_logger.info(e.message())
+        raise 
+    except requests.exceptions.RequestException as e:  # All others
+        my_logger.info(e.message())
+        raise  
+        
 """
-
 {
         "taskInputKey": 3497,
         "inputKey": 326,
@@ -542,7 +920,8 @@ def cleanupInputs(inputsLs):
         #del inputObj["validatedInputValue"]
     return inputsLs
 
-    """_
+
+"""
      {
         "taskOutputKey": 9358,
         "taskOutputSetKey": 425,
@@ -563,7 +942,7 @@ def cleanupInputs(inputsLs):
         "modifiedBy": "system",
         "dateModified": "2023-06-16T00:17:02.89"
       }
-    """
+"""
 def cleanupOutputs(outputLs):
     for outputObj in outputLs:
         del outputObj["taskOutputSetKey"]
@@ -600,75 +979,261 @@ def prepareSeriesAndSeriesMediaOutputValues(outputLs):
     return outputLs
 
 
-def getProceduresAndDataGivenName(procName):
-    # Return a list of dictionaries where dictionary is a procedure with inputs and putputs
-    return []
+"""
+Construct a list of these. The list is in a dict and its key is "animalInfo"
+The larger structure is used for speciemns. The "animal" dict is used for tasks
+animalInfo": [
+    {
+      "animal": {
+        "animalId": 32759,
+        "materialKey": 33464,
+        "animalName": "A-1030",
+        "exitReason": null,
+        "physicalMarker": null,
+        "dateBorn": "2022-04-18T04:00:00",
+        "dateExit": null,
+        "externalIdentifier": null,
+        "comments": null,
+        "species": "Mouse",
+        "sex": "Male",
+        "generation": "E18.5",
+        "markerType": "Ear Notch",
+        "arrivalDate": "2022-04-18T04:00:00",
+        "clinicalObservationsCount": 0,
+        "status": "Alive",
+        "taskInstanceCount": 3,
+        "modifiedBy": "kjp",
+        "dateModified": "2022-05-26T17:48:39.92"
+        "stock": "036867",  <<--
+        "line": "C57BL/6NJ-Fbrs<em1(IMPC)J>/Mmjax" << --
+      },
+      "line": {
+        "lineKey": 148,
+        "active": true,
+        "name": "C57BL/6NJ-Bicra<em1(IMPC)J>/Mmjax",
+        "shortName": "Bicra",
+        "stock": "035759",
+        "lineType": "Endonuclease mediated mutation (em)",
+        "lineStatus": "Embryo Lethal Complete",
+        "species": "Mouse",
+        "construct": null,
+        "genotypeAssaysCount": 2,
+        "technician": "ccm",
+        "parentLine": null,
+        "backgroundLine": "C57BL6/NJ",
+        "breedingStrategy": "Het X WT",
+        "development": null,
+        "externalLink": null,
+        "references": "MGI:2154263",
+        "comment": null,
+        "defaultLocation": "All GRS Locations",
+        "createdBy": "ccm",
+        "dateCreated": "2021-09-24T16:27:53.767",
+        "modifiedBy": "mike",
+        "dateModified": "2022-10-26T15:59:06.517"
+      },
+      "litter": {
+        "birthID": null,
+        "matingID": null,
+        "housingID": null,
+        "weanDate": null
+      },
+      "genotypes": [
+        {
+          "genotypeKey": 102109,
+          "date": "Feb 24 2023  5:00AM",
+          "assay": "Bicra<em1(IMPC)J>",
+          "genotype": "-/-",
+          "modifiedBy": "kjp",
+          "dateModified": "2023-02-24T15:29:08.903"
+        }
+      ]
+    }
+"""
 
-def getAnimalsGivenProcedureName(proName):
-    # Return a list of dictionaries where each element is an animals with strain and genotype info
-    return []
- 
+# Given a material key return an animalInfo list
+# We want to return a dict that has four elements.
+# The keys are "animal", "line", "litter", and genotypes.
+# See comment around line 684 for an example.
+def getAnimalGivenMaterialKey(materialKey,animaFilter):
+    mouseDict = { "animal": None, "line": None, "litter": None, "genotypes": None }
+    # Filters?
+    dictLs = getAnimalInfoFromFilter(f'?MaterialKey={materialKey}') # Zero or one
+    if len(dictLs) > 0:
+        mouseDict = dictLs[0]
+        if "generation" in animaFilter.keys():
+            if mouseDict["generation"] != animaFilter["generation"]:
+                return None # No match
+            
+        if "animalName" in animaFilter.keys(): # If there is an animal name filter check it
+            if not animaFilter["animalName"] in  mouseDict["generation"]:
+                return None  # Not there
+            
+        # TODO likeKeys = getLineKeys(animaFilter)
+        # Get the genotype
+        if mouseDict["genotypesCount"] > 0:
+            # Get genotypes
+            gt_ls = getGenotypesGivenMaterialKey(materialKey)
+        # OK. We have a mouse
     
+    return mouseDict
+
+
 ######## END OF USEFUL, SPECIAL CLIMB METHODS
 
-#### CSV funcs #########################################
-def createInputCsvFileHeader():
-    header = ['TaskName', 'InputName', 'InputKey' ]
-    f = open('inputs.csv', 'w', newline='')
-    writer = csv.writer(f)
-    writer.writerow(header)
-    return
-
-def createInputCsv(taskName, inputDictLs):
-    with open('inputs.csv', 'a', newline='') as f:
-        # create the csv writer
-        writer = csv.writer(f)
-        for x in inputDictLs:
-            row = []
-            row.append(taskName)
-            row.append(x.get("name"))
-            row.append(x.get("input_key"))
-            #row.append(x.get("inputKey"))  Native version
-            # write a row to the csv file
-            writer.writerow(row)
-    return
-
-def createOutputCsvFileHeader():
-    header = ['TaskName', 'OutputName', 'OutputKey' ]
-    f = open('outputs.csv', 'w', newline='')
-    writer = csv.writer(f)
-    writer.writerow(header)
-    return
+def getMiceAndProcedures(filterDict:dict) -> tuple[list, list]:
     
-def createOutputCsv(taskName, inputDictLs):
-    with open('outputs.csv', 'a', newline='') as f:
-        # create the csv writer
-        writer = csv.writer(f)
-        for x in inputDictLs:
-            row = []
-            row.append(taskName)
-            row.append(x.get("name"))
-            row.append(x.get("output_key"))
-            # row.append(x.get("outputKey"))  Native version
-            # write a row to the csv file
-            writer.writerow(row)
-    return
+    # Get all the procedures
+    taskInfoReturn_Ls_Dict = getProceduresGivenFilter(filterDict)
+    taskInfo_ls = taskInfoReturn_Ls_Dict["taskInfo"]  # taskInfo_ls is list that has a list of "taskInstance" that is also a list
+    
+    # Get all the mice and put them in a dataframe for filtering
+    df = animalsToDataframe(filterDict)
+    print(len(df.index))
+    # There returned lists: one for mice and one for mice/task combos
+    final_mouse_info_ls = []
+    final_task_info_ls = []
+ 
+    # Now cycle through the filtered tasks and find the filtered mouse in the dataframe
+    for taskInfo in taskInfo_ls:
+        # Dict nodes for lists
+        taskMouseInfo = {"animal":[], "taskInstance" : []}
+        mouseInfo = { "animal": {} , "line": {} , "litter": {} , "genotypes": [] }
+        
+        materialKey = taskInfo["materialKeys"][0]  # Check for empty list. In KOMP it should be exactly one.
+        specific_data = df.loc[df['materialKey'] == materialKey]  
+        
+        if specific_data.empty:
+            continue
+        
+        # Got a mouse. Is it a keeper? 
+        print(specific_data.to_dict(orient="index"))    
+        dict_from_mouse_df = specific_data.to_dict(orient="index") # Exactly one element 
+        mouse = next(iter(dict_from_mouse_df.values())) # The value of the dict is the dict we are looking for 
+        
+        # Test generation if present
+        animalFilter = filterDict["animal"]
+        if "generation" in animalFilter.keys():
+            if animalFilter["generation"] != mouse["generation"]:
+                continue # Bail
+            
+        # Test for a line filter
+        line_ls = getLineGivenLineKey(int(mouse['lineKey'])) # One element
+        line_filter_ls = filterDict["lines"]
+        if len(line_filter_ls) > 0:  # Also zero or one in filter
+            line = { "line": None, "stock": None, "name": None}
+            if "stock" in line_filter_ls[0].keys():
+                if line_filter_ls[0]["stock"] != line_ls[0]['stock']:
+                    continue  # Bail
+                
+                # Copy the stock number info up to the mouse for conveniece later
+                mouse["stock"] = line_ls[0]['stock']
+                line["stock"] = line_ls[0]['stock']
+            
+            if "name" in line_filter_ls[0].keys():
+                if line_filter_ls[0]["name"] != line_ls[0]['shortName']:
+                    continue  # Bail
+            
+                line["name"] = line_ls[0]['shortName']
+                # Copy the stock number info up to the mouse for conveniece later
+                mouse["line"] = line_ls[0]['name']
+            
+        # Any other filters ? No? OK
+        # Look like we have a winner. Add Genotypes and litter
+        gt_line = getGenotypesGivenMaterialKey(int(mouse['materialKey']))
+        birth_ls = getBirthGivenBirthId(mouse['birthId'])
+        
+        # Mouse info node for final_mouse_info_ls
+        mouseInfo["animal"] = mouse
+        mouseInfo["line"] = line_ls[0]
+        if len(birth_ls) > 0:
+            mouseInfo["litter"] = birth_ls[0]
+        else:
+            mouseInfo["litter"] = None
+            
+        mouseInfo["genotypes"] = gt_line
+        
+        # Add to returned mouse list
+        final_mouse_info_ls.append(mouseInfo)  # Done with mouse
+        
+        taskMouseInfo["animal"] = [ mouse ]
+        taskMouseInfo["taskInstance"] = [ taskInfo ]
+        # Let's grab those inputs and outputs
+        taskMouseInfo["taskInstance"][0]["outputs"] = getOutputs(taskInfo["taskInstanceKey"]) 
+        taskMouseInfo["taskInstance"][0]["inputs"] = getInputs(taskInfo["taskInstanceKey"])
+        
+        final_task_info_ls.append(taskMouseInfo)
+        
+    return  final_mouse_info_ls, final_task_info_ls
 
-def createUserCsv(userDictLs):
-    with open("C:\\TEMP\\users.csv", 'a', newline='') as f:
-        # create the csv writer
-        writer = csv.writer(f)
-        for x in userDictLs:
-            row = []
-            row.append(userDictLs)
-            row.append(x.get("userFirstName"))
-            row.append(x.get("userLastName"))
-            writer.writerow(row)
-    return
-###############  END OF CSV funcs ########################################
+def animalsToDataframe(filter:dict, page:int=1, pageSize:int=2000) -> pd.DataFrame:
+    
+    # Filter the mice, and stick them in a dataframe
+    animalFilter = filter["animal"] 
+    animalInfoLs = []
+    animalName = None
+    if "animalName" in animalFilter.keys():
+        animalName = animalFilter["animalName"]
+    else:
+        return None
+    
+    whereClause = f'?AnimalName={animalName}&AnimalNameSearchOptions=StartsWith'
+    
+    call_header = {'Authorization' : 'Bearer ' + token()}
+    try:
+        wgResponse = requests.get(endpoint()+'/animals' + whereClause + f'&PageNumber={page}&PageSize={pageSize}', headers=call_header, timeout=300)
+        
+        if wgResponse.status_code == 500: # Server error
+            print(wgResponse.content)
+        elif wgResponse.status_code == 422:
+            print(wgResponse.content)
+        elif wgResponse.status_code == 200:
+            response = wgResponse.json()
+            
+            animalInfoLs = response["data"]["items"]
+            totalItemCount = response["data"]["totalItemCount"]
+            pageNumber = response["data"]["pageNumber"]
+            pageCount = response["data"]["pageCount"]   # Total pages
+            pageSize = response["data"]["pageSize"]   
+            
+    except requests.exceptions.Timeout as e: 
+        my_logger.info(e.message())
+        raise 
+    except requests.exceptions.InvalidHeader as e:  
+        my_logger.info(e.message())
+        raise 
+    except requests.exceptions.InvalidURL as e:  
+        my_logger.info(e.message())
+        raise 
+    except requests.exceptions.RequestException as e:  # All others
+        my_logger.info(e.message())
+        raise  
+    
+    df = pd.DataFrame(animalInfoLs) 
+    if totalItemCount - (pageSize * pageNumber) > 0:
+        page = pageNumber + 1
+        df = pd.concat([df,animalsToDataframe(filter, page, pageSize)])
+    
+    return df
+
 
 if __name__ == '__main__':
     setWorkgroup('KOMP-JAX Lab')
     setMyToken(getTokenEx())
-    getProceduresGivenFilter(json.loads('{ "taskInstance": { "workflowTaskName": "Viability Primary Screen v2", "workflowTaskStatus":"Complete", "isReviewed": true}, "animal": "", "lines": [] }'))
+    
+    #filterDict = { "taskInstance": { "workflowTaskName": "E18.5 MicroCT", "completedStartDate": "2024-07-01", "completedEndDate": "2024-07-01", "isReviewed": True}, "animal": { "animalName":"A-3976", "generation":"E18.5"}, "lines": [] }
+    filterDict = { "taskInstance": { "workflowTaskName": "E18.5 MicroCT", "isReviewed": True}, "animal": { "animalName":"A-31", "generation":"E18.5"}, "lines": [] }
+    
+    mice_ls, task_ls = getMiceAndProcedures(filterDict)
+    
+    jsonDictLs = json.dumps(task_ls , indent=4)
+    with open("taskMouseInfoFinal.json","w") as f:
+        json.dump(jsonDictLs,f,indent=4)
+    
+    jsonDictLs = json.dumps(mice_ls , indent=4)
+    with open("mouseResultsFinal.json","w") as f:
+        json.dump(jsonDictLs,f,indent=4)
+        
     print("SUCCESS")
+    
+    
