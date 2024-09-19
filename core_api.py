@@ -233,34 +233,45 @@ def updateExperimentStatus(expName,expBarcode,status='Data Sent to DCC',comments
     put_data['JAX_EXPERIMENT_STATUS'] = status
     put_data['JAX_EXPERIMENT_COMMENTS'] = comments
     my_logger.info("PUT data:" + str(put_data))
+    s = f"Name: {expName} Barcode: {expBarcode} Status: {status} Comments: {comments}"
+    my_logger.info(s)
     
+    ''' DEBUG - Don't update CORE yet
     mycfg = cfg.parse_config(path="config.yml")
     baseURL = mycfg['corepfs_database']['baseURL']
     username = mycfg['corepfs_database']['username']
     password = mycfg['corepfs_database']['password']
+
     
     my_auth = HTTPBasicAuth(username, password)
-    query = baseURL + "KOMP_{0}_EXPERIMENT('{1}')".format(expName,expBarcode) # expName is like BODY_WEIGHT
+    query = baseURL + "{0}('{1}')".format(expName,expBarcode) # expName is like KOMP_BODY_WEIGHT_EXPERIMENT
 
     result = requests.put(query, data=json.dumps(put_data), auth=my_auth,headers = {"Content-Type": "application/json", "If-Match": "*" })  
     print(result.text)
     my_logger.info(result.text)
+    '''
   
 def getExperiment(expName:str, expBarcode:str) -> dict:
     # Get the experiment from the barcode and return it as a dict
-    mycfg = cfg.parse_config(path="config.yml")
-    baseURL = mycfg['corepfs_database']['baseURL']
-    username = mycfg['corepfs_database']['username']
-    password = mycfg['corepfs_database']['password']
-    
-    my_auth = HTTPBasicAuth(username, password)
-    query = baseURL + "KOMP_{0}_EXPERIMENT('{1}')".format(expName, expBarcode) # expName is like BODY_WEIGHT
+    try:
+        mycfg = cfg.parse_config(path="config.yml")
+        baseURL = mycfg['corepfs_database']['baseURL']
+        username = mycfg['corepfs_database']['username']
+        password = mycfg['corepfs_database']['password']
+        
+        my_auth = HTTPBasicAuth(username, password)
+        query = baseURL + "{0}('{1}')".format(expName, expBarcode) # expName is like BODY_WEIGHT
 
-    result = requests.get(query, auth=my_auth,headers = {"Content-Type": "application/json", "If-Match": "*" })  
-    cont = result.content
-    
-    d = json.loads(cont.decode('utf-8'))
-    d.pop("@odata.context", None)
+        result = requests.get(query, auth=my_auth,headers = {"Content-Type": "application/json", "If-Match": "*" })  
+        cont = result.content
+        if cont == None:
+            my_logger.info("No content returned for {0} {1}".format(expName,expBarcode))    
+            return {}
+        d = json.loads(cont.decode('utf-8'))
+        d.pop("@odata.context", None)
+    except Exception as e:
+        my_logger.info(repr(e))
+        return {}
     return d
       
       
@@ -397,6 +408,7 @@ def getTaskInfo(procedure,taskInstanceKey):
     taskInstanceInfo['dateReviewed'] = procedure['JAX_EXPERIMENT_STARTDATE']
     # Cancelled at the ASSAY level. Not at experiment 
     taskInstanceInfo['taskStatus'] = "Complete"  # The default. Assume complete until proven otherwise
+    taskInstanceInfo['barcode'] = procedure['Barcode']  
     
     taskInstanceLs.append(taskInstanceInfo)
     return taskInstanceLs
@@ -443,6 +455,8 @@ def getOutputs(expSample,dateStr):
             outputDict = getSeriesOutput(expSample,keystr,dateStr)
             if outputDict != None:
                 outputLs.append(outputDict)
+            else:
+                continue  # Skip it??
         elif isMediaSeries(keystr):# We must construct it
             outputDict = getMediaSeriesOutput(expSample,keystr,dateStr)
             if outputDict != None:
@@ -490,9 +504,17 @@ def getSeriesOutput(expSample,keystr,dateStr):
         outputDictValue["3"] = expSample[keystr.replace('T1','T3')]
         idx = 16 # i.e. IMPC_
     elif keystr == FIRST_HBD_HOLEPOKE_SEQUENCE_SERIES:  # Comes in as a single string. Needs to be converted
-        pokes = expSample[keystr].split('-')
-        for i in range(len(pokes)):
-            outputDictValue[str(i)] = str(pokes[i])
+        pokes = expSample[keystr]
+        if pokes == None:
+            my_logger.info("Output value for Holeboard Holepoke Sequence is None!")
+            return None
+        if '-' in pokes:
+            pokes = expSample[keystr].split('-')
+            for i in range(len(pokes)):
+                outputDictValue[str(i)] = str(pokes[i])
+        else:
+            my_logger.info("Output value for Holeboard Holepoke Sequence {0}: {1}".format(keystr,pokes))
+            outputDictValue["0"] = pokes
     else:
         # Error
         return None

@@ -840,7 +840,7 @@ def getProceduresGivenFilterWithIO(taskNameFilter,page=1,pageSize=500):
             taskInfoDictLs["taskInfo"] = taskInfoDictLs["taskInfo"] + d["taskInfo"]
                      
     
-    print(taskInfoDictLs) 
+    #print(taskInfoDictLs) 
     return taskInfoDictLs
 
 
@@ -1089,7 +1089,7 @@ def getMiceAndProcedures(filterDict:dict) -> tuple[list, list]:
     
     # Get all the mice and put them in a dataframe for filtering
     df = animalsToDataframe(filterDict)
-    print(len(df.index))
+    
     # There returned lists: one for mice and one for mice/task combos
     final_mouse_info_ls = []
     final_task_info_ls = []
@@ -1107,7 +1107,7 @@ def getMiceAndProcedures(filterDict:dict) -> tuple[list, list]:
             continue
         
         # Got a mouse. Is it a keeper? 
-        print(specific_data.to_dict(orient="index"))    
+        #print(specific_data.to_dict(orient="index"))    
         dict_from_mouse_df = specific_data.to_dict(orient="index") # Exactly one element 
         mouse = next(iter(dict_from_mouse_df.values())) # The value of the dict is the dict we are looking for 
         
@@ -1222,17 +1222,17 @@ if __name__ == '__main__':
     setMyToken(getTokenEx())
     
     #filterDict = { "taskInstance": { "workflowTaskName": "E18.5 MicroCT", "completedStartDate": "2024-07-01", "completedEndDate": "2024-07-01", "isReviewed": True}, "animal": { "animalName":"A-3976", "generation":"E18.5"}, "lines": [] }
-    filterDict = { "taskInstance": { "workflowTaskName": "E18.5 MicroCT", "isReviewed": True}, "animal": { "animalName":"A-31", "generation":"E18.5"}, "lines": [] }
+    filterDict = { "taskInstance": { "workflowTaskName": "E18.5 Embryo Gross Morphology", "isReviewed": True}, "animal": { "animalName":"A-63033", "generation":"E18.5"}, "lines": [] }
     
     mice_ls, task_ls = getMiceAndProcedures(filterDict)
     
     jsonDictLs = json.dumps(task_ls , indent=4)
-    with open("taskMouseInfoFinal.json","w") as f:
-        json.dump(jsonDictLs,f,indent=4)
+    with open("taskMouseInfoFinalA.json","w") as f:
+        json.dump(task_ls,f,indent=4)
     
     jsonDictLs = json.dumps(mice_ls , indent=4)
-    with open("mouseResultsFinal.json","w") as f:
-        json.dump(jsonDictLs,f,indent=4)
+    with open("mouseResultsFinalA.json","w") as f:
+        json.dump(mice_ls,f,indent=4)
         
     print("SUCCESS")
     
