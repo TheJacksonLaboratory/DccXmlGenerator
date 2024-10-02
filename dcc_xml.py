@@ -228,12 +228,27 @@ def createCentreSpecimenSet(root):
     centerNode = ET.SubElement(root, 'centreSpecimenSet', {'centreID':'J', 'pipeline':'JAX_001', 'project':'JAX'})
     return  centerNode
 
+def convert_date(date_str: str) -> str:
+  # Assume the date is in the format mm/dd/yyyy and convert to yyyy-mm-dd 
+  date_str = date_str[0:10] # Remove hh:ms if present
+  
+  try:
+    # Parse the input date string to a datetime object
+    date_obj = datetime.strptime(date_str, "%m/%d/%Y")
+    formatted_date = date_obj.strftime("%Y-%m-%d")  # Changed to match the DCC format 
+    return formatted_date  # Strip off minutes, etc
+  except Exception as e:
+    # Non-standard date format  
+    my_logger.info("Error converting date: " + date_str)
+    my_logger.info(repr(e))  
+    return date_str
+      
 def createExperiment(centerNode, expName, expDate,taskInstanceKey):
     # Generate the bones of the experiment node. No procedure or specimen info yet  
     experimentDictKeys = [ "experimentID", "dateOfExperiment" ]
     experimentDict = dict.fromkeys(experimentDictKeys)
     experimentDict["experimentID"] = expName
-    experimentDict["dateOfExperiment"] = expDate
+    experimentDict["dateOfExperiment"] =  expDate if '/' in expDate == False else convert_date(expDate) # Kind of a weak check
     if 'body' in expName.lower() and 'weight' in expName.lower():
       experimentDict["sequenceID"] = str(taskInstanceKey)
       
@@ -264,7 +279,7 @@ def createMetadata(procedureNode,impcCode, strVal):
 def createSimpleParameter(procedureNode,impcCode, strVal,statusCode):
     paramNode = ET.SubElement(procedureNode, 'simpleParameter', { 'parameterID': '{code}'.format(code=impcCode)})
     if len(statusCode) > 0:
-        statusNode = ET.SubElement(paramNode,'statusCode')
+        statusNode = ET.SubElement(paramNode,'parameterStatus')
         statusNode.text = statusCode   
     else:
       valueNode = ET.SubElement(paramNode, 'value')
@@ -302,20 +317,24 @@ def createMediaParameter(procedureNode,impc_code, image,procedureImpcCode,taskKe
     
   if image == None:
     return procedureNode # bail
-        
-    # The value is a dictionary with the key as the increment and the value as the value
-  paramNode = ET.SubElement(procedureNode, 'mediaParameter', { 'parameterID': '{code}'.format(code=impc_code)})
+  
+  # Looks like \\jax\jax\phenotype\EKG\KOMP\images\blah.jpg
+  filenameSplit = image.split('\\')
+  filenameOnly = filenameSplit[len(filenameSplit)-1]
+  filenameOnly = filenameOnly.replace(' ','_',)
+      
+  # The value is a dictionary with the key as the increment and the value as the value
+  param = {}
+  param['parameterID']  = impc_code
+  param['URI'] = getFtpServer() + 'images/' + procedureImpcCode + "/" + filenameOnly 
+  param['fileType'] = 'application/pdf'
+  
+  paramNode = ET.SubElement(procedureNode, 'mediaParameter', param)
   
   if len(statusCode) > 0:
-    statusNode = ET.SubElement(paramNode,'statusCode')
+    statusNode = ET.SubElement(paramNode,'parameterStatus')
     statusNode.text = statusCode  
-  else:
-    # Looks like \\jax\jax\phenotype\EKG\KOMP\images\blah.jpg
-    filenameSplit = image.split('\\')
-    filenameOnly = filenameSplit[len(filenameSplit)-1]
-    filenameOnly = filenameOnly.replace(' ','_',)
-    ET.SubElement(paramNode, 'value', {'URI': getFtpServer() + 'images/' + procedureImpcCode + "/" + filenameOnly})
-    
+  
     db.recordMediaSubmission(image, (getFtpServer() + 'images/' + procedureImpcCode + "/" + filenameOnly) ,taskKey,impc_code)
     
   return procedureNode
@@ -407,7 +426,7 @@ def createSpecimenRecord(specimenRecord,specimenSetNode,statusCode):
                               'phenotypingCentre': '{phenotypingCentre}'.format(phenotypingCentre=specimenRecord["phenotypingCenter"]),
                               'project': '{project}'.format(project=specimenRecord["project"]) })
     if len(statusCode) > 0:
-      statusNode = ET.SubElement(paramNode,'statusCode')
+      statusNode = ET.SubElement(paramNode,'parameterStatus')
       statusNode.text = statusCode
     
   return specimenSetNode
@@ -946,7 +965,7 @@ def handleClimbData():
           my_logger.info("CLIMB Validate specimen:" + repr(animal))
           isValid = v.validateAnimal(animal)
           if isValid == False:
-                my_logger.info("Failed specimen:"+animal["animal"])
+                my_logger.info("Failed specimen:"+ animal["animal"]["animalName"])
                 animalLs.remove(animal)
         
         createSpecimenXML(animalLs) # With the remaining embryos that have passed
@@ -1009,8 +1028,10 @@ def handlePfsData():
           if g_DryRun == False:
             db.recordSubmissionAttempt(expFileName.split('\\')[-1],animalName, task["taskInstance"][0], 
                                         getProcedureImpcCode(), v.getReviewedDate(task["taskInstance"][0]))
-            # TODO - Update the EXPERIMENT status to "Data Sent to DCC"
-            #pfs.updateExperimentStatus(expName,expBarcode,status,comments)
+          # TODO - Update the EXPERIMENT status to "Data Sent to DCC"
+          status = "Data Sent to DCC"
+          comments = ""  
+          pfs.updateExperimentStatus(task["taskInstance"][0]["workflowTaskName"],task["taskInstance"][0]["barcode"],status,comments)
     
     animalLs = pfs.getPfsAnimalInfo()
     
@@ -1029,7 +1050,6 @@ def handleJaxLimsData():
   try:
       mycfg = cfg.parse_config(path="config.yml")
       # Setup credentials for database
-      impc_pipeline = mycfg['impc_pipeline']['pipeline']
       impc_proc_ls = mycfg['impc_proc_codes']['impc_code_list'].split(',')
       jax_study = mycfg['jax_study']['study']
       whereClasue = mycfg['jaxlims_database']['whereClause']
@@ -1098,8 +1118,8 @@ if __name__ == '__main__':
     args = argparse.ArgumentParser()
     #add_arguments(args)
     # Otherwise, hard coded
-    setDataSrc('CLIMB')
-    setClimbFilterFile('test.json')  # CLIMB Only
+    setDataSrc('PFS')
+    setClimbFilterFile('filters-with-mice.json')  # CLIMB Only
     g_DryRun = True
     
     my_logger.info('Logger has been created')
