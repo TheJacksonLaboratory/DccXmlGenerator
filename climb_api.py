@@ -177,8 +177,8 @@ def escapeHtmlCharacter(html):
     return html
 
 def getTaskNames():
-    taskNames = ['E12.5 Embryo Gross Morphology', 'E12.5 Placenta Morphology', 'E15.5 Embryo Gross Morphology', 'E15.5 Placenta Morphology', 'E18.5 Embryo Gross Morphology', 'E18.5 Placenta Morphology', 'E9.5 Embryo Gross Morphology', 'E9.5 Placenta Morphology']
-    return taskNames
+    return ['Histopathology','E12.5 Embryo Gross Morphology', 'E12.5 Placenta Morphology', 'E15.5 Embryo Gross Morphology', 'E15.5 Placenta Morphology', 'E18.5 Embryo Gross Morphology', 'E18.5 Placenta Morphology', 'E9.5 Embryo Gross Morphology', 'E9.5 Placenta Morphology', 'MicroCT 18.5', 'MicroCT 15.5']
+
     
  
 # WORKGROUPS WORKGROUPS WORKGROUPS 
@@ -1185,8 +1185,10 @@ def animalsToDataframe(filter:dict, page:int=1, pageSize:int=2000) -> pd.DataFra
         
         if wgResponse.status_code == 500: # Server error
             print(wgResponse.content)
+            return pd.DataFrame()  # Empty dataframe
         elif wgResponse.status_code == 422:
             print(wgResponse.content)
+            return pd.DataFrame()  # Empty dataframe
         elif wgResponse.status_code == 200:
             response = wgResponse.json()
             
@@ -1222,16 +1224,16 @@ if __name__ == '__main__':
     setMyToken(getTokenEx())
     
     #filterDict = { "taskInstance": { "workflowTaskName": "E18.5 MicroCT", "completedStartDate": "2024-07-01", "completedEndDate": "2024-07-01", "isReviewed": True}, "animal": { "animalName":"A-3976", "generation":"E18.5"}, "lines": [] }
-    filterDict = { "taskInstance": { "workflowTaskName": "E18.5 Embryo Gross Morphology", "isReviewed": True}, "animal": { "animalName":"A-63033", "generation":"E18.5"}, "lines": [] }
+    filterDict = { "taskInstance": { "workflowTaskName": "Histopathology", "isReviewed": True}, "animal": { "animalName":"A-3"}, "lines": [] }
     
     mice_ls, task_ls = getMiceAndProcedures(filterDict)
     
     jsonDictLs = json.dumps(task_ls , indent=4)
-    with open("taskMouseInfoFinalA.json","w") as f:
+    with open("climb-api-results.json","w") as f:
         json.dump(task_ls,f,indent=4)
     
     jsonDictLs = json.dumps(mice_ls , indent=4)
-    with open("mouseResultsFinalA.json","w") as f:
+    with open("mouseResults.json","w") as f:
         json.dump(mice_ls,f,indent=4)
         
     print("SUCCESS")

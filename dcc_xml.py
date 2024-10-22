@@ -112,11 +112,9 @@ output_status_message_map = {
 'Parameter not measured - Sample Lost' : 'IMPC_PARAMSC_002',
 'Parameter not measured - Insufficient sample' : 'IMPC_PARAMSC_003',
 'Parameter not recorded - welfare issue' : 'IMPC_PARAMSC_004',
-'Parameter not recorded - Welfare issue' : 'IMPC_PARAMSC_004',
 'Free Text of Issues' : 'IMPC_PARAMSC_005',
 'Extra Information' : 'IMPC_PARAMSC_006',
 'Parameter not measured - not in SOP' : 'IMPC_PARAMSC_007',
-'Parameter not measured - Not in SOP' : 'IMPC_PARAMSC_007',
 'Above upper limit of quantitation' : 'IMPC_PARAMSC_008',
 'Below lower limit of quantitation' : 'IMPC_PARAMSC_009',
 'Parameter QC Failed' : 'IMPC_PARAMSC_010',
@@ -239,8 +237,8 @@ def convert_date(date_str: str) -> str:
     return formatted_date  # Strip off minutes, etc
   except Exception as e:
     # Non-standard date format  
-    my_logger.info("Error converting date: " + date_str)
     my_logger.info(repr(e))  
+    my_logger.info("Returning: " + date_str)
     return date_str
       
 def createExperiment(centerNode, expName, expDate,taskInstanceKey):
@@ -296,14 +294,20 @@ def createSeriesMediaParameter(procedureNode,impc_code, strVal,procedureImpcCode
     
   if strVal == None:
     return procedureNode # bail
-        
+  
+  # strVal is a string but must be a dict with the increment as the key and the output value as the value
+  dictVal = validateSeriesParameter(strVal)  # e.g. { "1" : "image1.jpg", "2" : "image2.jpg" } - returns None if not a dict
+  if dictVal == None: # Nothing to do
+    return procedureNode
+  
     # The value is a dictionary with the key as the increment and the value as the value
   paramNode = ET.SubElement(procedureNode, 'seriesMediaParameter', { 'parameterID': '{code}'.format(code=impc_code)})
     
-    # strVal is a string but must be a dict with the increment as the key and the output value as the value
-  dictVal = validateSeriesParameter(strVal)
   for key in dictVal:
     image = dictVal[key]  # Looks like \\jax\jax\phenotype\EKG\KOMP\images\blah.jpg
+    if '-1' in image: # -1 is a flag for None
+      continue
+    
     filenameSplit = image.split('\\')
     filenameOnly = filenameSplit[len(filenameSplit)-1]
     filenameOnly = filenameOnly.replace(' ','_',)
@@ -342,10 +346,12 @@ def createMediaParameter(procedureNode,impc_code, image,procedureImpcCode,taskKe
 def validateSeriesParameter(seriesValue: str): # Comes in a str, returns a dict
   # series parameters must be in dict format. If not make it so.
   # Both key and value need to be strings!!!
+  # Returns None if not valid
   paramDict = {}
   try:
+    if "None" in seriesValue: # Can't handle Nones. Should never see.
+      return None
     seriesValue = seriesValue.replace("\'","\"")  # Single quote check
-    seriesValue = seriesValue.replace("None","-1")  # Can't handle Nones. Should never see.
     paramDict = json.loads(seriesValue) # Turn to dict
     # Values need to be str's!
     for k,v in paramDict.items():
@@ -367,13 +373,16 @@ def validateSeriesParameter(seriesValue: str): # Comes in a str, returns a dict
 """
 def createSeriesParameter(procedureNode, impcCode, strVal):
     if strVal == None:
-          return procedureNode # bail
-        
+      return procedureNode # bail
+    
+    # strVal is a string but must be a dict with the increment as the key and the output value as the value
+    dictVal = validateSeriesParameter(strVal) #  returns None if can't be converted
+    if dictVal == None:  # Nothing to do
+      return procedureNode
+    
     # The value is a dictionary with the key as the increment and the value as the value
     paramNode = ET.SubElement(procedureNode, 'seriesParameter', { 'parameterID': '{code}'.format(code=impcCode)})
     
-    # strVal is a string but must be a dict with the increment as the key and the output value as the value
-    dictVal = validateSeriesParameter(strVal)
     for key in dictVal:
       valueNode = ET.SubElement(paramNode, 'value', {'incrementValue': key})
       valueNode.text = dictVal[key]
@@ -1028,10 +1037,10 @@ def handlePfsData():
           if g_DryRun == False:
             db.recordSubmissionAttempt(expFileName.split('\\')[-1],animalName, task["taskInstance"][0], 
                                         getProcedureImpcCode(), v.getReviewedDate(task["taskInstance"][0]))
-          # TODO - Update the EXPERIMENT status to "Data Sent to DCC"
-          status = "Data Sent to DCC"
-          comments = ""  
-          pfs.updateExperimentStatus(task["taskInstance"][0]["workflowTaskName"],task["taskInstance"][0]["barcode"],status,comments)
+            # TODO - Update the EXPERIMENT status to "Data Sent to DCC"
+            status = "Data Sent to DCC"
+            comments = ""  
+            pfs.updateExperimentStatus(task["taskInstance"][0]["workflowTaskName"],task["taskInstance"][0]["barcode"],status,comments)
     
     animalLs = pfs.getPfsAnimalInfo()
     
@@ -1118,8 +1127,8 @@ if __name__ == '__main__':
     args = argparse.ArgumentParser()
     #add_arguments(args)
     # Otherwise, hard coded
-    setDataSrc('PFS')
-    setClimbFilterFile('filters-with-mice.json')  # CLIMB Only
+    setDataSrc('CLIMB')
+    setClimbFilterFile('histo.json')  # CLIMB Only
     g_DryRun = True
     
     my_logger.info('Logger has been created')
