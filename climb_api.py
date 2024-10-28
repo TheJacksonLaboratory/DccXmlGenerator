@@ -3,11 +3,11 @@
 
 import requests
 import json
-from datetime import datetime
 import csv
 import pandas as pd
 import my_logger
 
+import histo_output_template as hot # Output template for histopathology    
 
 seriesParameter = [
 { "outputKey" :673, "impcCode" : "IMPC_VIA_037_001" } ,
@@ -58,7 +58,31 @@ def username():
 def password():
     return '1banana1'
 
+def isHistopathologyTask(outputls):
+    if hot.find_dict_by_key_value("outputKey", outputls[0]["outputKey"]) != None:  # Check for series
+        return True
+    return False
 
+def find_dict_index(list_of_dicts, key, value):
+    for i, dict_item in enumerate(list_of_dicts):
+        if key in dict_item and dict_item[key] == value:
+            return i
+    return -1  # Return -1
+    
+def prepareHistopathologyOutputValues(outputsOnly):
+    # The template has all possible outputs fpr histopathology with defaulted values and status codes.
+    # We need to match the outputKey and outputValue
+    hist_templ_ls = hot.histo_items_ls
+    for output in outputsOnly:
+        idx = find_dict_index(hist_templ_ls, "outputKey", output["outputKey"])      
+        if idx >= 0:
+            hist_templ_ls[idx] = output # Replace the template with the actual output   
+        else:
+            print(f"Output key {output['outputKey']} and name {output['outputName']} not found in histopathology template")     
+            
+    return hist_templ_ls
+
+                    
 #### CSV funcs #########################################
 def createInputCsvFileHeader():
     header = ['TaskName', 'InputName', 'InputKey' ]
@@ -373,9 +397,9 @@ def getAnimalInfoFromFilter(whereClause):
         wgResponse = requests.get(endpoint()+'/animals' + whereClause + '&PageNumber=0&PageSize=2000', headers=call_header, timeout=300)
         
         if wgResponse.status_code == 500: # Server error
-            print(wgResponse.content)
+            my_logger.info(wgResponse.content)
         elif wgResponse.status_code == 422:
-            print(wgResponse.content)
+            my_logger.info(wgResponse.content)
         elif wgResponse.status_code == 200:
             response = wgResponse.json()
             animalInfoLs = response["data"]["items"]
@@ -404,9 +428,9 @@ def getAnimalInfoFromFilterEx(whereClause):
         wgResponse = requests.get(endpoint()+'/animals' + whereClause + '&PageNumber=0&PageSize=2000', headers=call_header, timeout=300)
         
         if wgResponse.status_code == 500: # Server error
-            print(wgResponse.content)
+            my_logger.info(wgResponse.content)
         elif wgResponse.status_code == 422:
-            print(wgResponse.content)
+            my_logger.info(wgResponse.content)
         elif wgResponse.status_code == 200:
             response = wgResponse.json()
             animalInfoLs = response["data"]["items"]
@@ -433,9 +457,9 @@ def getGenotypesGivenLineKey(lineKey):
         wgResponse = requests.get(endpoint()+'/genotypes?LineKey=' + str(lineKey) , headers=call_header, timeout=300)
         
         if wgResponse.status_code == 500: # Server error
-            print(wgResponse.content)
+            my_logger.info(wgResponse.content)
         elif wgResponse.status_code == 422:
-            print(wgResponse.content)
+            my_logger.info(wgResponse.content)
         elif wgResponse.status_code == 200:
             response = wgResponse.json()
             line_ls = response["data"]["items"]
@@ -461,9 +485,9 @@ def getLineGivenLineName(lineName):
         wgResponse = requests.get(endpoint()+'/lines?Name=' + lineName , headers=call_header, timeout=300)
         
         if wgResponse.status_code == 500: # Server error
-            print(wgResponse.content)
+            my_logger.info(wgResponse.content)
         elif wgResponse.status_code == 422:
-            print(wgResponse.content)
+            my_logger.info(wgResponse.content)
         elif wgResponse.status_code == 200:
             response = wgResponse.json()
             line_ls = response["data"]["items"]
@@ -489,9 +513,9 @@ def getLineGivenLineKey(lineKey):
         wgResponse = requests.get(endpoint()+'/lines?LineKey=' + str(lineKey) , headers=call_header, timeout=300)
         
         if wgResponse.status_code == 500: # Server error
-            print(wgResponse.content)
+            my_logger.info(wgResponse.content)
         elif wgResponse.status_code == 422:
-            print(wgResponse.content)
+            my_logger.info(wgResponse.content)
         elif wgResponse.status_code == 200:
             response = wgResponse.json()
             line_ls = response["data"]["items"]
@@ -517,9 +541,9 @@ def getBirthGivenBirthId(birthId):
         wgResponse = requests.get(endpoint()+'/birth?BirthID=' + str(birthId) , headers=call_header, timeout=300)
         
         if wgResponse.status_code == 500: # Server error
-            print(wgResponse.content)
+            my_logger.info(wgResponse.content)
         elif wgResponse.status_code == 422:
-            print(wgResponse.content)
+            my_logger.info(wgResponse.content)
         elif wgResponse.status_code == 200:
             response = wgResponse.json()
             litter_ls = response["data"]["items"]
@@ -547,9 +571,9 @@ def getGenotypesGivenMaterialKey(materialKey):
         wgResponse = requests.get(endpoint()+'/genotypes?MaterialKey=' + str(materialKey) , headers=call_header, timeout=300)
         
         if wgResponse.status_code == 500: # Server error
-            print(wgResponse.content)
+            my_logger.info(wgResponse.content)
         elif wgResponse.status_code == 422:
-            print(wgResponse.content)
+            my_logger.info(wgResponse.content)
         elif wgResponse.status_code == 200:
             response = wgResponse.json()
             gt_ls = response["data"]["items"]
@@ -880,6 +904,8 @@ def getOutputs(taskInstanceKey):
         # clean up unwanted output objects
         outputsOnly = cleanupOutputs(outputsOnly) # Remove unwanted key+value pairs
         outputsOnly = prepareSeriesAndSeriesMediaOutputValues(outputsOnly)
+        if isHistopathologyTask(outputsOnly):
+            outputsOnly = prepareHistopathologyOutputValues(outputsOnly)
         return outputsOnly
     except requests.exceptions.Timeout as e: 
         my_logger.info(e.message())
@@ -1184,10 +1210,10 @@ def animalsToDataframe(filter:dict, page:int=1, pageSize:int=2000) -> pd.DataFra
         wgResponse = requests.get(endpoint()+'/animals' + whereClause + f'&PageNumber={page}&PageSize={pageSize}', headers=call_header, timeout=300)
         
         if wgResponse.status_code == 500: # Server error
-            print(wgResponse.content)
+            #print(wgResponse.content)
             return pd.DataFrame()  # Empty dataframe
         elif wgResponse.status_code == 422:
-            print(wgResponse.content)
+            #print(wgResponse.content)
             return pd.DataFrame()  # Empty dataframe
         elif wgResponse.status_code == 200:
             response = wgResponse.json()

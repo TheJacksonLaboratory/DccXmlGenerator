@@ -2,11 +2,6 @@
 import mysql.connector
 from mysql.connector import errorcode
 import read_config as cfg
-import logging
-from datetime import datetime
-from logging.handlers import TimedRotatingFileHandler
-import re
-
 import json
 
 # GLOBALS for this module
@@ -424,9 +419,10 @@ def getMice(procedure_instance_key_ls:list):
     return animalDictLs
 
 
-    """
+"""
     Return a list of the specimen and experiment data
-    """
+"""
+
 def getCombinedProcedureSpecimenData(impc_code:str,pipeline:str,whereClause:str):
     taskInfoDictLs = [] # List taskInfo dicts
     taskInfoDict = {}   # Dict where each dict has 'animal' list and a 'taskInstance'list.

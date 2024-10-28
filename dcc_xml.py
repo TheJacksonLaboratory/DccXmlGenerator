@@ -447,7 +447,7 @@ def embryoKluge(taskName, parentNode):
     # we may have to create the metadata because there were many tasks
     # created before the inputs were created.
   
-  expName = v.getCollectedBy()
+  expName = "Kristy"
   expId = db.databaseGetExperimenterIdCode(expName)
   
   if taskName ==  "E9.5 Embryo Gross Morphology":
@@ -727,7 +727,7 @@ def buildParameters(procedureNode,proc,parameterDefLs,procedureImpcCode):
       output_status_code = ''
       # Go through the outputs and if there is a climb_key match add the value
       outputLs = proc['outputs']
-      # TBD - Sort by _DccType_key because simples must precede and series?
+      # Sorted by _DccType_key because simples must precede ontology that must precede series
       for i, v in enumerate(parameterDefLs):
         impcCode = None
         dccType = None
@@ -742,10 +742,13 @@ def buildParameters(procedureNode,proc,parameterDefLs,procedureImpcCode):
         if not impcCode == None and output['outputValue'] is not None:
           # Get the IMPC code from metadataDefLs and the value from output
           outputVal = output['outputValue']
-          output_status_code = getOutputStatusCode(output)
-          
-        if outputVal is None:
+        
+        output_status_code = getOutputStatusCode(output)
+        
+        # No value and no status code 
+        if len(output_status_code) == 0 and (outputVal is None or len(outputVal) == 0):
               continue
+            
         if type(outputVal) != type(""): # TODO - Handle floats an ints
           outputVal = str(outputVal)    
         
@@ -984,6 +987,7 @@ def handleClimbData():
         success, message = v.validateProcedure(task)  # Sets the task status to 'Failed QC' if it fails.  TODO - Fix this 
         if success == False:
           taskLs.remove(task)  # Do not record it 
+          my_logger.info('Failed task: ' + message + str(task))
           
         elif success == True and task["taskInstance"][0]['taskStatus'] == 'Already submitted':
           taskLs.remove(task)  # Do not record it 
