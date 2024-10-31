@@ -31,54 +31,6 @@ def testTaskStatus(proc):
         
     return success, msg
 
-# Used to set the experimenter id
-def setCollectedBy(output):
-    global g_CollectedBy  
-    if output["collectedBy"] != None:
-        g_CollectedBy = output["collectedBy"]
-    return
-
-# Used to set the date of experiment
-def setDateCollected(output):
-    global g_DateCollected
-    g_DateCollected = output["collectedDate"]
-    return    
-
-
-def getCollectedBy():
-    global g_CollectedBy  
-    return g_CollectedBy
-
-def getDateCollected():
-    global g_DateCollected
-    return g_DateCollected
-
-# Not really used but for now needs to have some value.
-def setReviewedBy(proc):
-    global g_ReviewedBy
-    g_ReviewedBy = proc["reviewedBy"]
-
-def getReviewedBy():
-    global g_ReviewedBy
-    return g_ReviewedBy
-
-# Newer than the store date means it is a resubmission
-def setReviewedDate(proc):
-    global g_ReviewedDate
-    g_ReviewedDate = proc["dateReviewed"]
-
-def getReviewedDate(proc):
-    global g_ReviewedDate
-    if proc != None:
-        g_ReviewedDate = proc["dateReviewed"]
-    return g_ReviewedDate
-
-
-# Have we submitted this successfully before?
-# Look up the test in the database and compare reviewed dates
-def testPreviouslySubmitted(proc):
-    msg = ""
-    return True, msg
 
 # Is there a date of experiment?
 def testCollectedDate(output):
@@ -86,7 +38,7 @@ def testCollectedDate(output):
     if output["collectedDate"]  == None or len(output["collectedDate"]) == 0:
         return False, "No collected date."
     
-    setDateCollected(output)
+    #setDateCollected(output)
     return True, ""
 
 # Is there a collectedBy value, i.e. experimneterID?
@@ -95,7 +47,7 @@ def testCollectedBy(output):
     if output["collectedBy"]  == None or len(output["collectedBy"]) == 0:
         return False, "No 'collected by' value."
     
-    setCollectedBy(output)
+    #setCollectedBy(output)
     return True, ""
 
 # make sure this has been reviewed by someone
@@ -104,8 +56,8 @@ def testReviewedBy(proc):
         return False, "Review By is missing."
     
     # I need to set it as a global
-    setReviewedBy(proc)
-    setReviewedDate(proc)
+    #setReviewedBy(proc)
+    #setReviewedDate(proc)
     
     return True, ""
 
@@ -119,10 +71,6 @@ def testInputs(proc):
         success = False
 
     return success, msg
-
-def validateSeriesType(output):
-    # TODO - if it is a series or mediaSeries it must be a dict 
-    return output["outputValue"]
 
 # Are all outputs set? 
 def testOutputs(proc):
@@ -145,10 +93,15 @@ def testOutputs(proc):
         elif "name" in output.keys():
             keystr = "name"   # the others
             
-        if output['outputValue'] == None or output['outputValue'] == '':
-            if db.isRequired(output[keystr]):
-                success = False
-                msg = "Missing mandatory parameter " + output['name']
+        if db.isRequired(output[keystr]):
+            if (output['outputValue'] == None or output['outputValue'] == ''):
+                if 'statusCode' in output.keys() == False: # Is there a statusCode field? No
+                    success = False
+                    msg = "Missing mandatory parameter " + output[keystr]
+                elif len(output['statusCode'])== 0:  # Status code field but no code
+                    success = False
+                    msg = "Missing mandatory parameter " + output[keystr]
+                
                 
         ok, err = testCollectedBy(output) 
         success = (ok and success)
@@ -161,7 +114,10 @@ def testOutputs(proc):
         output['outputValue'] = validateSeriesType(output)
        
     return success, msg
-    
+def validateSeriesType(output):
+    # TODO - if it is a series or mediaSeries it must be a dict 
+    return output["outputValue"]
+   
 def validateMouseFields(specimenRecord):
       msg = ""
       msgDict = { "AnimalName":"", "TaskName":"", "TaskInstanceKey":0, "ImpcCode":"", "StockNumber":"", "DateDue":"", "Issue":"" }
@@ -365,10 +321,10 @@ def validateProcedure(proc):
     if len(msg) > 0:
         overallMsg = overallMsg + "; " + msg
         
-    success, msg = testPreviouslySubmitted(task) # TODO This is a no-op
-    overallSuccess = overallSuccess and success
-    if len(msg) > 0:
-        overallMsg = overallMsg + "; " + msg
+    #success, msg = testPreviouslySubmitted(task) # TODO This is a no-op
+    #overallSuccess = overallSuccess and success
+    #if len(msg) > 0:
+    #    overallMsg = overallMsg + "; " + msg
     
     success, msg = testTaskStatus(task)
     overallSuccess = overallSuccess and success
@@ -377,10 +333,14 @@ def validateProcedure(proc):
     
     #success, msg = testInputs(task) # Embryo lethal tasks were erronoeusly created with no inputs
     
+    if task['dateComplete'] == None or len(task['dateComplete']) == 0:
+        overallSuccess = False
+        overallMsg = overallMsg + "; " + "No completion date"
+        
     # TBD - Need to task key  for line submissions
     #lastReviewedDate = db.getLastReviewedDate(specimen["animalName"],task["workflowTaskName"])
     lastReviewedDate = db.getLastReviewedDate(task["taskInstanceKey"])
-    reviewedDateStr = getReviewedDate(task)
+    reviewedDateStr = task["dateReviewed"]
     if reviewedDateStr != None and len(reviewedDateStr) > 0:
         currentReviewedDate = datetime.strptime(reviewedDateStr, "%Y-%m-%d")
     else:
