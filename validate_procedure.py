@@ -31,6 +31,11 @@ def testTaskStatus(proc):
         
     return success, msg
 
+def getReviewedDate(taskInstance:dict) -> str:
+    if "dateReviewed" not in taskInstance.keys():
+        return ""
+    
+    return taskInstance["dateReviewed"]
 
 # Is there a date of experiment?
 def testCollectedDate(output):

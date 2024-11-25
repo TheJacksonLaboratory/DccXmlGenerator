@@ -700,12 +700,12 @@ def updateAssayWithFailReason(expName,assayBarcode,failreason,failcomments):
     my_auth = HTTPBasicAuth(username, password)
     query = baseURL + "KOMP_{0}_ASSAY_DATA('{1}')".format(expName,assayBarcode) # expName is like BODY_WEIGHT
 
-    print(put_data)
+    #print(put_data)
     my_logger.info(put_data)
     
     result = requests.put(query, data=json.dumps(put_data), auth=my_auth,headers = {"Content-Type": "application/json", "If-Match": "*" })  
     
-    print(result.text)
+    #print(result.text)
     my_logger.info(result.text)
     # Did it work? Chekc for code 200
     return 200
@@ -720,7 +720,7 @@ def updateExperimentStatus(expName,expBarcode,status='Data Sent to DCC',comments
     s = f"Name: {expName} Barcode: {expBarcode} Status: {status} Comments: {comments}"
     my_logger.info(s)
     
-    ''' DEBUG - Don't update CORE yet
+    
     mycfg = cfg.parse_config(path="config.yml")
     baseURL = mycfg['corepfs_database']['baseURL']
     username = mycfg['corepfs_database']['username']
@@ -731,9 +731,15 @@ def updateExperimentStatus(expName,expBarcode,status='Data Sent to DCC',comments
     query = baseURL + "{0}('{1}')".format(expName,expBarcode) # expName is like KOMP_BODY_WEIGHT_EXPERIMENT
 
     result = requests.put(query, data=json.dumps(put_data), auth=my_auth,headers = {"Content-Type": "application/json", "If-Match": "*" })  
-    print(result.text)
     my_logger.info(result.text)
-    '''
+    # Did it work? Chekc for code 200   
+    if result.status_code == 200:
+        my_logger.info("BARCODE " + expBarcode + " succesfully update to " + status)  
+    else:
+        #print("BARCODE " + expBarcode + " failed to update to " + status)
+        my_logger.info("BARCODE " + expBarcode + " failed to update to " + status + ". Return code: " + str(result.status_code))  
+                
+        
   
 def getExperiment(expName:str, expBarcode:str) -> dict:
     # Get the experiment from the barcode and return it as a dict
@@ -821,8 +827,15 @@ def getExperimentData(experimentname):
         wgJson = result.json()
         
         #Get list of values
-        valueLs = wgJson.get('value')
-        totalCount = wgJson.get('@odata.count')
+        valueLs = []
+        totalCount = 0
+        if 'value' in wgJson.keys(): # A list of dicts
+            valueLs = wgJson.get('value') 
+            totalCount = wgJson.get('@odata.count')
+        else:   # A single dict
+            valueLs.append(wgJson)
+            totalCount = 1
+            
         my_logger.info("Number of requests for {0}:".format(experimentname) + str(totalCount))  
         
         if valueLs != None:
@@ -847,7 +860,6 @@ def getExperimentData(experimentname):
         my_logger.info(repr(e))
         raise 
     
-    return 0,None
     
 # The results will be taskInfo [ animal [], taskInstance [ inputs [] , outputs [] ] ]
 def buildTaskInfoList(expDataLs):
@@ -1111,7 +1123,7 @@ def getPfsTaskInfo():
     for expName in kompExperimentNames:
         taskInfoList={}
         numberOfKompRequest, valuelist = getExperimentData(expName)
-        print("Number of requests:" + str(numberOfKompRequest))
+        #print("Number of requests:" + str(numberOfKompRequest))
         my_logger.info("Number of requests for {0}:".format(expName) + str(numberOfKompRequest))
           
         taskInfoList["taskInfo"] = buildTaskInfoList(valuelist)     
@@ -1132,7 +1144,7 @@ if __name__ == '__main__':
     my_auth = HTTPBasicAuth(username, password)
     for impccode in impcCodeLookups.keys():
         query = baseURL + f"TYPE_ATTRIBUTE?$filter=AttributeName eq '{impccode}'&$select=ColumnHeader"
-        print(query)
+        #print(query)
         result = requests.get(query, auth=my_auth,headers = {"Prefer": "odata.maxpagesize=5000"})    
         wgJson = result.json()
         if len(wgJson['value']) == 0:
@@ -1141,7 +1153,7 @@ if __name__ == '__main__':
         
         valueLs = wgJson.get('value')
         impcCodeLookups[impccode] = valueLs[0]['ColumnHeader']  
-        print(impccode + " " + impcCodeLookups[impccode])   
+        #print(impccode + " " + impcCodeLookups[impccode])   
     
     #print(impcCodeLookups)  
         

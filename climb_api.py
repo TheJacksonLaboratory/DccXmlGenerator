@@ -25,6 +25,10 @@ seriesParameter = [
 ]
 
 seriesMediaParameter = [
+{ "outputKey" :977, "impcCode" : "IMPC_HIS_177_001" } ,
+{ "outputKey" :978, "impcCode" : "IMPC_HIS_177_001" } ,
+{ "outputKey" :1145, "impcCode" : "IMPC_HIS_177_001" } ,
+{ "outputKey" :1146, "impcCode" : "IMPC_HIS_177_001" } ,
 { "outputKey" :65, "impcCode" : "IMPC_GEM_049_001" } ,
 { "outputKey" :23, "impcCode" : "IMPC_GEL_044_001" } ,
 { "outputKey" :155, "impcCode" : "IMPC_GEP_064_001" } ,
@@ -79,7 +83,13 @@ def prepareHistopathologyOutputValues(outputsOnly):
             hist_templ_ls[idx] = output # Replace the template with the actual output   
         else:
             print(f"Output key {output['outputKey']} and name {output['outputName']} not found in histopathology template")     
-            
+    
+    # Now we add the series media if any
+    mediaSeriesValue = hot.build_histo_image(outputsOnly) # This is a dictionary of images
+    if len(mediaSeriesValue) > 0:
+        hist_templ_ls[len(hist_templ_ls)-1]["outputValue"] = mediaSeriesValue
+        hist_templ_ls[len(hist_templ_ls)-1]["parameterStatus"] = ''
+    
     return hist_templ_ls
 
                     
@@ -997,7 +1007,7 @@ def prepareSeriesAndSeriesMediaOutputValues(outputLs):
                 incrVal = "1" # TODO - Increment if multiple images for one embryo
         
         # Increment value should be incrementable except if Viability, then it must be noLitter
-        if tmp != None:
+        if tmp != None and outputObj["outputValue"] != None:
            dictVal = {}
            dictVal[incrVal] = outputObj["outputValue"]  # Must be noLitter for VIA. 
            outputObj["outputValue"] = str(dictVal)

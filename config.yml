@@ -6,12 +6,17 @@ jaxlims_database:
  whereClause:
 
 corepfs_database:
- #baseURL: https://jacksonlabstest.platformforscience.com/KOMP_UAT_Testing_01202024/odata/
- baseURL: https://jacksonlabs.platformforscience.com/PROD/odata/
+ baseURL: https://jacksonlabstest.platformforscience.com/PROD-COPY-2/odata/
+ #baseURL: https://jacksonlabs.platformforscience.com/PROD/odata/
+ 
  mouseEndpoint: KOMP_REQUEST?$expand=REV_MOUSESAMPLELOT_KOMPREQUEST($expand=SAMPLE/pfs.MOUSE_SAMPLE($filter=Active eq true))
- experimentEndpointTemplate: KOMP_{exp}_EXPERIMENT?$filter= JAX_EXPERIMENT_STATUS eq 'Review Completed'&$expand=EXPERIMENT_SAMPLES($expand=ASSAY_DATA/pfs.KOMP_{exp}_ASSAY_DATA,ENTITY/pfs.MOUSE_SAMPLE_LOT($expand=SAMPLE/pfs.MOUSE_SAMPLE))
+ 
+ experimentEndpointTemplate: KOMP_{exp}_EXPERIMENT?$filter=JAX_EXPERIMENT_STATUS eq 'Review Completed'&$expand=EXPERIMENT_SAMPLES($expand=ASSAY_DATA/pfs.KOMP_{exp}_ASSAY_DATA,ENTITY/pfs.MOUSE_SAMPLE_LOT($expand=SAMPLE/pfs.MOUSE_SAMPLE))
+ #experimentEndpointTemplate: KOMP_STARTLE_PPI_EXPERIMENT('KSPE3')?&$expand=EXPERIMENT_SAMPLES($expand=ASSAY_DATA/pfs.KOMP_STARTLE_PPI_ASSAY_DATA,ENTITY/pfs.MOUSE_SAMPLE_LOT($expand=SAMPLE/pfs.MOUSE_SAMPLE))
+ 
  basicMouseInfoEndpoint: MOUSE_SAMPLE?$filter=Active eq true&$expand=MOUSE_SAMPLE_LOT($expand=SAMPLE)   
  #basicMouseInfoEndpoint: MOUSE_SAMPLE('{barcode}')
+ 
  username: svc-corePFS@jax.org
  password: hRbP&6K&(Qvw
 
@@ -26,26 +31,26 @@ impc_pipeline:
     ip_pipeline: JAXIP_001
     lap_pipeline: JAXLA_001
 
-# BODY_WEIGHT
-# AUDITORY_BRAINSTEM_RESPONSE
-# BODY_COMPOSITION
-# CLINICAL_BLOOD_CHEMISTRY
+#BODY_WEIGHT
+#AUDITORY_BRAINSTEM_RESPONSE
+#BODY_COMPOSITION
+#CLINICAL_BLOOD_CHEMISTRY
 #ELECTROCARDIOGRAM
 #ELECTRORETINOGRAPHY
-#       EYE_MORPHOLOGY
+#EYE_MORPHOLOGY
 #FUNDUS_IMAGING
-# GLUCOSE_TOLERANCE_TEST
-# GRIP_STRENGTH
-#       HEART_WEIGHT
-# HEMATOLOGY
-# HOLEBOARD***
-# LIGHT_DARK_BOX
-# OPEN_FIELD
-# SHIRPA_DYSMORPHOLOGY
-# STARTLE_PPI
+#GLUCOSE_TOLERANCE_TEST
+#GRIP_STRENGTH
+#HEART_WEIGHT
+#HEMATOLOGY
+#HOLEBOARD
+#LIGHT_DARK_BOX
+#OPEN_FIELD
+#SHIRPA_DYSMORPHOLOGY
+#STARTLE_PPI
 
 impc_proc_codes:
-    impc_code_list: CLINICAL_BLOOD_CHEMISTRY
+    impc_code_list: STARTLE_PPI
     
 impc_proc_status_codes:
     

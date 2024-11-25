@@ -40,6 +40,8 @@ import jaxlims_api as db
 import climb_api as c
 import validate_procedure as v
 import core_api as pfs
+import omero_api
+
 import my_logger
 
 
@@ -296,7 +298,7 @@ def createSeriesMediaParameter(procedureNode,impc_code, strVal,procedureImpcCode
     return procedureNode # bail
   
   # strVal is a string but must be a dict with the increment as the key and the output value as the value
-  dictVal = validateSeriesParameter(strVal)  # e.g. { "1" : "image1.jpg", "2" : "image2.jpg" } - returns None if not a dict
+  dictVal = validateSeriesParameter(strVal)  # e.g. { "1" : "/path/image1.jpg", "2" : "image2.jpg" } - returns None if not a dict
   if dictVal == None: # Nothing to do
     return procedureNode
   
@@ -304,29 +306,38 @@ def createSeriesMediaParameter(procedureNode,impc_code, strVal,procedureImpcCode
   paramNode = ET.SubElement(procedureNode, 'seriesMediaParameter', { 'parameterID': '{code}'.format(code=impc_code)})
     
   for key in dictVal:
-    image = dictVal[key]  # Looks like \\jax\jax\phenotype\EKG\KOMP\images\blah.jpg
-    if '-1' in image: # -1 is a flag for None
+    image = dictVal[key]  # Looks like \\jax\jax\phenotype\EKG\KOMP\images\blah.jpg or https://omeroweb.jax.org/webgateway/img_detail/69917
+    if '-1' in image: # -1 is a flag for None. TODO make it None
       continue
     
-    filenameSplit = image.split('\\')
-    filenameOnly = filenameSplit[len(filenameSplit)-1]
-    filenameOnly = filenameOnly.replace(' ','_',)
-    valueNode = ET.SubElement(paramNode, 'value', {'incrementValue': str(key), 'URI': getFtpServer() + 'images/' + procedureImpcCode + "/" + filenameOnly})
-    #valueNode.text = ???
+    filenameOnly = get_filename_only(image)  # e.g. blah.jpg
+    ET.SubElement(paramNode, 'value', {'incrementValue': str(key), 'URI': getFtpServer() + 'images/' + procedureImpcCode + "/" + filenameOnly})     
     db.recordMediaSubmission(image, (getFtpServer() + 'images/' + procedureImpcCode + "/" + filenameOnly) ,taskKey,impc_code)
 
   return procedureNode
 
+def get_filename_only(fullyqualified_path:str) -> str:
+  filenameOnly = ''
+  try:
+    if fullyqualified_path != None:
+      if omero_api.is_omero_url(fullyqualified_path):
+        filenameOnly = omero_api.get_upload_image_filename(fullyqualified_path)   
+      else:
+        filenameOnly_ls = fullyqualified_path.split('\\')
+        filenameOnly = filenameOnly_ls[len(filenameOnly_ls)-1]
+        filenameOnly = filenameOnly.replace(' ','_',)  # Replace spaces with underscores
+  except Exception as e:
+      my_logger.info(repr(e))
+  
+  return filenameOnly 
+    
 def createMediaParameter(procedureNode,impc_code, image,procedureImpcCode,taskKey, statusCode):
     
   if image == None:
     return procedureNode # bail
   
-  # Looks like \\jax\jax\phenotype\EKG\KOMP\images\blah.jpg
-  filenameSplit = image.split('\\')
-  filenameOnly = filenameSplit[len(filenameSplit)-1]
-  filenameOnly = filenameOnly.replace(' ','_',)
-      
+  filenameOnly = get_filename_only(image)  # e.g. \\jax\jax\phenotype\EKG\KOMP\images\blah.jpg return blah.jpg
+  
   # The value is a dictionary with the key as the increment and the value as the value
   param = {}
   param['parameterID']  = impc_code
@@ -746,7 +757,7 @@ def buildParameters(procedureNode,proc,parameterDefLs,procedureImpcCode):
         output_status_code = getOutputStatusCode(output)
         
         # No value and no status code 
-        if len(output_status_code) == 0 and (outputVal is None or len(outputVal) == 0):
+        if len(output_status_code) == 0 and (outputVal is None or len(str(outputVal)) == 0):
               continue
             
         if type(outputVal) != type(""): # TODO - Handle floats an ints
@@ -974,7 +985,7 @@ def handleClimbData():
       # Get the animals and validate
       if len(animalLs) > 0:  
         for animal in reversed(animalLs):  # Remove those animals that failed
-          my_logger.info("CLIMB Validate specimen:" + repr(animal))
+          #my_logger.info("CLIMB Validate specimen:" + repr(animal))
           isValid = v.validateAnimal(animal)
           if isValid == False:
                 my_logger.info("Failed specimen:"+ animal["animal"]["animalName"])
@@ -1133,7 +1144,7 @@ if __name__ == '__main__':
     # Otherwise, hard coded
     setDataSrc('CLIMB')
     setClimbFilterFile('histo.json')  # CLIMB Only
-    g_DryRun = True
+    g_DryRun = False
     
     my_logger.info('Logger has been created')
 	
