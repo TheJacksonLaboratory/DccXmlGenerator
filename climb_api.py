@@ -25,6 +25,7 @@ seriesParameter = [
 ]
 
 seriesMediaParameter = [
+{ "outputKey" :1150, "impcCode" : "IMPC_EMO_001_001" } ,
 { "outputKey" :977, "impcCode" : "IMPC_HIS_177_001" } ,
 { "outputKey" :978, "impcCode" : "IMPC_HIS_177_001" } ,
 { "outputKey" :1145, "impcCode" : "IMPC_HIS_177_001" } ,
@@ -80,7 +81,8 @@ def prepareHistopathologyOutputValues(outputsOnly):
     for output in outputsOnly:
         idx = find_dict_index(hist_templ_ls, "outputKey", output["outputKey"])      
         if idx >= 0:
-            hist_templ_ls[idx] = output # Replace the template with the actual output   
+            if output["outputValue"] != None:
+                hist_templ_ls[idx] = output # Replace the template with the actual output   
         else:
             print(f"Output key {output['outputKey']} and name {output['outputName']} not found in histopathology template")     
     

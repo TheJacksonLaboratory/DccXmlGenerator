@@ -286,6 +286,17 @@ def createSimpleParameter(procedureNode,impcCode, strVal,statusCode):
       valueNode.text = strVal
     
     return procedureNode
+  
+def createOntologyParameter(procedureNode,impcCode, strVal,statusCode):
+    paramNode = ET.SubElement(procedureNode, 'ontologyParameter', { 'parameterID': '{code}'.format(code=impcCode)})
+    if len(statusCode) > 0:
+        statusNode = ET.SubElement(paramNode,'parameterStatus')
+        statusNode.text = statusCode   
+    else:
+      valueNode = ET.SubElement(paramNode, 'value')
+      valueNode.text = strVal
+    
+    return procedureNode
 
 # <seriesMediaParameter parameterID="IMPC_XRY_048_001">
 #    <value incrementValue="1" URI="ftp://images/image1.jpg" fileType="img/jpg">
@@ -767,7 +778,7 @@ def buildParameters(procedureNode,proc,parameterDefLs,procedureImpcCode):
           if dccType == 1:
               procedureNode = createSimpleParameter(procedureNode, impcCode, outputVal,output_status_code)
           elif dccType == 2: #  Ontology TBD
-              procedureNode = createSimpleParameter(procedureNode, impcCode, outputVal,output_status_code)
+              procedureNode = createOntologyParameter(procedureNode, impcCode, outputVal,output_status_code)
           elif dccType == 3: # Media - ABR (014) and ERG (047)
               taskKey = int(proc["taskInstanceKey"])
               procedureNode = createMediaParameter(procedureNode,impcCode, outputVal,procedureImpcCode,taskKey,output_status_code)
@@ -837,8 +848,14 @@ def generateSpecimenXML(animalInfoLs, centerNode):  # List of dictionaries
         specimenRecord["colonyId"]  = "JR" + line["stock"][1:6]
       else:
         specimenRecord["colonyId"]  = ""
-      #specimenRecord["strainID"] = line["references"]
-      specimenRecord["zygosity"] = extractGenotype(genotypes)   # must be present
+      
+      genotype_str = extractGenotype(genotypes)   # must be present
+      if genotype_str == None:
+        my_logger.info("Could not resolve zygosity for" + animal['animalName'])
+        continue
+     
+      specimenRecord["zygosity"] = genotype_str
+      
       specimenRecord["generation"] = animal['generation']
       
       if litter != None: # Not required
@@ -904,7 +921,7 @@ genotypes = List of dicts with keys genotypeKey, date, assay, genotype, modified
 """
 
 def extractGenotype(genotypes):
-  zygosity = '?/?'
+  zygosity = None
   for genotype in genotypes:
     if genotype["genotype"] == '+/+':
         zygosity = 'wild type'
@@ -1008,8 +1025,11 @@ def handleClimbData():
           if len(animalName) > 0: # Need a JR or animal name. 
             expFileName = getNextExperimentFilename(getDatadir()) # We get the exp filename now so we can log it as submitted.
             if len(task["taskInstance"]) > 0 and g_DryRun == False:
-              db.recordSubmissionAttempt(expFileName.split('\\')[-1],animalName, task["taskInstance"][0], 
-                                        getProcedureImpcCode(), v.getReviewedDate(task["taskInstance"][0]))
+              db.recordSubmissionAttempt(expFileName.split('\\')[-1],
+                                          animalName, 
+                                          task["taskInstance"][0], 
+                                          getProcedureImpcCode(), 
+                                          v.getReviewedDate(task["taskInstance"][0]))
       
       #End of loop 
       createExperimentXML(taskLs,procedureHasAnimals(json.loads(climbFilter)))
@@ -1050,8 +1070,12 @@ def handlePfsData():
         if len(task["taskInstance"]) > 0:
           animalName = task["animal"][0]["animalName"]
           if g_DryRun == False:
-            db.recordSubmissionAttempt(expFileName.split('\\')[-1],animalName, task["taskInstance"][0], 
-                                        getProcedureImpcCode(), v.getReviewedDate(task["taskInstance"][0]))
+            db.recordSubmissionAttempt(expFileName.split('\\')[-1],
+                                        animalName, 
+                                        task["taskInstance"][0], 
+                                        getProcedureImpcCode(), 
+                                        v.getReviewedDate(task["taskInstance"][0]),
+                                        task["taskInstance"][0]["barcode"]) # Can I get the exp[eriment barcode here?
             # TODO - Update the EXPERIMENT status to "Data Sent to DCC"
             status = "Data Sent to DCC"
             comments = ""  
@@ -1140,11 +1164,7 @@ if __name__ == '__main__':
 
     # Uncomment out the next two lines when running from the commandline
     args = argparse.ArgumentParser()
-    #add_arguments(args)
-    # Otherwise, hard coded
-    setDataSrc('CLIMB')
-    setClimbFilterFile('histo.json')  # CLIMB Only
-    g_DryRun = False
+    add_arguments(args)
     
     my_logger.info('Logger has been created')
 	

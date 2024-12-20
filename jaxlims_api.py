@@ -272,13 +272,13 @@ def getLastReviewedDate(taskInstanceKey):
     
     return lastReviewDate
 
-def recordSubmissionAttempt(fileName, animalName, procedure, impcCode, reviewDate):  
+def recordSubmissionAttempt(fileName, animalName, procedure, impcCode, reviewDate,taskName=' '): 
     procedureName = procedure["workflowTaskName"]
     taskInstanceId = int(procedure["taskInstanceKey"])
     
     """ Given  dictionary pull out the elements and insert it into the database """
-    insertStmt = "INSERT INTO komp.submittedProcedures (AnimalName, ExperimentName, ImpcCode, XmlFilename, DateReviewed, TaskInstanceId) VALUES ( '{0}','{1}','{2}','{3}','{4}',{5})".\
-        format(animalName, procedureName, impcCode, fileName, reviewDate, taskInstanceId)
+    insertStmt = "INSERT INTO komp.submittedProcedures (AnimalName, ExperimentName, ImpcCode, XmlFilename, DateReviewed, TaskInstanceId,TaskName) VALUES ('{0}','{1}','{2}','{3}','{4}',{5},'{6}')".\
+        format(animalName, procedureName, impcCode, fileName, reviewDate, taskInstanceId,taskName)
 
     try:    
         #print(insertStmt)
