@@ -167,46 +167,61 @@ def getBackgroundStrainId():
 
 # XML XML XML
 def createSpecimenXML(animalLs):
-    root = createSpecimenRoot()
-    centerNode = createSpecimenCentre(root)
-    generateSpecimenXML(animalLs, centerNode)
-      
-    # Write it out
-    tree = ET.ElementTree(indent(root))
-    specimenFileName = getNextSpecimenFilename(getDatadir())
-    tree.write(specimenFileName, xml_declaration=True, encoding='utf-8')
+   
+  # Upper limit of 2500 entries will never be reached, I assume       
+  root = createSpecimenRoot()
+  centerNode = createSpecimenCentre(root)
+  generateSpecimenXML(animalLs, centerNode)
     
-    my_logger.info("Creating specimen file {0}".format(specimenFileName))
-    
-    # Now zip it up.
-    zipfilename = specimenFileName.replace('specimen.','').replace('xml','zip')
-    with ZipFile(zipfilename,'w',zipfile.ZIP_DEFLATED) as zipper:
-      zipper.write(specimenFileName,basename(specimenFileName))
-      zipper.close()
+  # Write it out
+  tree = ET.ElementTree(indent(root))
+  specimenFileName = getNextSpecimenFilename(getDatadir())
+  tree.write(specimenFileName, xml_declaration=True, encoding='utf-8')
+  
+  my_logger.info("Creating specimen file {0}".format(specimenFileName))
+  
+  # Now zip it up.
+  zipfilename = specimenFileName.replace('specimen.','').replace('xml','zip')
+  with ZipFile(zipfilename,'w',zipfile.ZIP_DEFLATED) as zipper:
+    zipper.write(specimenFileName,basename(specimenFileName))
+    zipper.close()
       
       
 def createExperimentXML(experimentLs, procedureHasAnimals):
-    root = createProcedureRoot()
-    centerNode = createCentre(root)
+   startRecord = 0
+   maxRecords = 2500 # The xml file will be failed by the crawler if it contains more than 2500 entries
+   while startRecord < len(experimentLs):
+      endRecord = startRecord + maxRecords
+      if endRecord > len(experimentLs):
+        endRecord = len(experimentLs)
+      experimentChunk = experimentLs[startRecord:endRecord]
+      startRecord = endRecord
+      
+      root = createProcedureRoot()
+      centerNode = createCentre(root)
     
-    if procedureHasAnimals:
-          numberOfProcs = generateExperimentXML(experimentLs, centerNode) 
-    else:
-          numberOfProcs = generateLineCallExperimentXML(experimentLs, centerNode)
-    
-    expFileName = getNextExperimentFilename(getDatadir())
-    
-    my_logger.info("Creating experiment file {0}".format(expFileName))
-    
-    if(numberOfProcs > 0):      # write the new XML file
-      tree = ET.ElementTree(indent(root))
-      tree.write(expFileName, xml_declaration=True, encoding='utf-8')
+      if procedureHasAnimals:
+            numberOfProcs = generateExperimentXML(experimentChunk, centerNode) 
+      else:
+            numberOfProcs = generateLineCallExperimentXML(experimentChunk, centerNode)
+      
+      expFileName = getNextExperimentFilename(getDatadir())
+      my_logger.info("Creating experiment file {0}".format(expFileName))
+      
+      if(numberOfProcs > 0):      # write the new XML file
+        tree = ET.ElementTree(indent(root))
+        tree.write(expFileName, xml_declaration=True, encoding='utf-8')
+      
       
       # Now zip it up.
-      zipfilename = expFileName.replace('experiment.','').replace('xml','zip')
-      with ZipFile(zipfilename,'w',zipfile.ZIP_DEFLATED) as zipper:
-        zipper.write(expFileName,basename(expFileName))
-        zipper.close()  
+        zipfilename = expFileName.replace('experiment.','').replace('xml','zip')
+        with ZipFile(zipfilename,'w',zipfile.ZIP_DEFLATED) as zipper:
+          zipper.write(expFileName,basename(expFileName))
+          zipper.close()  
+      
+      # Now record it.
+      recordSubmission(experimentChunk,expFileName)
+      
        
 def createProcedureRoot():
     root = ET.Element('centreProcedureSet', {'xmlns':'http://www.mousephenotype.org/dcc/exportlibrary/datastructure/core/procedure'})
@@ -239,8 +254,8 @@ def convert_date(date_str: str) -> str:
     return formatted_date  # Strip off minutes, etc
   except Exception as e:
     # Non-standard date format  
-    my_logger.info(repr(e))  
-    my_logger.info("Returning: " + date_str)
+    #my_logger.info(repr(e))  
+    #my_logger.info("Returning: " + date_str)
     return date_str
       
 def createExperiment(centerNode, expName, expDate,taskInstanceKey):
@@ -600,7 +615,7 @@ def generateExperimentXML(taskInfoLs, centerNode):
             procedureNode = buildMetadata(procedureNode,proc)
             
             experimentNode = buildExperimentStatusCode(experimentNode,getProcedureStatusCode(proc))
-    
+    # CALL the new function
     return numberOfProcs
 
 # Create experiment XMLs
@@ -673,10 +688,9 @@ def buildMetadata(procedureNode,proc):
                 inputVal = input['inputValue'].strip()
                 if len(inputVal) > 0:  # only if there is a value there.
                   if db.isExperimenterID(impcCode) == True:  # Can't use real names. Must insert numerical value
-                    my_logger.info("Looking up " + inputVal + " for experimenterID.")
                     inputVal = db.databaseGetExperimenterIdCode(inputVal)
                     if len(inputVal) == 0:
-                      my_logger.info("    Couldn't resolve experimenter ID")
+                      my_logger.info("Couldn't resolve experimenter ID for " + input['inputValue'].strip())
                   elif db.isDate(impcCode) == True:  # Format YYYY-MM-DD
                     inputVal = str(pd.to_datetime(inputVal))[0:10]
                     my_logger.info("Reformating date:"+ input['inputValue'].strip() + " to " + inputVal)
@@ -703,7 +717,7 @@ def buildMetadata(procedureNode,proc):
                 outputVal = str(output['outputValue']).strip()
                 if len(outputVal) > 0: # only if there is a value there.
                   if db.isExperimenterID(impcCode) == True:  # Can't use real names. Must insert numerical value
-                    my_logger.info("Looking up " + outputVal + " for experimenterID.")
+                    #my_logger.info("Looking up " + outputVal + " for experimenterID.")
                     outputVal = db.databaseGetExperimenterIdCode(outputVal)
                     if len(outputVal) == 0:
                       my_logger.info("    Couldn't resolve experimenter ID")
@@ -1019,22 +1033,36 @@ def handleClimbData():
           
         elif success == True and task["taskInstance"][0]['taskStatus'] == 'Already submitted':
           taskLs.remove(task)  # Do not record it 
-          
-        else: # Record it as submitted
-          animalName = getAnimalNameFromTaskInfo(task)
-          if len(animalName) > 0: # Need a JR or animal name. 
-            expFileName = getNextExperimentFilename(getDatadir()) # We get the exp filename now so we can log it as submitted.
-            if len(task["taskInstance"]) > 0 and g_DryRun == False:
-              db.recordSubmissionAttempt(expFileName.split('\\')[-1],
-                                          animalName, 
-                                          task["taskInstance"][0], 
-                                          getProcedureImpcCode(), 
-                                          v.getReviewedDate(task["taskInstance"][0]))
+          my_logger.info('Already submitted task: ' + str(task))
       
       #End of loop 
       createExperimentXML(taskLs,procedureHasAnimals(json.loads(climbFilter)))
       
-
+def recordSubmission(taskLs, expFileName):
+  
+  if g_DryRun == True:
+    return
+  
+  # Record the submission
+  experimentBarcode = set() # We ony want to update PFS once
+  for task in taskLs:
+    if len(task["taskInstance"]) > 0:
+        animalName = task["animal"][0]["animalName"]  # TODO Line calls will not have an animal. Need to get the colony ID : getColonyId()
+        db.recordSubmissionAttempt(expFileName.split('\\')[-1],
+                                animalName, 
+                                task["taskInstance"][0], 
+                                getProcedureImpcCode(), 
+                                v.getReviewedDate(task["taskInstance"][0]),
+                                task["taskInstance"][0]["barcode"]) 
+          # Update the EXPERIMENT status to "Data Sent to DCC"
+        if task["taskInstance"][0]["barcode"] not in experimentBarcode:  # Just do it once
+            status = "Data Sent to DCC"
+            comments = ""  # Not used at the moment
+            pfs.updateExperimentStatus(task["taskInstance"][0]["workflowTaskName"],task["taskInstance"][0]["barcode"],status,comments)
+            experimentBarcode.add(task["taskInstance"][0]["barcode"]) 
+    
+  return  
+  
 def handlePfsData():
     # For CORE PFS komp mice
     mycfg = cfg.parse_config(path="config.yml")
@@ -1055,7 +1083,12 @@ def handlePfsData():
         success, message = v.validateProcedure(task)  # Sets the task status to 'Failed QC' if it fails.
         date_complete = 'None' if task["taskInstance"][0]["dateComplete"] == None else task["taskInstance"][0]["dateComplete"]
         if success == False:
-            my_logger.info("Rejected " + task["taskInstance"][0]["workflowTaskName"] + ": " + message +  " Name " +  task["animal"][0]["animalName"] + " Complete date: " + date_complete )
+            my_logger.info("Rejected " + task["taskInstance"][0]["workflowTaskName"] + 
+                           " " + task["taskInstance"][0]["barcode"] + 
+                           " " + task["animal"][0]["animalName"] + 
+                           ": " + message +  
+                           " Complete date: " + date_complete )
+            
             taskLs.remove(task)  # Do not record it 
         else: # Record the mouse name for later filtering
           animalsInprocedures.add(task["animal"][0]["animalName"])
@@ -1065,22 +1098,6 @@ def handlePfsData():
       # OK. With list cleaned up, lets create the experiment XML
       createExperimentXML(taskLs, True)
       
-      # Now record what we wull attempt to submit. (Move up to line 993?)
-      for task in taskLs:
-        if len(task["taskInstance"]) > 0:
-          animalName = task["animal"][0]["animalName"]
-          if g_DryRun == False:
-            db.recordSubmissionAttempt(expFileName.split('\\')[-1],
-                                        animalName, 
-                                        task["taskInstance"][0], 
-                                        getProcedureImpcCode(), 
-                                        v.getReviewedDate(task["taskInstance"][0]),
-                                        task["taskInstance"][0]["barcode"]) # Can I get the exp[eriment barcode here?
-            # TODO - Update the EXPERIMENT status to "Data Sent to DCC"
-            status = "Data Sent to DCC"
-            comments = ""  
-            pfs.updateExperimentStatus(task["taskInstance"][0]["workflowTaskName"],task["taskInstance"][0]["barcode"],status,comments)
-    
     animalLs = pfs.getPfsAnimalInfo()
     
     for animal in reversed(animalLs):  # Remove those animals that failed or are not in the procedure list
@@ -1110,9 +1127,6 @@ def handleJaxLimsData():
       for proc_code in impc_proc_ls:
         pi_key_ls, taskInstanceDictLs = db.getCombinedProcedureSpecimenData(proc_code,jax_study,whereClasue)
         createExperimentXML(taskInstanceDictLs,True)  # Second arg is 'experimentHasAnimals?'
-        # TODO Record the submission
-        #if g_DryRun == False:
-        #  db.recordSubmissionAttempt(expFilename, animalName, taskInstance, procedure code, review date)
         all_mice.extend(pi_key_ls)
 
       

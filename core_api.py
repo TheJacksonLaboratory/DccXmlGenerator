@@ -13,6 +13,7 @@ from datetime import timedelta
 import re
 
 import my_logger
+import csv
 
 
 impcCodeLookups = {
@@ -733,7 +734,7 @@ def updateExperimentStatus(expName,expBarcode,status='Data Sent to DCC',comments
     result = requests.put(query, data=json.dumps(put_data), auth=my_auth,headers = {"Content-Type": "application/json", "If-Match": "*" })  
     my_logger.info(result.text)
     # Did it work? Chekc for code 200   
-    if result.status_code == 200:
+    if result.status_code == 200 or result.status_code == 5000: # CORE bug : returns error 5000 but PUT works
         my_logger.info("BARCODE " + expBarcode + " succesfully update to " + status)  
     else:
         #print("BARCODE " + expBarcode + " failed to update to " + status)
@@ -887,7 +888,13 @@ def buildTaskInfoList(expDataLs):
             
             sampleEntity = expSample['ENTITY']
             animalInfo["animalName"] = sampleEntity['SAMPLE']['JAX_SAMPLE_EXTERNALID']
-            animalInfo['stock'] = expSample['ASSAY_DATA']['JAX_ASSAY_STRAINNAME']
+            
+            assayData = expSample['ASSAY_DATA'] 
+            if 'JAX_ASSAY_STRAINNAME' not in assayData.keys():  # Some CSD seems to be missing these...
+                my_logger.info("No JAX_ASSAY_STRAINNAME in " + str(assayData))  
+                continue    # Skip it
+            
+            animalInfo['stock'] = assayData['JAX_ASSAY_STRAINNAME']
             animal.append(animalInfo)
             taskInfo['animal'] = animal
             
@@ -1134,8 +1141,38 @@ def getPfsTaskInfo():
         
     return taskInfoListList
 
+def write_data_sent_experiments_to_csv():
+        mycfg = cfg.parse_config(path="config.yml")
+        baseURL = mycfg['corepfs_database']['baseURL']
+        username = mycfg['corepfs_database']['username']
+        password = mycfg['corepfs_database']['password']
+        experimentOnlyEndpoint = mycfg['corepfs_database']['experimentOnlyEndpointTemplate']
+        impc_all_codes = mycfg['impc_proc_codes']['impc_all_code_list']
+        all_code_ls = impc_all_codes.split(',')
+
+        my_auth = HTTPBasicAuth(username, password)
+        
+        with open('data_sent_to_dcc.csv', mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['EntityTypeName', 'Barcode'])
+            
+            for code in all_code_ls:
+                endpoint = experimentOnlyEndpoint.format(code)  # e.g. KOMP_BODY_WEIGHT_EXPERIMENT
+                query = baseURL + endpoint
+                result = requests.get(query, auth=my_auth, headers={"Prefer": "odata.maxpagesize=5000"})
+                wgJson = result.json()
+                valueLs = wgJson.get('value')
+                
+                for val in valueLs:
+                    writer.writerow([val['EntityTypeName'], val['Barcode']])
+
+
+
 if __name__ == '__main__':
     
+    
+    write_data_sent_experiments_to_csv()
+    """
     mycfg = cfg.parse_config(path="config.yml")
     baseURL = mycfg['corepfs_database']['baseURL']
     username = mycfg['corepfs_database']['username']
@@ -1160,16 +1197,17 @@ if __name__ == '__main__':
     with open("column_hdrs.json","w") as outfile:
         outfile.write(json.dumps(impcCodeLookups,indent=4))
         
-    """
+    
     Get all KOMP Mice
     numberOfKompRequest, valuelist = getKompMice()
     animalInfo = getSampleList(valuelist)
     
     with open("samples.json","w") as outfile:
         outfile.write(json.dumps(animalInfo,indent=4))
-    """
+    
     db.init()
     with open("taskInfoList.json","w") as outfile:
         outfile.write(json.dumps(getPfsTaskInfo(),indent=4))
     db.close()
+    """
     print("SUCCESS")
