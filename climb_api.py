@@ -1127,6 +1127,10 @@ def getMiceAndProcedures(filterDict:dict) -> tuple[list, list]:
     
     # Get all the mice and put them in a dataframe for filtering
     df = animalsToDataframe(filterDict)
+    # test for empty dataframe
+    if df.empty:
+        return [], []
+    
     
     # There returned lists: one for mice and one for mice/task combos
     final_mouse_info_ls = []
@@ -1199,6 +1203,7 @@ def getMiceAndProcedures(filterDict:dict) -> tuple[list, list]:
         # Let's grab those inputs and outputs
         taskMouseInfo["taskInstance"][0]["outputs"] = getOutputs(taskInfo["taskInstanceKey"]) 
         taskMouseInfo["taskInstance"][0]["inputs"] = getInputs(taskInfo["taskInstanceKey"])
+        taskMouseInfo["taskInstance"][0]["barcode"] = "TBD"  #TBD    
         
         final_task_info_ls.append(taskMouseInfo)
         

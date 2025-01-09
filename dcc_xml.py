@@ -376,7 +376,7 @@ def createMediaParameter(procedureNode,impc_code, image,procedureImpcCode,taskKe
     statusNode = ET.SubElement(paramNode,'parameterStatus')
     statusNode.text = statusCode  
   
-    db.recordMediaSubmission(image, (getFtpServer() + 'images/' + procedureImpcCode + "/" + filenameOnly) ,taskKey,impc_code)
+  db.recordMediaSubmission(image, (getFtpServer() + 'images/' + procedureImpcCode + "/" + filenameOnly) ,taskKey,impc_code)
     
   return procedureNode
 
@@ -648,7 +648,7 @@ def generateLineCallExperimentXML(taskInfoLs, centerNode):
           numberOfProcs += 1
             
           lineNode = createColonyId(centerNode,getColonyId())
-          procedureNode = createProcedure(lineNode,db.databaseSelectProcedureCode(proc['workflowTaskName']))  # TODO Add status code is present
+          procedureNode = createProcedure(lineNode,db.databaseSelectProcedureCode(proc['workflowTaskName']))
           
           # Now create the metadata from the inputs and outputs
           procedureNode = buildParameters(procedureNode,proc,parameterDefLs,procedureImpcCode)
@@ -785,7 +785,7 @@ def buildParameters(procedureNode,proc,parameterDefLs,procedureImpcCode):
         if len(output_status_code) == 0 and (outputVal is None or len(str(outputVal)) == 0):
               continue
             
-        if type(outputVal) != type(""): # TODO - Handle floats an ints
+        if type(outputVal) != type(""): # TODO - Handle floats and ints
           outputVal = str(outputVal)    
         
         if len(outputVal) > 0:
@@ -1026,7 +1026,7 @@ def handleClimbData():
           
       for task in reversed(taskLs):  # task should be a dictionary { "animal" : [], "taskInstance": []}
         #FIX
-        success, message = v.validateProcedure(task)  # Sets the task status to 'Failed QC' if it fails.  TODO - Fix this 
+        success, message = v.validateProcedure(task)  # Sets the task status to 'Failed QC' if it fails.
         if success == False:
           taskLs.remove(task)  # Do not record it 
           my_logger.info('Failed task: ' + message + str(task))
@@ -1047,15 +1047,18 @@ def recordSubmission(taskLs, expFileName):
   experimentBarcode = set() # We ony want to update PFS once
   for task in taskLs:
     if len(task["taskInstance"]) > 0:
-        animalName = task["animal"][0]["animalName"]  # TODO Line calls will not have an animal. Need to get the colony ID : getColonyId()
+        # animalName = task["animal"][0]["animalName"]  # TODO Line calls will not have an animal. Need to get the colony ID : getColonyId()
+        animalName = getAnimalNameFromTaskInfo(task)  
         db.recordSubmissionAttempt(expFileName.split('\\')[-1],
                                 animalName, 
                                 task["taskInstance"][0], 
                                 getProcedureImpcCode(), 
                                 v.getReviewedDate(task["taskInstance"][0]),
                                 task["taskInstance"][0]["barcode"]) 
-          # Update the EXPERIMENT status to "Data Sent to DCC"
-        if task["taskInstance"][0]["barcode"] not in experimentBarcode:  # Just do it once
+        
+          # Update the EXPERIMENT status to "Data Sent to DCC" if the source is PFS CORE
+        if getDataSrc() == 'PFS':
+          if task["taskInstance"][0]["barcode"] not in experimentBarcode:  # Just do it once
             status = "Data Sent to DCC"
             comments = ""  # Not used at the moment
             pfs.updateExperimentStatus(task["taskInstance"][0]["workflowTaskName"],task["taskInstance"][0]["barcode"],status,comments)
