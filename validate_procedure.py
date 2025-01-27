@@ -355,9 +355,9 @@ def validateProcedure(proc):
     # Exclude those we have already successfully uploaded
     if lastReviewedDate is not None and currentReviewedDate is not None:
         if lastReviewedDate >= currentReviewedDate:  # Is the SME resubmitting this procedure?
-            print("Already submitted but submitting anyway.")
-            #task["taskStatus"]  = 'Already submitted'  # else remove the Complete or Cancelled status to avoid unnecessary resubmission
-            #createLogEntry(specimen, task, lineInfo, None, overallMsg + ' *Already submitted')
+            print("Already submitted: " + str(lastReviewedDate) + " >= " + str(currentReviewedDate) + " for " + specimen["animalName"] + " " + task["workflowTaskName"])
+            task["taskStatus"]  = 'Already submitted'  # else remove the Complete or Cancelled status to avoid unnecessary resubmission
+            createLogEntry(specimen, task, lineInfo, None, overallMsg + ' *Already submitted')
       
     if overallSuccess == False:
         createLogEntry(specimen, task, lineInfo, None, overallMsg)

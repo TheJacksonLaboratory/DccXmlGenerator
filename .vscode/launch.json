@@ -9,8 +9,8 @@
             "program": "${file}",
             "console": "integratedTerminal","args": [
                     "-s", "CLIMB",
-                    "-f", "histo-short.json",
-                    "-d", "true"
+                    "-f", "e18-5-gross.json",
+                    "-d", "false"
                 ],
             "purpose": ["debug-in-terminal"]
         }

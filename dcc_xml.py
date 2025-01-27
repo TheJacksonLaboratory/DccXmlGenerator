@@ -308,7 +308,7 @@ def createOntologyParameter(procedureNode,impcCode, strVal,statusCode):
         statusNode = ET.SubElement(paramNode,'parameterStatus')
         statusNode.text = statusCode   
     else:
-      valueNode = ET.SubElement(paramNode, 'value')
+      valueNode = ET.SubElement(paramNode, 'term')
       valueNode.text = strVal
     
     return procedureNode
@@ -337,6 +337,8 @@ def createSeriesMediaParameter(procedureNode,impc_code, strVal,procedureImpcCode
       continue
     
     filenameOnly = get_filename_only(image)  # e.g. blah.jpg
+    my_logger.info("Image: " + image + " Filename: " + filenameOnly)  
+    
     ET.SubElement(paramNode, 'value', {'incrementValue': str(key), 'URI': getFtpServer() + 'images/' + procedureImpcCode + "/" + filenameOnly})     
     db.recordMediaSubmission(image, (getFtpServer() + 'images/' + procedureImpcCode + "/" + filenameOnly) ,taskKey,impc_code)
 
@@ -1005,14 +1007,16 @@ def handleClimbData():
       
     c.setWorkgroup()  # Inits CLIMB
     
-    animalLs = []
-    taskLs = []
-    
     # Each line in the input file can be a filter and 
     #   can generate a specimen and experiment XML
-    for climbFilter in filterLines:
-      animalLs, taskLs = c.getMiceAndProcedures(json.loads(climbFilter))
-      
+    for climbFilter in filterLines: 
+      animalLs = []
+      taskLs = []
+      if procedureHasAnimals(json.loads(climbFilter)):
+        animalLs, taskLs = c.getMiceAndProcedures(json.loads(climbFilter))
+      else:  # Line call
+        taskLs = c.getProceduresGivenFilterWithIO(json.loads(climbFilter))
+        
       # Get the animals and validate
       if len(animalLs) > 0:  
         for animal in reversed(animalLs):  # Remove those animals that failed

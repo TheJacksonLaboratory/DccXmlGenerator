@@ -161,16 +161,16 @@ def getToken(username, password):
         my_logger.info(token)
         return token
     except requests.exceptions.Timeout as e: 
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise Exception(e)
     except requests.exceptions.InvalidHeader as e:  
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise ValueError(e)
     except requests.exceptions.InvalidURL as e:  
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise ValueError(e)
     except requests.exceptions.RequestException as e:  # All others
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise SystemExit(e)
     
 def getTokenEx():
@@ -180,16 +180,16 @@ def getTokenEx():
         token = response.json()
         return token
     except requests.exceptions.Timeout as e: 
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise Exception(e)
     except requests.exceptions.InvalidHeader as e:  
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise ValueError(e)
     except requests.exceptions.InvalidURL as e:  
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise ValueError(e)
     except requests.exceptions.RequestException as e:  # All others
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise SystemExit(e)
 
 
@@ -237,16 +237,16 @@ def getWorkgroups():
         dict_list = outer_dict.get('items')
         return dict_list
     except requests.exceptions.Timeout as e: 
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.InvalidHeader as e:  
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.InvalidURL as e:  
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.RequestException as e:  # All others
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     
 def setWorkgroup(workgroupName=None):
@@ -299,16 +299,16 @@ def getWorkflowTaskNameKey(taskName):
         return wfKey
 
     except requests.exceptions.Timeout as e: 
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.InvalidHeader as e:  
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.InvalidURL as e:  
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.RequestException as e:  # All others
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     
     return 0
@@ -377,16 +377,16 @@ def getTaskInfoFromFilter(taskInfoFiler):
         wgResponse = requests.post(endpoint()+'/taskAnimalInfo', data=json.dumps(taskInfoFiler), headers=call_header, timeout=60)
         taskInfoLs = wgResponse.json()
     except requests.exceptions.Timeout as e: 
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.InvalidHeader as e:  
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.InvalidURL as e:  
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.RequestException as e:  # All others
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise  
     
     # Do any post-processing required for generating XML
@@ -416,16 +416,16 @@ def getAnimalInfoFromFilter(whereClause):
             response = wgResponse.json()
             animalInfoLs = response["data"]["items"]
     except requests.exceptions.Timeout as e: 
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.InvalidHeader as e:  
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.InvalidURL as e:  
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.RequestException as e:  # All others
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise  
        
     return animalInfoLs
@@ -447,16 +447,16 @@ def getAnimalInfoFromFilterEx(whereClause):
             response = wgResponse.json()
             animalInfoLs = response["data"]["items"]
     except requests.exceptions.Timeout as e: 
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.InvalidHeader as e:  
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.InvalidURL as e:  
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.RequestException as e:  # All others
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise  
        
     return animalInfoLs
@@ -476,16 +476,16 @@ def getGenotypesGivenLineKey(lineKey):
             response = wgResponse.json()
             line_ls = response["data"]["items"]
     except requests.exceptions.Timeout as e: 
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.InvalidHeader as e:  
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.InvalidURL as e:  
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.RequestException as e:  # All others
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise  
        
     return line_ls
@@ -504,16 +504,16 @@ def getLineGivenLineName(lineName):
             response = wgResponse.json()
             line_ls = response["data"]["items"]
     except requests.exceptions.Timeout as e: 
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.InvalidHeader as e:  
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.InvalidURL as e:  
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.RequestException as e:  # All others
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise  
        
     return line_ls
@@ -532,16 +532,16 @@ def getLineGivenLineKey(lineKey):
             response = wgResponse.json()
             line_ls = response["data"]["items"]
     except requests.exceptions.Timeout as e: 
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.InvalidHeader as e:  
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.InvalidURL as e:  
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.RequestException as e:  # All others
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise  
        
     return line_ls
@@ -560,16 +560,16 @@ def getBirthGivenBirthId(birthId):
             response = wgResponse.json()
             litter_ls = response["data"]["items"]
     except requests.exceptions.Timeout as e: 
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.InvalidHeader as e:  
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.InvalidURL as e:  
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.RequestException as e:  # All others
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise  
        
     return litter_ls
@@ -590,16 +590,16 @@ def getGenotypesGivenMaterialKey(materialKey):
             response = wgResponse.json()
             gt_ls = response["data"]["items"]
     except requests.exceptions.Timeout as e: 
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.InvalidHeader as e:  
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.InvalidURL as e:  
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.RequestException as e:  # All others
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise  
        
     return gt_ls
@@ -747,17 +747,17 @@ def getProceduresGivenFilter(taskNameFilter,page=1,pageSize=500):
                 taskInfoDictLs["taskInfo"].append(taskinstance) 
         
     except requests.exceptions.Timeout as e: 
-        my_logger.info(e.message())
-        raise 
+        my_logger.info(repr(e))
+        return taskInfoDictLs 
     except requests.exceptions.InvalidHeader as e:  
-        my_logger.info(e.message())
-        raise 
+        my_logger.info(repr(e))
+        return taskInfoDictLs 
     except requests.exceptions.InvalidURL as e:  
-        my_logger.info(e.message())
-        raise 
+        my_logger.info(repr(e))
+        return taskInfoDictLs 
     except requests.exceptions.RequestException as e:  # All others
-        my_logger.info(e.message())
-        raise  
+        my_logger.info(repr(e)) 
+        return taskInfoDictLs  
     
     if page > 0:
         d = getProceduresGivenFilter(taskNameFilter,page,pageSize)  
@@ -797,8 +797,9 @@ def getProceduresGivenFilterWithIO(taskNameFilter,page=1,pageSize=500):
     # end of filters (we can expand as needed)
     
     taskInfoLs = [] # Response from CLIMB
-    taskInfoDictLs = { "taskInfo":[] }  # A list of one
-    taskInfoReturnDictLs =  [] # What we return - a list of dictionaries - taskInfoDict
+    #taskInfoDictLs = { "taskInfo":[] }  # A list of one
+    
+    taskInfoDictLs = []  # A list of one
     
     call_header = {'Authorization' : 'Bearer ' + token()}
     try:
@@ -834,7 +835,9 @@ def getProceduresGivenFilterWithIO(taskNameFilter,page=1,pageSize=500):
         # End of loop
         
         for taskinstance in taskInfoLs:
-        # Get the inputs
+            # TBD - Make more meaningful?
+            taskinstance["barcode"] = "TBD"
+            # Get the inputs
             endpointUrl = endpoint() +'/taskinstances/taskInputs?TaskInstanceKey=' + str(taskinstance["taskInstanceKey"]) + '&PageNumber=0&PageSize=200'
             wgResponse = requests.get(endpointUrl, headers=call_header, timeout=60)
             inputLs = wgResponse.json()
@@ -854,29 +857,29 @@ def getProceduresGivenFilterWithIO(taskNameFilter,page=1,pageSize=500):
             taskinstance["outputs"] = outputsOnly
             
             # List inside a dict inside a list
-            taskInfoDictLs["taskInfo"].append(taskinstance)
-            
- 
+            outer_dict = {}
+            outer_dict["taskInstance"] = []
+            outer_dict["taskInstance"].append(taskinstance)  
+            taskInfoDictLs.append(outer_dict)
+        
     except requests.exceptions.Timeout as e: 
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.InvalidHeader as e:  
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.InvalidURL as e:  
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.RequestException as e:  # All others
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise  
     
     if page > 0:
         d = getProceduresGivenFilterWithIO(taskNameFilter,page,pageSize)  
         if d != None and "taskInfo" in d.keys():
-            taskInfoDictLs["taskInfo"] = taskInfoDictLs["taskInfo"] + d["taskInfo"]
-                     
+            taskInfoDictLs = taskInfoDictLs + d   # UNTESTED           
     
-    #print(taskInfoDictLs) 
     return taskInfoDictLs
 
 
@@ -892,16 +895,16 @@ def getInputs(taskInstanceKey):
         inputsOnly = cleanupInputs(inputsOnly) # Remove unwanted key+value pairs
         return inputsOnly
     except requests.exceptions.Timeout as e: 
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.InvalidHeader as e:  
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.InvalidURL as e:  
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.RequestException as e:  # All others
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise  
                 
 def getOutputs(taskInstanceKey):
@@ -920,16 +923,16 @@ def getOutputs(taskInstanceKey):
             outputsOnly = prepareHistopathologyOutputValues(outputsOnly)
         return outputsOnly
     except requests.exceptions.Timeout as e: 
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.InvalidHeader as e:  
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.InvalidURL as e:  
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.RequestException as e:  # All others
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise  
         
 """
@@ -1129,7 +1132,8 @@ def getMiceAndProcedures(filterDict:dict) -> tuple[list, list]:
     df = animalsToDataframe(filterDict)
     # test for empty dataframe
     if df.empty:
-        return [], []
+        return [], []   # BAIL
+    
     
     
     # There returned lists: one for mice and one for mice/task combos
@@ -1218,7 +1222,7 @@ def animalsToDataframe(filter:dict, page:int=1, pageSize:int=2000) -> pd.DataFra
     if "animalName" in animalFilter.keys():
         animalName = animalFilter["animalName"]
     else:
-        return None
+        return pd.DataFrame()  # Empty dataframe
     
     whereClause = f'?AnimalName={animalName}&AnimalNameSearchOptions=StartsWith'
     
@@ -1242,16 +1246,16 @@ def animalsToDataframe(filter:dict, page:int=1, pageSize:int=2000) -> pd.DataFra
             pageSize = response["data"]["pageSize"]   
             
     except requests.exceptions.Timeout as e: 
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.InvalidHeader as e:  
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.InvalidURL as e:  
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise 
     except requests.exceptions.RequestException as e:  # All others
-        my_logger.info(e.message())
+        my_logger.info(repr(e))
         raise  
     
     df = pd.DataFrame(animalInfoLs) 
