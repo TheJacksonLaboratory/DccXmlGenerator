@@ -877,8 +877,10 @@ def buildTaskInfoList(expDataLs):
             taskInfo = {}
             animal = []
             animalInfo = {}
-            # Yuck. 
-            dateStr = ""
+            # Get the date from the assay data but if not possible
+            #  use today's date. If the task is cancelled then the date is today's date
+            dateStr = None  # Cancelled assays might not have complete dates
+            
             if 'JAX_ASSAY_TEST_DATE' in expSample['ASSAY_DATA'].keys():
                 dateStr =  expSample['ASSAY_DATA']['JAX_ASSAY_TEST_DATE']
             elif 'JAX_ASSAY_TESTDATE' in expSample['ASSAY_DATA'].keys():
@@ -886,6 +888,9 @@ def buildTaskInfoList(expDataLs):
             elif 'IMPC_CBC_046_001' in expSample['ASSAY_DATA'].keys():
                 dateStr =  expSample['ASSAY_DATA']['IMPC_CBC_046_001']
             
+            if dateStr == None:    
+                dateStr = datetime.now().strftime("%Y-%m-%d")
+                
             sampleEntity = expSample['ENTITY']
             animalInfo["animalName"] = sampleEntity['SAMPLE']['JAX_SAMPLE_EXTERNALID']
             

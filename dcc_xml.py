@@ -94,7 +94,7 @@ procedure_status_message_map = {
 'Cancelled - Pipeline stopped - welfare' : 'IMPC_PSC_005',
 'Cancelled - Single procedure not performed - welfare' : 'IMPC_PSC_003',
 'Incomplete - Procedure Failed - Equipment Failed' : 'IMPC_PSC_007',
-'Incomplete - Single procedure not performed - schedule' : ' IMPC_PSC_004',
+'Incomplete - Single procedure not performed - schedule' : 'IMPC_PSC_004',
 'Procedure Failed - Insufficient Sample' : 'IMPC_PSC_009',
 'Procedure Failed - Process Failed' : 'IMPC_PSC_010',
 'Procedure Failed - Sample Lost' : 'IMPC_PSC_008',
@@ -304,13 +304,16 @@ def createSimpleParameter(procedureNode,impcCode, strVal,statusCode):
   
 def createOntologyParameter(procedureNode,impcCode, strVal,statusCode):
     paramNode = ET.SubElement(procedureNode, 'ontologyParameter', { 'parameterID': '{code}'.format(code=impcCode)})
+    
     if len(statusCode) > 0:
-        statusNode = ET.SubElement(paramNode,'parameterStatus')
-        statusNode.text = statusCode   
+      valueNode = ET.SubElement(paramNode, 'term')
+      valueNode.text = ""
+      statusNode = ET.SubElement(paramNode,'parameterStatus')
+      statusNode.text = statusCode
     else:
       valueNode = ET.SubElement(paramNode, 'term')
       valueNode.text = strVal
-    
+      
     return procedureNode
 
 # <seriesMediaParameter parameterID="IMPC_XRY_048_001">
@@ -766,7 +769,7 @@ def buildParameters(procedureNode,proc,parameterDefLs,procedureImpcCode):
       # Go through the outputs and if there is a climb_key match add the value
       outputLs = proc['outputs']
       # Sorted by _DccType_key because simples must precede ontology that must precede series
-      for i, v in enumerate(parameterDefLs):
+      for i, v in enumerate(parameterDefLs):  # (impccode, _climb_key, _dccType_key)
         impcCode = None
         dccType = None
         for output in outputLs:
@@ -776,40 +779,39 @@ def buildParameters(procedureNode,proc,parameterDefLs,procedureImpcCode):
                   dccType = v[2]
                   break
                 
-        outputVal=None
-        if not impcCode == None and output['outputValue'] is not None:
-          # Get the IMPC code from metadataDefLs and the value from output
+        if impcCode == None:  # Nothing to encode in XML
+          continue
+        
+        if output['outputValue'] is None:  # Can't be None
+          outputVal = ''
+        else:
           outputVal = output['outputValue']
-        
+          
         output_status_code = getOutputStatusCode(output)
-        
-        # No value and no status code 
-        if len(output_status_code) == 0 and (outputVal is None or len(str(outputVal)) == 0):
-              continue
-            
+       
         if type(outputVal) != type(""): # TODO - Handle floats and ints
           outputVal = str(outputVal)    
         
-        if len(outputVal) > 0:
-          if dccType == 1:
-              procedureNode = createSimpleParameter(procedureNode, impcCode, outputVal,output_status_code)
-          elif dccType == 2: #  Ontology TBD
-              procedureNode = createOntologyParameter(procedureNode, impcCode, outputVal,output_status_code)
-          elif dccType == 3: # Media - ABR (014) and ERG (047)
-              taskKey = int(proc["taskInstanceKey"])
-              procedureNode = createMediaParameter(procedureNode,impcCode, outputVal,procedureImpcCode,taskKey,output_status_code)
-          elif dccType == 4: # Series 
-              outputVal = outputVal.replace("\'","\"")  # TODO - will this handle VIABILITY?
-              procedureNode = createSeriesParameter(procedureNode, impcCode, json.loads(json.dumps(outputVal)))
-          elif dccType == 5: # SeriesMedia 
-              taskKey = int(proc["taskInstanceKey"])
-              procedureNode = createSeriesMediaParameter(procedureNode, impcCode, outputVal,procedureImpcCode,taskKey)
-          elif dccType == 8:  # colony ids are stored as ouputs for line calls
-                setColonyId(outputVal)
-          elif dccType == 6: # MediaSample - unsupported
-              my_logger.info("MediaSample for an output type? Output key:" + str(outputKey))
-          else:
-              my_logger.info("Metadata for an output? Output key:" + str(outputKey))
+        #if len(outputVal) > 0:
+        if dccType == 1:
+            procedureNode = createSimpleParameter(procedureNode, impcCode, outputVal,output_status_code)
+        elif dccType == 2: #  Ontology TBD
+            procedureNode = createOntologyParameter(procedureNode, impcCode, outputVal,output_status_code)
+        elif dccType == 3: # Media - ABR (014) and ERG (047)
+            taskKey = int(proc["taskInstanceKey"])
+            procedureNode = createMediaParameter(procedureNode,impcCode, outputVal,procedureImpcCode,taskKey,output_status_code)
+        elif dccType == 4: # Series 
+            outputVal = outputVal.replace("\'","\"")  # TODO - will this handle VIABILITY?
+            procedureNode = createSeriesParameter(procedureNode, impcCode, json.loads(json.dumps(outputVal)))
+        elif dccType == 5: # SeriesMedia 
+            taskKey = int(proc["taskInstanceKey"])
+            procedureNode = createSeriesMediaParameter(procedureNode, impcCode, outputVal,procedureImpcCode,taskKey)
+        elif dccType == 8:  # colony ids are stored as ouputs for line calls
+              setColonyId(outputVal)
+        elif dccType == 6: # MediaSample - unsupported
+            my_logger.info("MediaSample for an output type? Output key:" + str(outputKey))
+        else:
+            my_logger.info("Metadata for an output? Output key:" + str(outputKey))
                     
               
       return procedureNode
