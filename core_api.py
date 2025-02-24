@@ -881,6 +881,9 @@ def buildTaskInfoList(expDataLs):
             #  use today's date. If the task is cancelled then the date is today's date
             dateStr = None  # Cancelled assays might not have complete dates
             
+            if expSample['ASSAY_DATA'] == None:
+                continue
+            
             if 'JAX_ASSAY_TEST_DATE' in expSample['ASSAY_DATA'].keys():
                 dateStr =  expSample['ASSAY_DATA']['JAX_ASSAY_TEST_DATE']
             elif 'JAX_ASSAY_TESTDATE' in expSample['ASSAY_DATA'].keys():
