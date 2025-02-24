@@ -690,7 +690,9 @@ def buildMetadata(procedureNode,proc):
             if not impcCode == None:
               # Get the value from input
               if input['inputValue'] is not None:
-                inputVal = input['inputValue'].strip()
+                #inputVal = input['inputValue'].strip()
+                inputVal = input['inputValue']
+                inputVal = str(inputVal).strip()
                 if len(inputVal) > 0:  # only if there is a value there.
                   if db.isExperimenterID(impcCode) == True:  # Can't use real names. Must insert numerical value
                     inputVal = db.databaseGetExperimenterIdCode(inputVal)
@@ -792,7 +794,10 @@ def buildParameters(procedureNode,proc,parameterDefLs,procedureImpcCode):
         if type(outputVal) != type(""): # TODO - Handle floats and ints
           outputVal = str(outputVal)    
         
-        #if len(outputVal) > 0:
+        # Unfortunately, we have to handle the case where the output is empty but we need to include it in the XML
+        if len(outputVal) == 0 and len(output_status_code) == 0:
+          output_status_code = "IMPC_PARAMSC_007"  # Missing data, 'Parameter not measured - not in SOP'
+          
         if dccType == 1:
             procedureNode = createSimpleParameter(procedureNode, impcCode, outputVal,output_status_code)
         elif dccType == 2: #  Ontology TBD
