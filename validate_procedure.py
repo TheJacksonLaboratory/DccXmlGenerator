@@ -82,6 +82,7 @@ def testOutputs(proc):
     # This function assumes that the validity of individual outputs are already done
     msg = ""
     success = True
+   
     if "outputs" not in proc.keys():
         return False, "No outputs!" # TODO - This is a bug in the API
     
@@ -146,7 +147,10 @@ def validateMouseFields(specimenRecord):
             msg = msg +  " phenotyping ID missing" + str(specimenRecord)
       if checkForValue(specimenRecord["project"]) == False:
             msg = msg +  " project ID missing" + str(specimenRecord)
-      
+      #UNTESTED
+      if specimenRecord["gender"].lower() not in ['m','f','u'] and specimenRecord["gender"].lower() not in ['male','female','no data']:
+            msg = msg + " Gender {} for mouse {} is invalid.".format(specimenRecord["gender"], specimenRecord["specimenID"])
+            
       if len(msg) == 0:
         return True
       else:
@@ -298,7 +302,7 @@ def validateAnimal(specimen):
     return (successMouse and successStockNumber)
 
 def validateProcedure(proc):
-    
+    # Validate the companents of the procedure
     lineInfo = None
     specimen = None
     if "animal" in proc:
@@ -311,6 +315,8 @@ def validateProcedure(proc):
         return False,"No task returned by query" 
     
     task = taskLs[0] # TODO - Handle multiple procedures?
+    if task["taskStatus"] != 'Complete':  # or task status == NULL? would that work for CLIMB?
+        return True, None
     
     msg = ""
     overallMsg = ""
@@ -343,7 +349,6 @@ def validateProcedure(proc):
         overallMsg = overallMsg + "; " + "No completion date"
         
     # TBD - Need to task key  for line submissions
-    #lastReviewedDate = db.getLastReviewedDate(specimen["animalName"],task["workflowTaskName"])
     lastReviewedDate = db.getLastReviewedDate(task["taskInstanceKey"])
     reviewedDateStr = task["dateReviewed"]
     if reviewedDateStr != None and len(reviewedDateStr) > 0:
@@ -351,12 +356,17 @@ def validateProcedure(proc):
     else:
         overallMsg = overallMsg + " No Reviewed Date task."
         overallSuccess = False
-        
+    
+    if specimen == None:
+        animalName = "N/A"
+    else:
+        animalName = specimen["animalName"]
+          
     # Exclude those we have already successfully uploaded
     if lastReviewedDate is not None and currentReviewedDate is not None:
         if lastReviewedDate >= currentReviewedDate:  # Is the SME resubmitting this procedure?
-            print("Already submitted: " + str(lastReviewedDate) + " >= " + str(currentReviewedDate) + " for " + specimen["animalName"] + " " + task["workflowTaskName"])
-            task["taskStatus"]  = 'Already submitted'  # else remove the Complete or Cancelled status to avoid unnecessary resubmission
+            print("Already submitted: " + str(lastReviewedDate) + " >= " + str(currentReviewedDate) + " for " + animalName + " " + task["workflowTaskName"])
+            #task["taskStatus"]  = 'Already submitted'  # else remove the Complete or Cancelled status to avoid unnecessary resubmission
             createLogEntry(specimen, task, lineInfo, None, overallMsg + ' *Already submitted')
       
     if overallSuccess == False:
