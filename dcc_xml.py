@@ -1131,7 +1131,7 @@ def handleJaxLimsData():
       # Setup credentials for database
       impc_proc_ls = mycfg['impc_proc_codes']['impc_code_list'].split(',')
       jax_study = mycfg['jax_study']['study']
-      whereClasue = mycfg['jaxlims_database']['whereClause']
+      whereClause = mycfg['jaxlims_database']['whereClause']
       setDataDir(mycfg['directories']['dest'])
       
       all_mice = []
@@ -1139,7 +1139,8 @@ def handleJaxLimsData():
       
       # For each procedure code in the list, generate an experient XML file
       for proc_code in impc_proc_ls:
-        pi_key_ls, taskInstanceDictLs = db.getCombinedProcedureSpecimenData(proc_code,jax_study,whereClasue)
+        pi_key_ls, taskInstanceDictLs = db.getCombinedProcedureSpecimenData(proc_code,jax_study, (whereClause if whereClause != None else ""))
+        
         createExperimentXML(taskInstanceDictLs,True)  # Second arg is 'experimentHasAnimals?'
         all_mice.extend(pi_key_ls)
 
