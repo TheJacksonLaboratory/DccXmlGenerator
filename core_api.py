@@ -1008,10 +1008,10 @@ def getSeriesOutput(expSample,keystr,dateStr):
     # Build up the series. A dictionary. Key is increment value is value
     if keystr == FIRST_GTT_SERIES: # t0, t15, t30, t60, t120
         outputDictValue["0"] = expSample[keystr]
-        outputDictValue["15"] = expSample[keystr.replace('t0','t15')]
-        outputDictValue["30"] = expSample[keystr.replace('t0','t30')]
-        outputDictValue["60"] = expSample[keystr.replace('t0','t60')]
-        outputDictValue["120"] = expSample[keystr.replace('t0','t120')]
+        outputDictValue["15"] = expSample[keystr.replace('T0','T15')]
+        outputDictValue["30"] = expSample[keystr.replace('T0','T30')]
+        outputDictValue["60"] = expSample[keystr.replace('T0','T60')]
+        outputDictValue["120"] = expSample[keystr.replace('T0','T120')]
         idx = 16 # i.e. IMPC_
     elif  keystr == FIRST_OFD_DISTANCE_TRAVELLED_SERIES: # 1st5, 2nd5, 3rd5, 4th5
         outputDictValue["5"] = expSample[keystr]
