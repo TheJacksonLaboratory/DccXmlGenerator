@@ -725,9 +725,10 @@ def buildMetadata(procedureNode,proc):
                 if len(outputVal) > 0: # only if there is a value there.
                   if db.isExperimenterID(impcCode) == True:  # Can't use real names. Must insert numerical value
                     #my_logger.info("Looking up " + outputVal + " for experimenterID.")
+                    origVal = outputVal
                     outputVal = db.databaseGetExperimenterIdCode(outputVal)
                     if len(outputVal) == 0:
-                      my_logger.info("    Couldn't resolve experimenter ID")
+                      my_logger.info(origVal + "    Couldn't resolve experimenter ID. Code ="+impcCode)
                   elif db.isDate(impcCode) == True:  # Format YYYY-MM-DD
                     outputVal = str(pd.to_datetime(outputVal))[0:10]
                     my_logger.info("Reformating date:"+ output['outputValue'].strip() + " to " + outputVal)
@@ -957,7 +958,7 @@ def extractGenotype(genotypes):
     elif genotype["genotype"] == '+/Y':
         zygosity = 'anzygous'
         
-    return zygosity
+  return zygosity
 
 lineCallProcedures = ["Viability E18.5 Secondary Screen", "Viability E15.5 Secondary Screen", 
                       "Viability E12.5 Secondary Screen", "Viability E9.5 Secondary Screen", 
