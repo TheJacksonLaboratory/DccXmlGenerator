@@ -783,7 +783,126 @@ def getAssay(expName:str, assayBarcode:str) -> dict:
     d = json.loads(cont.decode('utf-8'))
     d.pop("@odata.context", None)
     return d
-      
+
+"""
+    This function updates the experiment status in the PFS database using RESTful API calls.
+    It logs in, updates the status for each experiment in the provided list, and then logs out.
+    
+    No return value, but logs the success or failure of each update.
+    
+    status_message: The status message to set for the experiments.
+    experiment_name: The name of the experiment type (e.g., "KOMP_BODY_WEIGHT_EXPERIMENT"). 
+    exp_ls: A list of experiment barcodes to update.
+"""
+def restful_update(status_message,experiment_name,exp_ls):
+
+    mycfg = cfg.parse_config(path="config.yml")
+    baseURL = mycfg['corepfs_database']['baseURL']
+    name = mycfg['corepfs_database']['username']
+    password = mycfg['corepfs_database']['password']
+    # Right now looks only for PROD or TEST  
+    tenant = "PROD" if "PROD" in baseURL else "TEST" 
+
+    loginUrl =  "https://jacksonlabstest.platformforscience.com/sdklogin/"
+    updateUrl = "https://jacksonlabstest.platformforscience.com/sdk/"
+
+    headers = {
+        'Content-Type':'application/json',
+        'If-Match': '*',
+        'Accept': 'application/json'
+    }
+    
+    # login template
+    login_template = { 
+            "request" : 
+            { "sdkCmd": "sdk-login",
+                "typeParam": "*",
+                "data": {
+                "lims_userName": "",
+                "lims_password": "",
+                "accountRef": { "name": "" }
+            },
+            "responseOptions": []
+            } 
+        }
+
+    login_template["request"]["data"]["lims_userName"] = name
+    login_template["request"]["data"]["lims_password"] = password
+    login_template["request"]["data"]["accountRef"]["name"] = tenant  # e.g. PROD
+    
+    session= requests.Session()
+    resp = session.post(loginUrl, headers=headers, data=json.dumps(login_template))
+
+    if resp.status_code == 200:
+        my_logger.info("Login successful")
+    else:
+        my_logger.info("Login failed")
+        my_logger.info(resp.content)
+        return  # Bail
+    
+    # Add cookie with jsessionId
+    jsessionId = json.loads(resp.content)["response"]["data"]["jsessionid"]
+    session.cookies.set("JSESSIONID", jsessionId)
+    
+    update_body_template = {
+          "request": {
+            "sdkCmd": "update",
+            "data": {
+            "values": {
+                "JAX_EXPERIMENT_STATUS": {
+                    "stringData": ""
+                }
+            },
+            "name": "",
+            "active": 1,
+            "barcode": ""
+        },
+        "responseOptions": [
+            "CONTEXT_GET",
+            "MESSAGE_LEVEL_WARN"
+        ],
+        "typeParam": "",
+        "logicOptions": [
+            "EXECUTE_TRIGGERS"
+        ]
+     }
+     }
+   
+    # Loop through the experiment list
+    try:
+       experiment_name = experiment_name.replace("_", " ")
+       update_body_template["request"]["data"]["values"]["JAX_EXPERIMENT_STATUS"]["stringData"] = status_message
+       update_body_template["request"]["typeParam"] = experiment_name
+       
+       for barcode in exp_ls:
+           # Now the UPDATE
+           update_body_template["request"]["data"]["barcode"] = barcode
+           update_body_template["request"]["data"]["name"] = barcode
+           # Yes, we use a GET to do the update  
+           resp = session.get(updateUrl, headers=headers, data=json.dumps(update_body_template))
+        
+           # Check if the response is successful
+           if resp.status_code == 200:
+            my_logger.info("Update successful: " + barcode)
+           else:
+            my_logger.info("Update failed: " + barcode)
+            my_logger.info(resp.content)
+            
+    except Exception as e:
+        my_logger.info(f"UPDATE error occurred: {e}")
+
+   # Always logout
+    finally:
+        login_template["request"]["data"]["sdkCmd"] = "sdk-logout"
+        resp = session.post(loginUrl+"?sessionid="+jsessionId, headers=headers, data=json.dumps(login_template))
+   
+        # Check if the response is successful
+        if resp.status_code == 200:
+            my_logger.info("Logout successful")
+        else:
+            my_logger.info("Logout failed")
+            my_logger.info(resp.content)
+
     
 
 def jaxstrainToStocknumber(jaxstrain):
@@ -1012,7 +1131,7 @@ def getSeriesOutput(expSample,keystr,dateStr):
         outputDictValue["15"] = expSample[keystr.replace('T0','T15')]
         outputDictValue["30"] = expSample[keystr.replace('T0','T30')]
         outputDictValue["60"] = expSample[keystr.replace('T0','T60')]
-        outputDictValue["120"] = expSample[keystr.replace('T0','T120')]
+        outputDictValue["120"] = expSample[keystr.replace('T0','T120')] 
         idx = 16 # i.e. IMPC_
     elif  keystr == FIRST_OFD_DISTANCE_TRAVELLED_SERIES: # 1st5, 2nd5, 3rd5, 4th5
         outputDictValue["5"] = expSample[keystr]
@@ -1184,42 +1303,94 @@ if __name__ == '__main__':
     
     # A way to update the status of an experiment from the list generated by write_data_sent_experiments_to_csv()
     """
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT1','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT2','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT3','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT4','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT5','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT6','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT7','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT8','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT9','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT10','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT11','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT12','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT13','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT14','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT15','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT16','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT17','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT18','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT19','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT20','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT21','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT22','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT23','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT24','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT25','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT26','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT27','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT28','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT29','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT30','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT31','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT32','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT34','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT35','Review Completed')
-    updateExperimentStatus('KOMP_GLUCOSE_TOLERANCE_TEST_EXPERIMENT','KGTT36','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR1','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR10','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR11','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR12','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR13','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR14','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR15','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR16','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR17','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR18','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR19','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR2','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR20','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR21','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR22','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR23','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR24','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR25','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR26','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR27','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR28','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR29','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR30','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR31','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR32','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR33','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR34','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR35','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR36','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR37','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR38','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR39','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR4','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR40','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR41','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR5','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR6','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR7','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR8','Review Completed')
+    updateExperimentStatus('KOMP_AUDITORY_BRAINSTEM_RESPONSE_EXPERIMENT','KABR9','Review Completed')
     """
+    
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE1','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE2','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE4','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE5','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE6','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE7','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE8','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE9','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE10','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE11','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE12','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE13','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE14','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE15','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE16','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE17','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE18','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE19','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE20','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE21','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE22','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE23','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE24','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE26','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE27','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE28','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE29','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE30','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE31','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE32','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE33','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE34','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE35','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE36','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE37','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE38','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE39','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE40','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE41','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE42','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE43','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE44','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE45','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE46','Review Completed')
+    updateExperimentStatus('KOMP_SHIRPA_DYSMORPHOLOGY_EXPERIMENT','KSDE47','Review Completed')
+    
     """
     # Get column headers for attribute names
     mycfg = cfg.parse_config(path="config.yml")
@@ -1247,13 +1418,15 @@ if __name__ == '__main__':
         outfile.write(json.dumps(impcCodeLookups,indent=4))
         
     """
+    
     #Get all KOMP Mice
+    """
     numberOfKompRequest, valuelist = getKompMice()
     animalInfo = getSampleList(valuelist)
     
     with open("samples.json","w") as outfile:
         outfile.write(json.dumps(animalInfo,indent=4))
-    
+    """
     """
     db.init()
     with open("taskInfoList.json","w") as outfile:

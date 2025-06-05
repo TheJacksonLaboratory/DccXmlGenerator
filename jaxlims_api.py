@@ -656,7 +656,8 @@ def resolveSeries(outputInstanceDictLs:list, first_index:int):
         i = i - 1
         
     return outputInstanceDictLs
-                      
+
+
 def resolveMediaSeries(outputInstanceDictLs:list, first_index:int):
     # The i-th element is the start of the series
     seriesVal = {}

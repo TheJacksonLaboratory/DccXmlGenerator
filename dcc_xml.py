@@ -391,15 +391,15 @@ def validateSeriesParameter(seriesValue: str): # Comes in a str, returns a dict
   # Returns None if not valid
   paramDict = {}
   try:
-    if "None" in seriesValue: # Can't handle Nones. Should never see.
-      return None
-    seriesValue = seriesValue.replace("\'","\"")  # Single quote check
-    paramDict = json.loads(seriesValue) # Turn to dict
-    # Values need to be str's!
-    for k,v in paramDict.items():
-      paramDict[k] = str(v)
+    seriesValue = seriesValue.replace("None","'None'")
+    seriesValue = seriesValue.replace("\'","\"")
     
-    # TODO : Handle viability -> paramDict["noLitter"] = seriesValue  # VIA only for now
+    paramDict = json.loads(seriesValue) # Turn to dict
+    
+    # Values need to be str's. None will be replaced with empty strings
+    for k,v in paramDict.items():
+        paramDict[k] = str(v)
+    # TODO? : Handle viability -> paramDict["noLitter"] = seriesValue  # VIA only for now
   except Exception as e:
     my_logger.info(repr(e))
     
@@ -425,9 +425,18 @@ def createSeriesParameter(procedureNode, impcCode, strVal):
     # The value is a dictionary with the key as the increment and the value as the value
     paramNode = ET.SubElement(procedureNode, 'seriesParameter', { 'parameterID': '{code}'.format(code=impcCode)})
     
+    # No values? Need to status code this
+    if dictVal == {}:  # Nothing to do
+      my_logger.info("No values for series parameter {0}".format(impcCode)) 
+      statusNode = ET.SubElement(paramNode,'parameterStatus')
+      statusNode.text = 'IMPC_PARAMSC_001'  # Parameter not measured - Equipment Failed
+    
     for key in dictVal:
-      valueNode = ET.SubElement(paramNode, 'value', {'incrementValue': key})
-      valueNode.text = dictVal[key]
+      if dictVal[key] == None or dictVal[key] == 'None' or dictVal[key] == '':
+        valueNode = ET.SubElement(paramNode, 'value', {'incrementValue': key, 'incrementStatus':"IMPC_PARAMSC_001"})
+      else:
+        valueNode = ET.SubElement(paramNode, 'value', {'incrementValue': key})
+        valueNode.text = dictVal[key]
       
     return procedureNode
 
@@ -1056,10 +1065,11 @@ def recordSubmission(taskLs, expFileName):
     return
   
   # Record the submission
+  experiment_name = ''
   experimentBarcode = set() # We ony want to update PFS once
   for task in taskLs:
     if len(task["taskInstance"]) > 0:
-        # animalName = task["animal"][0]["animalName"]  # TODO Line calls will not have an animal. Need to get the colony ID : getColonyId()
+        experiment_name = task["taskInstance"][0]["workflowTaskName"]
         animalName = getAnimalNameFromTaskInfo(task)  
         db.recordSubmissionAttempt(expFileName.split('\\')[-1],
                                 animalName, 
@@ -1068,16 +1078,16 @@ def recordSubmission(taskLs, expFileName):
                                 v.getReviewedDate(task["taskInstance"][0]),
                                 task["taskInstance"][0]["barcode"]) 
         
-          # Update the EXPERIMENT status to "Data Sent to DCC" if the source is PFS CORE
-        if getDataSrc() == 'PFS':
-          if task["taskInstance"][0]["barcode"] not in experimentBarcode:  # Just do it once
-            status = "Data Sent to DCC"
-            comments = ""  # Not used at the moment
-            pfs.updateExperimentStatus(task["taskInstance"][0]["workflowTaskName"],task["taskInstance"][0]["barcode"],status,comments)
-            experimentBarcode.add(task["taskInstance"][0]["barcode"]) 
-    
-  return  
+
+        if "barcode" in task["taskInstance"][0].keys() and task["taskInstance"][0]["barcode"] not in experimentBarcode:  # Just do it once
+            experimentBarcode.add(task["taskInstance"][0]["barcode"])
   
+  # Update the EXPERIMENT status to "Data Sent to DCC" if the source is PFS CORE
+  if getDataSrc() == 'PFS':
+    pfs.restful_update("Data Sent to DCC",experiment_name,list(experimentBarcode))
+
+  return
+
 def handlePfsData():
     # For CORE PFS komp mice
     mycfg = cfg.parse_config(path="config.yml")

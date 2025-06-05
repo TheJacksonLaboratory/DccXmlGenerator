@@ -1126,8 +1126,10 @@ def getMiceAndProcedures(filterDict:dict) -> tuple[list, list]:
     
     # Get all the procedures
     taskInfoReturn_Ls_Dict = getProceduresGivenFilter(filterDict)
+        
+    # Get the taskInfo list
     taskInfo_ls = taskInfoReturn_Ls_Dict["taskInfo"]  # taskInfo_ls is list that has a list of "taskInstance" that is also a list
-    
+   
     # Get all the mice and put them in a dataframe for filtering
     df = animalsToDataframe(filterDict)
     # test for empty dataframe
@@ -1231,10 +1233,10 @@ def animalsToDataframe(filter:dict, page:int=1, pageSize:int=2000) -> pd.DataFra
         wgResponse = requests.get(endpoint()+'/animals' + whereClause + f'&PageNumber={page}&PageSize={pageSize}', headers=call_header, timeout=300)
         
         if wgResponse.status_code == 500: # Server error
-            #print(wgResponse.content)
+            my_logger.info(wgResponse.content)
             return pd.DataFrame()  # Empty dataframe
         elif wgResponse.status_code == 422:
-            #print(wgResponse.content)
+            my_logger.info(wgResponse.content)
             return pd.DataFrame()  # Empty dataframe
         elif wgResponse.status_code == 200:
             response = wgResponse.json()
@@ -1257,7 +1259,7 @@ def animalsToDataframe(filter:dict, page:int=1, pageSize:int=2000) -> pd.DataFra
     except requests.exceptions.RequestException as e:  # All others
         my_logger.info(repr(e))
         raise  
-    
+
     df = pd.DataFrame(animalInfoLs) 
     if totalItemCount - (pageSize * pageNumber) > 0:
         page = pageNumber + 1
