@@ -6,11 +6,17 @@ jaxlims_database:
  whereClause:
 
 corepfs_database:
+    #baseURL: https://jacksonlabstest.platformforscience.com/TEST/odata/
     baseURL: https://jacksonlabs.platformforscience.com/PROD/odata/
     experimentEndpointTemplate: KOMP_{exp}_EXPERIMENT?$filter=JAX_EXPERIMENT_STATUS eq 'Review Completed'&$expand=EXPERIMENT_SAMPLES($expand=ASSAY_DATA/pfs.KOMP_{exp}_ASSAY_DATA($filter='LC5' ne JAX_ASSAY_PENBARCODE),ENTITY/pfs.MOUSE_SAMPLE_LOT($expand=SAMPLE/pfs.MOUSE_SAMPLE))
     mouseEndpoint: KOMP_REQUEST?$expand=REV_MOUSESAMPLELOT_KOMPREQUEST($expand=SAMPLE/pfs.MOUSE_SAMPLE($filter=Active eq true))
     experimentOnlyEndpointTemplate: KOMP_{}_EXPERIMENT?$filter=JAX_EXPERIMENT_STATUS eq 'Data Sent to DCC'&$count=true
     basicMouseInfoEndpoint: MOUSE_SAMPLE?$filter=Active eq true&$expand=MOUSE_SAMPLE_LOT($expand=SAMPLE)   
+    #loginUrl: https://jacksonlabstest.platformforscience.com/sdklogin/
+    #updateUrl: https://jacksonlabstest.platformforscience.com/sdk/
+    loginUrl: https://jacksonlabs.platformforscience.com/sdklogin/
+    updateUrl: https://jacksonlabs.platformforscience.com/sdk/
+
  
     username: svc-corePFS@jax.org
     password: hRbP&6K&(Qvw
@@ -45,7 +51,7 @@ impc_pipeline:
 #STARTLE_PPI
 
 impc_proc_codes:
-    impc_code_list: EYE_MORPHOLOGY
+    impc_code_list: GLUCOSE_TOLERANCE_TEST
     impc_all_code_list: BODY_WEIGHT,OPEN_FIELD,HOLEBOARD,SHIRPA_DYSMORPHOLOGY,STARTLE_PPI,GRIP_STRENGTH,HEMATOLOGY,CLINICAL_BLOOD_CHEMISTRY,HEART_WEIGHT,BODY_COMPOSITION,GLUCOSE_TOLERANCE_TEST,ELECTROCARDIOGRAM,ELECTRORETINOGRAPHY,FUNDUS_IMAGING,EYE_MORPHOLOGY,AUDITORY_BRAINSTEM_RESPONSE,LIGHT_DARK_BOX
     
 impc_proc_status_codes:
