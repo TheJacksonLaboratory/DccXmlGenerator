@@ -1268,23 +1268,92 @@ def animalsToDataframe(filter:dict, page:int=1, pageSize:int=2000) -> pd.DataFra
     return df
 
 
+def flatten_json(task_ls:list) -> list:
+    out_ls = [] 
+    
+    for task in task_ls:  # task is a dict
+        task_instance_ls = task.get("taskInstance")  # One element list
+        if task_instance_ls is None or len(task_instance_ls) == 0:
+            continue
+        
+        task_instance = task_instance_ls[0]  # One element list
+        
+        if "materialKeys" in task_instance.keys():
+            del task_instance["materialKeys"]
+            
+        # Delete the input list 
+        if "inputs" in task_instance.keys():
+            inputs = task_instance["inputs"]
+            for input in inputs:
+                name = input["inputName"]
+                value = input["inputValue"]
+                if value is None:
+                    value = ""
+                task_instance[name] = value
+            del task_instance["inputs"]
+            
+            
+        #Get the output list
+        if "outputs" in task_instance.keys():
+            outputs = task_instance["outputs"]
+        
+            for output in outputs:
+                name = output["outputName"]
+                value = output["outputValue"]
+                if value is None:
+                    value = ""
+                task_instance[name] = value
+            
+        del task_instance["outputs"]
+        del task_instance["taskAlias"]
+        del task_instance["taskStatusKey"]
+        del task_instance["assignedTo"]
+        del task_instance["dateDue"]
+        del task_instance["protocolKey"]
+        del task_instance["jobKey"]
+        del task_instance["cohortCount"]
+        del task_instance["animalCount"]
+        del task_instance["sampleCount"]
+        del task_instance["taskInputCount"]
+        del task_instance["taskOutputSetCount"]
+        del task_instance["taskOutputCount"]
+        del task_instance["createdBy"]
+        del task_instance["dateCreated"]
+        del task_instance["modifiedBy"]
+        del task_instance["dateModified"]
+        del task_instance["barcode"]
+        out_ls.append(task_instance)
+        # Take list of dicts and create a dataframe
+        df = pd.DataFrame(out_ls)
+        # Write to a csv file
+        df.to_csv("flattened.csv", index=False)
+        
+    return out_ls
+
 if __name__ == '__main__':
     setWorkgroup('KOMP-JAX Lab')
     setMyToken(getTokenEx())
     
     #filterDict = { "taskInstance": { "workflowTaskName": "E18.5 MicroCT", "completedStartDate": "2024-07-01", "completedEndDate": "2024-07-01", "isReviewed": True}, "animal": { "animalName":"A-3976", "generation":"E18.5"}, "lines": [] }
-    filterDict = { "taskInstance": { "workflowTaskName": "Histopathology", "isReviewed": True}, "animal": { "animalName":"A-3"}, "lines": [] }
+    #filterDict = { "taskInstance": { "workflowTaskName": "Histopathology", "isReviewed": True}, "animal": { "animalName":"A-3"}, "lines": [] }
+    filterDict = { "taskInstance": { "workflowTaskName": "Viability Primary Screen v2", "workflowTaskStatus":"Complete", "isReviewed": True}, "animal": { "generation":""}, "lines": [] }
+    #filterDict = { "taskInstance": { "workflowTaskName": "Fertility of Homozygous Knock-out Mice", "workflowTaskStatus":"Complete", "isReviewed": True}, "animal": { "generation":""}, "lines": [] }
+    #mice_ls, task_ls = getProceduresGivenFilterWithIO(filterDict)    
+    task_ls = getProceduresGivenFilterWithIO(filterDict)
     
-    mice_ls, task_ls = getMiceAndProcedures(filterDict)
+    task_and_output_ls = flatten_json(task_ls)
+    with open("flattened.json","w") as f:
+        json.dump(task_and_output_ls,f,indent=4)
+    
     
     jsonDictLs = json.dumps(task_ls , indent=4)
     with open("climb-api-results.json","w") as f:
         json.dump(task_ls,f,indent=4)
-    
+    """
     jsonDictLs = json.dumps(mice_ls , indent=4)
     with open("mouseResults.json","w") as f:
         json.dump(mice_ls,f,indent=4)
-        
+    """   
     print("SUCCESS")
     
     
