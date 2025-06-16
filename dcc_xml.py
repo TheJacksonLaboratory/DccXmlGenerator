@@ -784,7 +784,7 @@ def buildParameters(procedureNode,proc,parameterDefLs,procedureImpcCode):
       for i, v in enumerate(parameterDefLs):  # (impccode, _climb_key, _dccType_key)
         impcCode = None
         dccType = None
-        for output in outputLs:
+        for output in outputLs:  # TODO - Very inefficient
           outputKey = output['outputKey']
           if v[1] == outputKey:
                   impcCode = v[0]
@@ -806,7 +806,10 @@ def buildParameters(procedureNode,proc,parameterDefLs,procedureImpcCode):
         
         # Unfortunately, we have to handle the case where the output is empty but we need to include it in the XML
         if len(outputVal) == 0 and len(output_status_code) == 0:
-          output_status_code = "IMPC_PARAMSC_007"  # Missing data, 'Parameter not measured - not in SOP'
+          if db.isRequired(impcCode):
+            output_status_code = "IMPC_PARAMSC_007"  # Missing data, 'Parameter not measured - not in SOP'
+          else:
+            continue  # Not required, no value ... so skip it.
           
         if dccType == 1:
             procedureNode = createSimpleParameter(procedureNode, impcCode, outputVal,output_status_code)
