@@ -393,6 +393,8 @@ def validateSeriesParameter(seriesValue: str): # Comes in a str, returns a dict
   try:
     seriesValue = seriesValue.replace("None","'None'")
     seriesValue = seriesValue.replace("\'","\"")
+    if seriesValue == None or seriesValue == '':
+      return paramDict
     
     paramDict = json.loads(seriesValue) # Turn to dict
     
@@ -402,7 +404,6 @@ def validateSeriesParameter(seriesValue: str): # Comes in a str, returns a dict
     # TODO? : Handle viability -> paramDict["noLitter"] = seriesValue  # VIA only for now
   except Exception as e:
     my_logger.info(repr(e))
-    
     
   return paramDict  
 # e.g. for Primary Viability
@@ -754,7 +755,8 @@ def getProcedureStatusCode(proc:dict):
   if 'taskStatus' in proc and proc['taskStatus'] is not None:
     if proc['taskStatus'] in procedure_status_message_map:
       impc_status_code = procedure_status_message_map[proc['taskStatus']]
-  
+    else:
+      impc_status_code = 'IMPC_PSC_006'  # Cancelled --- the default status code
   return impc_status_code
 
 # For adding to XML
