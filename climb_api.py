@@ -212,8 +212,8 @@ def escapeHtmlCharacter(html):
     html = html.replace("/","%2F")
     return html
 
-def getTaskNames():
-    return ['Histopathology','E12.5 Embryo Gross Morphology', 'E12.5 Placenta Morphology', 'E15.5 Embryo Gross Morphology', 'E15.5 Placenta Morphology', 'E18.5 Embryo Gross Morphology', 'E18.5 Placenta Morphology', 'E9.5 Embryo Gross Morphology', 'E9.5 Placenta Morphology', 'MicroCT 18.5', 'MicroCT 15.5']
+def getTaskNamesWithSpecimens():
+    return ['Histopathology','E12.5 Embryo Gross Morphology', 'E12.5 Placenta Morphology', 'E15.5 Embryo Gross Morphology', 'E15.5 Placenta Morphology', 'E18.5 Embryo Gross Morphology', 'E18.5 Placenta Morphology', 'E9.5 Embryo Gross Morphology', 'E9.5 Placenta Morphology', 'E18.5 MicroCT', 'MicroCT E14.5-E15.5']
 
     
  
@@ -334,7 +334,8 @@ def getInputsFromTaskName(taskName):
 def getInputsFromTaskNames():
     # For each task get the inputs and write them to a CSV file
     createInputCsvFileHeader()
-    taskNames = getTaskNames()
+    taskNames = getTaskNamesWithSpecimens()
+    inputDictLs = []
     for taskName in taskNames:
         inputDictLs = getInputsFromTaskName(escapeHtmlCharacter(taskName))
         createInputCsv(taskName,inputDictLs)
@@ -363,7 +364,8 @@ def getOutputsFromTaskName(taskName):
 def getOutputsFromTaskNames():
     # For each task get the outputs and write them to a CSV file
     createOutputCsvFileHeader()
-    taskNames = getTaskNames()
+    taskNames = getTaskNamesWithSpecimens()
+    outputDictLs = []
     for taskName in taskNames:
         outputDictLs = getOutputsFromTaskName(escapeHtmlCharacter(taskName))
         createOutputCsv(taskName,outputDictLs)
@@ -797,7 +799,6 @@ def getProceduresGivenFilterWithIO(taskNameFilter,page=1,pageSize=500):
     # end of filters (we can expand as needed)
     
     taskInfoLs = [] # Response from CLIMB
-    #taskInfoDictLs = { "taskInfo":[] }  # A list of one
     
     taskInfoDictLs = []  # A list of one
     
@@ -883,12 +884,18 @@ def getProceduresGivenFilterWithIO(taskNameFilter,page=1,pageSize=500):
     return taskInfoDictLs
 
 
+
+# Get the inputs
 def getInputs(taskInstanceKey):
-    # Get the inputs
+    print(taskInstanceKey)
     call_header = {'Authorization' : 'Bearer ' + token()}
     try:
         endpointUrl = endpoint() +'/taskinstances/taskInputs?TaskInstanceKey=' + str(taskInstanceKey) + '&PageNumber=0&PageSize=200'
         wgResponse = requests.get(endpointUrl, headers=call_header, timeout=60)
+        if wgResponse.status_code != 200: # Server error
+            print("Error getting inputs for taskInstanceKey: " + str(taskInstanceKey)  )
+            my_logger.info(wgResponse.content)
+            
         inputLs = wgResponse.json()
         inputsOnly = inputLs["data"]["items"]
         # clean up unwanted input objects
@@ -906,9 +913,12 @@ def getInputs(taskInstanceKey):
     except requests.exceptions.RequestException as e:  # All others
         my_logger.info(repr(e))
         raise  
+    except Exception as e:  
+        my_logger.info(repr(e))
+        raise
                 
 def getOutputs(taskInstanceKey):
-            
+    wgResponse=None   
     # Get the outputs
     call_header = {'Authorization' : 'Bearer ' + token()}
     try:
@@ -934,6 +944,9 @@ def getOutputs(taskInstanceKey):
     except requests.exceptions.RequestException as e:  # All others
         my_logger.info(repr(e))
         raise  
+    except Exception as e:  
+        my_logger.info(repr(e))
+        raise 
         
 """
 {
@@ -1272,12 +1285,17 @@ def flatten_json(task_ls:list) -> list:
     out_ls = [] 
     
     for task in task_ls:  # task is a dict
+        
         task_instance_ls = task.get("taskInstance")  # One element list
         if task_instance_ls is None or len(task_instance_ls) == 0:
             continue
         
         task_instance = task_instance_ls[0]  # One element list
         
+        if "animal" in task.keys():
+            task_instance["animalId"] = task["animal"][0]["animalName"]
+            task_instance["animalLine"] = task["animal"][0]["line"]
+
         if "materialKeys" in task_instance.keys():
             del task_instance["materialKeys"]
             
@@ -1331,16 +1349,22 @@ def flatten_json(task_ls:list) -> list:
     return out_ls
 
 if __name__ == '__main__':
+    my_logger.info('Logger has been created')
+    
+    print(my_logger.get_current_line_number())
+    
     setWorkgroup('KOMP-JAX Lab')
     setMyToken(getTokenEx())
     
-    #filterDict = { "taskInstance": { "workflowTaskName": "E18.5 MicroCT", "completedStartDate": "2024-07-01", "completedEndDate": "2024-07-01", "isReviewed": True}, "animal": { "animalName":"A-3976", "generation":"E18.5"}, "lines": [] }
+    #filterDict = { "taskInstance": { "workflowTaskName": "E18.5 MicroCT", "isReviewed": True}, "animal": { "animalName":"A-", "generation":"E18.5"}, "lines": [] }
     #filterDict = { "taskInstance": { "workflowTaskName": "Histopathology", "isReviewed": True}, "animal": { "animalName":"A-3"}, "lines": [] }
-    filterDict = { "taskInstance": { "workflowTaskName": "Viability Primary Screen v2", "workflowTaskStatus":"Complete", "isReviewed": True}, "animal": { "generation":""}, "lines": [] }
-    #filterDict = { "taskInstance": { "workflowTaskName": "Fertility of Homozygous Knock-out Mice", "workflowTaskStatus":"Complete", "isReviewed": True}, "animal": { "generation":""}, "lines": [] }
-    #mice_ls, task_ls = getProceduresGivenFilterWithIO(filterDict)    
-    task_ls = getProceduresGivenFilterWithIO(filterDict)
-    
+    #filterDict = { "taskInstance": { "workflowTaskName": "Viability Primary Screen v2", "workflowTaskStatus":"Complete", "isReviewed": True}, "animal": { "generation":""}, "lines": [] }
+    filterDict = { "taskInstance": { "workflowTaskName": "Fertility of Homozygous Knock-out Mice", "workflowTaskStatus":"Complete", "isReviewed": True}, "animal": { "generation":""}, "lines": [] }
+    if filterDict["taskInstance"]["workflowTaskName"] in getTaskNamesWithSpecimens():
+        mice_ls, task_ls = getMiceAndProcedures(filterDict)   
+    else:
+        task_ls = getProceduresGivenFilterWithIO(filterDict)
+        
     task_and_output_ls = flatten_json(task_ls)
     with open("flattened.json","w") as f:
         json.dump(task_and_output_ls,f,indent=4)
