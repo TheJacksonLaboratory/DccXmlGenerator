@@ -34,6 +34,7 @@ def init():
     g_logger.info('Logger has been created')
 
 def info(message):
+    global g_logger
     if g_logger == None:
         init()
         
@@ -41,7 +42,20 @@ def info(message):
     
 
 def debug(message):
+    global g_logger
     if g_logger == None:
         init()
         
     g_logger.debug(message)
+
+from inspect import currentframe, getframeinfo
+
+def get_current_line_number():
+    """
+    Returns the line number of the calling code.
+    """
+    frame = currentframe()
+    frame_info = getframeinfo(frame)
+    # f_lineno gives the line number of the current frame
+    # f_back gives the previous frame in the call stack
+    return frame.f_back.f_lineno, frame.f_back.f_code.co_filename
