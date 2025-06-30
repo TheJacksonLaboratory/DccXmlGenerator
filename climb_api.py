@@ -215,6 +215,10 @@ def escapeHtmlCharacter(html):
 def getTaskNamesWithSpecimens():
     return ['Histopathology','E12.5 Embryo Gross Morphology', 'E12.5 Placenta Morphology', 'E15.5 Embryo Gross Morphology', 'E15.5 Placenta Morphology', 'E18.5 Embryo Gross Morphology', 'E18.5 Placenta Morphology', 'E9.5 Embryo Gross Morphology', 'E9.5 Placenta Morphology', 'E18.5 MicroCT', 'MicroCT E14.5-E15.5']
 
+ 
+def getTaskNamesWithoutSpecimens():
+    return ['Viability Primary Screen v2','Viability E9.5 Secondary Screen', 'Viability E12.5 Secondary Screen', 'Viability E15.5 Secondary Screen', 'Viability E18.5 Secondary Screen', 'Fertility of Homozygous Knock-out Mice']
+
     
  
 # WORKGROUPS WORKGROUPS WORKGROUPS 
@@ -611,8 +615,8 @@ def getMinMaxFromOutput(key):  # TBD if needed
     max = None
     return min, max
 
-def intersection(lst1, lst2):
-    lst3 = [set(lst1)+set(lst2)]
+def intersection(lst1:list, lst2:list)->list:
+    lst3 = list(set(lst1) & set(lst2))
     return lst3
 
 ######## SOME USEFUL, SPECIAL CLIMB METHODS
@@ -1280,8 +1284,8 @@ def animalsToDataframe(filter:dict, page:int=1, pageSize:int=2000) -> pd.DataFra
     
     return df
 
-
-def flatten_json(task_ls:list) -> list:
+def flatten_json_tasks(task_name:str,task_ls:list) -> list:   
+    
     out_ls = [] 
     
     for task in task_ls:  # task is a dict
@@ -1293,8 +1297,8 @@ def flatten_json(task_ls:list) -> list:
         task_instance = task_instance_ls[0]  # One element list
         
         if "animal" in task.keys():
-            task_instance["animalId"] = task["animal"][0]["animalName"]
-            task_instance["animalLine"] = task["animal"][0]["line"]
+            task_instance["AnimalId"] = task["animal"][0]["animalName"]
+            task_instance["AnimalLine"] = task["animal"][0]["line"]
 
         if "materialKeys" in task_instance.keys():
             del task_instance["materialKeys"]
@@ -1340,13 +1344,82 @@ def flatten_json(task_ls:list) -> list:
         del task_instance["modifiedBy"]
         del task_instance["dateModified"]
         del task_instance["barcode"]
+        # Captilize the keys in the task_instance
+        # task_instance = {k.capitalize(): v for k, v in task_instance.items()}
+        # Capitilize the first character of the keys in the task_instance
+        task_instance = {k[0].upper() + k[1:]: v for k, v in task_instance.items()}
+        
         out_ls.append(task_instance)
-        # Take list of dicts and create a dataframe
-        df = pd.DataFrame(out_ls)
-        # Write to a csv file
-        df.to_csv("flattened.csv", index=False)
+        
         
     return out_ls
+
+
+def flatten_json_mice(task_name:str,mice_ls:list) -> list:   
+    
+    out_ls = [] 
+    out_mouse_dict = {}
+    for mouse in mice_ls:  # mouse is a dict
+        
+        in_mouse_dict = mouse.get("animal")
+        line_dict = mouse.get("line")
+        genotypes_ls = mouse.get("genotypes",[])
+        
+        out_mouse_dict = {}
+        out_mouse_dict["AnimalName"]= in_mouse_dict["animalName"]
+        out_mouse_dict["AnimalId"]  = in_mouse_dict["animalId"]
+        out_mouse_dict["Sex"]  = in_mouse_dict["sex"]
+        out_mouse_dict["DateOfBirth"]  = in_mouse_dict["dateBorn"]
+        out_mouse_dict["Status"]  = in_mouse_dict["status"]
+        out_mouse_dict["Line"] = in_mouse_dict["line"]
+        out_mouse_dict["LineShortName"] = line_dict["shortName"]
+        out_mouse_dict["DateOfArrival"] = in_mouse_dict["arrivalDate"]
+        out_mouse_dict["Generation"] = in_mouse_dict["generation"]
+        out_mouse_dict["StockNumber"] = line_dict["stock"]   
+        out_mouse_dict["LitterId"] = in_mouse_dict["birthId"]
+        if genotypes_ls is not None and len(genotypes_ls) > 0:
+            genotype_str = ", ".join([f"{gt['genotype']} ({gt['assay']})" for gt in genotypes_ls])
+            out_mouse_dict["Genotypes"] =  genotype_str
+
+        out_ls.append(out_mouse_dict)
+        
+        
+    return out_ls
+
+def produceCsvReport(filter_ls:list):
+    
+    mice_ls = []
+    task_ls = []
+    line_number = 0
+    for filter in filter_ls:
+        
+        filterDict = json.loads(filter)  # Convert the string to a dictionary
+        line_number += 1
+        try:
+            mice_ls = []
+            task_ls = []
+            task_name = filterDict["taskInstance"]["workflowTaskName"]
+            if task_name in getTaskNamesWithSpecimens():
+                mice_ls, task_ls = getMiceAndProcedures(filterDict)   
+            else:
+                task_ls = getProceduresGivenFilterWithIO(filterDict)
+            
+            if len(task_ls) > 0: 
+                with open(f'report_data/{task_name}_{line_number}_tasks.json',"w") as f:
+                    json.dump(task_ls,f,indent=4)
+                task_and_output_ls = flatten_json_tasks(task_name,task_ls)
+                df = pd.DataFrame(task_and_output_ls)
+                df.to_csv(f'report_data/{task_name}_{line_number}_tasks.csv', index=False)
+            
+            if len(mice_ls) > 0:
+                with open(f'report_data/{task_name}_{line_number}_mice.json',"w") as f:  # Not flattened
+                    json.dump(mice_ls,f,indent=4)
+                mice_output_ls = flatten_json_mice(task_name,mice_ls)
+                df = pd.DataFrame(mice_output_ls)
+                df.to_csv(f'report_data/{task_name}_{line_number}_mice.csv', index=False)
+        except Exception as e:
+            print(f"Error processing filter {filter}: {repr(e)}")
+            continue
 
 if __name__ == '__main__':
     my_logger.info('Logger has been created')
@@ -1356,28 +1429,10 @@ if __name__ == '__main__':
     setWorkgroup('KOMP-JAX Lab')
     setMyToken(getTokenEx())
     
-    #filterDict = { "taskInstance": { "workflowTaskName": "E18.5 MicroCT", "isReviewed": True}, "animal": { "animalName":"A-", "generation":"E18.5"}, "lines": [] }
-    #filterDict = { "taskInstance": { "workflowTaskName": "Histopathology", "isReviewed": True}, "animal": { "animalName":"A-3"}, "lines": [] }
-    #filterDict = { "taskInstance": { "workflowTaskName": "Viability Primary Screen v2", "workflowTaskStatus":"Complete", "isReviewed": True}, "animal": { "generation":""}, "lines": [] }
-    filterDict = { "taskInstance": { "workflowTaskName": "Fertility of Homozygous Knock-out Mice", "workflowTaskStatus":"Complete", "isReviewed": True}, "animal": { "generation":""}, "lines": [] }
-    if filterDict["taskInstance"]["workflowTaskName"] in getTaskNamesWithSpecimens():
-        mice_ls, task_ls = getMiceAndProcedures(filterDict)   
-    else:
-        task_ls = getProceduresGivenFilterWithIO(filterDict)
+    with open("report-filter.json") as f:
+        filterLines = f.read().splitlines()
+        produceCsvReport(filterLines)
         
-    task_and_output_ls = flatten_json(task_ls)
-    with open("flattened.json","w") as f:
-        json.dump(task_and_output_ls,f,indent=4)
-    
-    
-    jsonDictLs = json.dumps(task_ls , indent=4)
-    with open("climb-api-results.json","w") as f:
-        json.dump(task_ls,f,indent=4)
-    """
-    jsonDictLs = json.dumps(mice_ls , indent=4)
-    with open("mouseResults.json","w") as f:
-        json.dump(mice_ls,f,indent=4)
-    """   
     print("SUCCESS")
     
     
