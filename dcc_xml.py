@@ -752,10 +752,11 @@ def buildMetadata(procedureNode,proc):
     
 def getProcedureStatusCode(proc:dict): 
   impc_status_code = ""
-  if 'taskStatus' in proc and proc['taskStatus'] is not None:
+  if 'taskStatus' in proc and proc['taskStatus'] is not None and proc['taskStatus'] != '-':
     if proc['taskStatus'] in procedure_status_message_map:
       impc_status_code = procedure_status_message_map[proc['taskStatus']]
-    else:
+    else: 
+      my_logger.info("Status is: " + proc['taskStatus'] + ". Using default code of IMPC_PSC_006")
       impc_status_code = 'IMPC_PSC_006'  # Cancelled --- the default status code
   return impc_status_code
 
